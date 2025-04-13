@@ -95,7 +95,7 @@ export default function Header() {
   return (
     <header className="flex justify-center w-full fixed top-0 left-0 z-30">
       <motion.div
-        className="hidden lg:flex justify-between items-center mx-auto transition-colors duration-300"
+        className="hidden lg:flex justify-between items-center mx-auto transition-colors duration-200"
         style={{
           // scale: smoothScale,
           width: smoothWidth,
@@ -106,15 +106,19 @@ export default function Header() {
         }}
         animate={{
           backgroundColor: isScrolled
-            ? "rgba(255, 255, 255, 1)"
+            ? "rgba(255, 255, 255, 0.9)"
             : "rgba(255, 255, 255, 0)",
           boxShadow: isScrolled
             ? "0px 4px 8px rgba(0, 0, 0, 0.1)"
             : "0px 0px 0px rgba(0, 0, 0, 0)",
+          backdropFilter: isScrolled ? "blur(8px)" : "blur(0px)",
+          WebkitBackdropFilter: isScrolled ? "blur(8px)" : "blur(0px)", // Safari support
         }}
         transition={{
-          backgroundColor: { duration: 0.3 },
-          boxShadow: { duration: 0.3 },
+          backgroundColor: { duration: 0.2 },
+          boxShadow: { duration: 0.2 },
+          backdropFilter: { duration: 0.2 },
+          WebkitBackdropFilter: { duration: 0.2 },
         }}
       >
         <div className="flex items-center gap-6">
@@ -229,18 +233,16 @@ export default function Header() {
       {/* Version mobile */}
       <div className="lg:hidden relative w-full">
         <div className="flex justify-between items-center px-8 py-4 z-50">
-          <Link href="/">
-            <div className="flex items-center gap-4 z-50">
-              <Image src="/logo.webp" alt="Logo" width={32} height={32} />
-              <ButtonMain
-                icon={<Phone size={16} strokeWidth={1.75} />}
-                children="Réserver un appel"
-                size="sm"
-                link="https://cal.com/arnaudgct/prise-de-contact"
-                newTab={true}
-              />
-            </div>
-          </Link>
+          <div className="flex items-center gap-4 z-50">
+            <Image src="/logo.webp" alt="Logo" width={32} height={32} />
+            <ButtonMain
+              icon={<Phone size={16} strokeWidth={1.75} />}
+              children="Réserver un appel"
+              size="sm"
+              link="https://cal.com/arnaudgct/prise-de-contact"
+              newTab={true}
+            />
+          </div>
           <motion.button
             whileTap={{ scale: 0.85 }}
             onClick={toggleMenu}
@@ -323,8 +325,22 @@ export default function Header() {
           initial={{ height: "65px" }}
           animate={{ height: isMenuOpen ? "205px" : "65px" }}
           transition={{ type: "spring", bounce: 0.35 }}
-          className="absolute top-0 right-0 bg-white shadow w-full z-40"
-        ></motion.div>
+          className="absolute top-0 right-0 w-full z-40"
+          style={{
+            backgroundColor:
+              isMenuOpen || isScrolled
+                ? "rgba(255, 255, 255, 0.9)"
+                : "rgba(255, 255, 255, 0)",
+            boxShadow:
+              isMenuOpen || isScrolled
+                ? "0 2px 8px rgba(223, 231, 255, 0.4)"
+                : "none",
+            transition: "background-color 0.3s ease, box-shadow 0.3s ease",
+            WebkitBackdropFilter:
+              isMenuOpen || isScrolled ? "blur(8px)" : "blur(0px", // Safari support
+            backdropFilter: isMenuOpen || isScrolled ? "blur(8px)" : "blur(0px",
+          }}
+        />
       </div>
     </header>
   );

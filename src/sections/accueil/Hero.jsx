@@ -21,7 +21,7 @@ export default function Hero() {
 
       {/* "Faux trou" = texte + copie de la grille + fond blanc */}
       <div
-        className="absolute top-[64px] left-0 bg-white z-11 px-10 pb-4 pt-2 rounded-br-lg"
+        className="w-full sm:w-auto rounded-b-lg sm:rounded-br-lg sm:rounded-bl-none absolute top-[64px] left-0 bg-white z-11 px-6 sm:px-10 pb-4 pt-2 "
         style={{
           backgroundImage: "url('/grille.svg')",
           backgroundRepeat: "repeat",
@@ -29,18 +29,26 @@ export default function Hero() {
         }}
       >
         <div className="flex flex-col gap-2 items-start justify-center">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <TagAvailable />
             <Tag name="monteur vidéo" background="false" />
             <Tag name="cadreur" background="false" />
           </div>
-          <div>
-            <h1 className="text-4xl font-black text-blue-900 font-rethink-sans">
-              Hey, je suis{" "}
-              <span className="font-covered-by-your-grace font-normal text-blue-600">
+          <div className="flex flex-col w-full">
+            <h1 className="flex flex-col sm:flex-row sm:items-center sm:gap-x-3 max-w-[380px] sm:max-w-none text-4xl font-black text-blue-900 font-rethink-sans">
+              Hey, je suis
+              <div className="sm:hidden flex items-end gap-2 w-full">
+                <span className="flex-grow h-px bg-blue-600"></span>
+                <span className="whitespace-nowrap font-covered-by-your-grace font-normal text-blue-600">
+                  Arnaud Graciet
+                </span>
+              </div>
+              {/* Desktop layout avec le nom inline */}
+              <span className="hidden sm:inline font-covered-by-your-grace font-normal text-blue-600">
                 Arnaud Graciet
               </span>
             </h1>
+
             <h2 className="text-lg font-normal text-blue-900">
               Imaginons ensemble votre{" "}
               <span className="font-semibold text-blue-600">
