@@ -31,8 +31,8 @@ export default function Hero() {
         <div className="flex flex-col gap-2 items-start justify-center">
           <div className="flex flex-wrap items-center gap-2">
             <TagAvailable />
-            <Tag name="monteur vidéo" background="false" />
-            <Tag name="cadreur" background="false" />
+            <Tag name="monteur vidéo" background={false} />
+            <Tag name="cadreur" background={false} />
           </div>
           <div className="flex flex-col w-full">
             <h1 className="flex flex-col sm:flex-row sm:items-center sm:gap-x-3 max-w-[380px] sm:max-w-none text-4xl font-black text-blue-900 font-rethink-sans">

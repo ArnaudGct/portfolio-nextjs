@@ -29,6 +29,7 @@
   --font-outfit: var(--font-outfit);
   --font-rethink-sans: var(--font-rethink-sans);
   --font-covered-by-your-grace: var(--font-covered-by-your-grace);
+  --breakpoint-xs: 30rem;
 }
 
 .dark {

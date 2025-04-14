@@ -1,8 +1,10 @@
-// tailwind.config.js
 module.exports = {
-  darkMode: "class", // ou 'media' si tu préfères, mais ici 'class' pour le toggle
+  darkMode: "class",
   theme: {
     extend: {
+      screens: {
+        xs: "425px", // 👉 nouveau breakpoint personnalisé
+      },
       colors: {
         blue: {
           50: "var(--color-blue-50)",

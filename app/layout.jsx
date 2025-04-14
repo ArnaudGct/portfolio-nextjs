@@ -1,6 +1,7 @@
 import { Rethink_Sans, Outfit, Covered_By_Your_Grace } from "next/font/google";
 import "./globals.css";
 import Header from "./../src/sections/Header";
+import Footer from "./../src/sections/Footer";
 
 const rethinkSans = Rethink_Sans({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
       >
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

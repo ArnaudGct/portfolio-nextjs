@@ -30,7 +30,6 @@ export default function Header() {
   // const headerScale = useTransform(scrollY, [0, 100], [1, 0.95]);
   const headerWidth = useTransform(scrollY, [0, 100], ["100%", "60%"]);
   const headerPadding = useTransform(scrollY, [0, 100], ["0 2rem", "0 1.5rem"]);
-  const headerRadius = useTransform(scrollY, [0, 100], ["0px", "8px"]);
   const headerPositionY = useTransform(scrollY, [0, 100], ["0px", "10px"]);
 
   const springConfig = {
@@ -42,7 +41,6 @@ export default function Header() {
   // const smoothScale = useSpring(headerScale, springConfig);
   const smoothWidth = useSpring(headerWidth, springConfig);
   const smoothPadding = useSpring(headerPadding, springConfig);
-  const smoothRadius = useSpring(headerRadius, springConfig);
   const smoothPositionY = useSpring(headerPositionY, springConfig);
 
   const pathname = usePathname();
@@ -95,12 +93,11 @@ export default function Header() {
   return (
     <header className="flex justify-center w-full fixed top-0 left-0 z-30">
       <motion.div
-        className="hidden lg:flex justify-between items-center mx-auto transition-colors duration-200"
+        className="hidden lg:flex justify-between items-center mx-auto rounded-lg"
         style={{
           // scale: smoothScale,
           width: smoothWidth,
           padding: smoothPadding,
-          borderRadius: smoothRadius,
           position: "relative",
           top: smoothPositionY,
         }}
@@ -167,7 +164,6 @@ export default function Header() {
               size="sm"
               link="https://cal.com/arnaudgct/prise-de-contact"
               newTab={true}
-              className="mr-5"
             >
               Réserver un appel
             </ButtonMain>

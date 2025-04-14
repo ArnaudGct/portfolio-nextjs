@@ -1,9 +1,11 @@
 import Hero from "./../src/sections/accueil/Hero";
+import Presentation from "./../src/sections/accueil/Presentation";
 
 export default function Home() {
   return (
-    <div className="h-[4000px]">
+    <main className="h-[4000px]">
       <Hero />
-    </div>
+      <Presentation />
+    </main>
   );
 }
