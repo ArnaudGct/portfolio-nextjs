@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Toggl from "./../../components/Toggl";
 import { Play, Pause } from "lucide-react";
 
-export default function DailymotionPlayerReact() {
+export default function DailymotionPlayer() {
   const playerRef = useRef(null);
   const [player, setPlayer] = useState(null);
   const [muted, setMuted] = useState(true);
@@ -129,7 +129,7 @@ export default function DailymotionPlayerReact() {
       </div>
       <div className="absolute z-9 left-0 bottom-0 w-full h-full bg-gradient-to-tr from-blue-700 from-0% via-blue-300/0 via-15% to-transparent to-100% opacity-50 pointer-events-none" />
 
-      <div id="my-dailymotion-player" className="z-8" ref={playerRef}></div>
+      <div id="my-dailymotion-player" ref={playerRef}></div>
     </div>
   );
 }
