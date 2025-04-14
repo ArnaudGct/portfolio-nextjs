@@ -34,12 +34,12 @@ export default function Presentation() {
               <Tag
                 name="21 ans"
                 background={true}
-                icon={<Cake width={16} strokeWidth={1.75} />}
+                icon={<Cake size={14} strokeWidth={1.75} />}
               />
               <Tag
                 name="La Rochelle"
                 background={true}
-                icon={<MapPin width={16} strokeWidth={1.75} />}
+                icon={<MapPin size={14} strokeWidth={1.75} />}
               />
               <Tag name="monteur vidéo" background={false} />
               <Tag name="cadreur" background={false} />

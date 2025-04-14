@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model avis {
+  id_avis     Int     @id @default(autoincrement())
+  commentaire String  @db.VarChar(500)
+  client      String  @db.VarChar(50)
+  plateforme  String  @db.VarChar(50)
+  date        String? @db.VarChar(50)
+  afficher    Boolean
+}
+
+model categories {
+  id_cat   Int     @id @default(autoincrement())
+  titre    String  @db.VarChar(50)
+  afficher Boolean
+}
+
+model creations {
+  id_crea               Int      @id @default(autoincrement())
+  titre                 String   @db.VarChar(100)
+  description           String   @db.VarChar(3500)
+  type                  String   @db.VarChar(50)
+  lien                  String   @db.VarChar(500)
+  date                  String   @db.VarChar(50)
+  media_webm            String   @db.VarChar(100)
+  media_mp4             String   @db.VarChar(100)
+  duree                 String   @db.VarChar(25)
+  afficher_competences  String   @db.VarChar(50)
+  afficher              Boolean
+  derniere_modification DateTime @db.DateTime(0)
+}
+
+model experiences {
+  id_exp         Int    @id @default(autoincrement())
+  date_debut     String @db.VarChar(50)
+  date_fin       String @db.VarChar(10)
+  titre          String @db.VarChar(150)
+  description    String @db.VarChar(10000)
+  url_img        String @db.VarChar(250)
+  position_img   String @db.VarChar(50)
+  position       String @db.VarChar(10)
+  categorie      String @db.VarChar(25)
+  img_logo       String @db.VarChar(250)
+  nom_entreprise String @db.VarChar(50)
+  url_entreprise String @db.VarChar(1000)
+  type_emploi    String @db.VarChar(50)
+  poste_actuel   Int
+  afficher       Int
+}
+
+model faq {
+  id_faq   Int     @id @default(autoincrement())
+  question String  @db.VarChar(250)
+  reponse  String  @db.VarChar(1000)
+  afficher Boolean
+}
+
+model photos_experiences {
+  id_photo Int    @id @default(autoincrement())
+  titre    String @db.VarChar(100)
+  url      String @db.VarChar(1000)
+  date     String @db.VarChar(50)
+}
+
+model tags_creations {
+  id_tag               Int     @id @default(autoincrement())
+  titre                String  @db.VarChar(50)
+  afficher_competences Boolean
+}
+
+model utilisateurs {
+  id_user  Int     @id @default(autoincrement())
+  img      String  @db.VarChar(250)
+  email    String? @db.VarChar(50)
+  username String  @db.VarChar(50)
+  password String  @db.VarChar(50)
+  role     String  @db.VarChar(10)
+}

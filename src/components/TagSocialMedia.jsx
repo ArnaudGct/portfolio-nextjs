@@ -42,7 +42,7 @@ export default function TagSocialMedia({ name }) {
     <Link href={social.href} target="_blank" rel="noopener noreferrer">
       <button
         className={`flex items-center text-normal font-medium font-rethink-sans px-4 py-1 rounded-lg gap-2
-        ${social.text} ${social.bg} ${social.border} border transition hover:opacity-80`}
+        ${social.text} ${social.bg} ${social.border} border transition hover:opacity-80 cursor-pointer`}
       >
         <span>{social.icon}</span>
         <p>{social.label}</p>
