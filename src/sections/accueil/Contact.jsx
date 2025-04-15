@@ -1,19 +1,94 @@
+"use client"; // à ajouter si vous utilisez App Router
+
+import { useState, useEffect } from "react";
 import TagAvailable from "./../../components/TagAvailable";
 import TagSocialMedia from "./../../components/TagSocialMedia";
 import ButtonMain from "./../../components/ButtonMain";
-import { Phone, Send } from "lucide-react";
+import { Phone, Send, CheckCircle, AlertCircle } from "lucide-react";
 import Image from "next/image";
-import Tag from "./../../components/Tag";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    message: "",
+  });
+
+  const [formState, setFormState] = useState({
+    isSubmitting: false,
+    isSuccess: false,
+    isError: false,
+    message: "",
+  });
+
+  useEffect(() => {
+    if (formState.isSuccess) {
+      const timer = setTimeout(() => {
+        setFormState((prev) => ({
+          ...prev,
+          isSuccess: false,
+          message: "",
+        }));
+      }, 5000); // 5 sec
+
+      return () => clearTimeout(timer);
+    }
+  }, [formState.isSuccess]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setFormState({
+      isSubmitting: true,
+      isSuccess: false,
+      isError: false,
+      message: "",
+    });
+
+    try {
+      const response = await fetch("/api/accueil/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setFormState({
+          isSubmitting: false,
+          isSuccess: true,
+          isError: false,
+          message: "Message envoyé avec succès !",
+        });
+        // Réinitialiser le formulaire
+        setFormData({ firstName: "", lastName: "", email: "", message: "" });
+      } else {
+        throw new Error(data.message || "Une erreur est survenue");
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du formulaire:", error);
+      setFormState({
+        isSubmitting: false,
+        isSuccess: false,
+        isError: true,
+        message:
+          error.message ||
+          "Une erreur est survenue lors de l'envoi du message.",
+      });
+    }
+  };
+
   return (
     <section className="flex flex-col gap-12 lg:flex-row items-start lg:items-center justify-center lg:justify-between w-[90%] mt-36 mb-20 mx-auto max-w-[1440px]">
-      {/* <div>
-        <h2 className="text-4xl font-bold mb-8">Contact</h2>
-      <p className="text-lg mb-4">
-        Pour toute question ou demande, n'hésitez pas à nous contacter.
-      </p>
-      </div> */}
       <div className="w-full flex flex-col gap-8 items-start justify-start">
         <div className="flex gap-4 items-center justify-start">
           <Image
@@ -62,7 +137,10 @@ export default function Contact() {
         </div>
       </div>
 
-      <form className="flex flex-col gap-6 w-full p-9 bg-slate-50 rounded-lg">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-6 w-full p-9 bg-slate-50 rounded-lg"
+      >
         <div>
           <p className="text-blue-600 text-2xl font-extrabold font-rethink-sans">
             Contact
@@ -76,33 +154,76 @@ export default function Contact() {
           <div className="w-full flex flex-col sm:flex-row gap-4">
             <input
               type="text"
+              name="firstName"
               placeholder="Prénom"
-              className="w-full py-2 px-4 bg-slate-200 rounded-lg"
+              value={formData.firstName}
+              onChange={handleChange}
+              className="w-full py-2 px-4 bg-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+              disabled={formState.isSubmitting || formState.isSuccess}
             />
             <input
               type="text"
+              name="lastName"
               placeholder="Nom"
-              className="w-full py-2 px-4 bg-slate-200 rounded-lg"
+              value={formData.lastName}
+              onChange={handleChange}
+              className="w-full py-2 px-4 bg-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+              disabled={formState.isSubmitting || formState.isSuccess}
             />
           </div>
           <input
             type="email"
+            name="email"
             placeholder="Email"
-            className="w-full py-2 px-4 bg-slate-200 rounded-lg"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full py-2 px-4 bg-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+            disabled={formState.isSubmitting || formState.isSuccess}
           />
           <textarea
+            name="message"
             placeholder="Message"
-            className="w-full py-2 px-4 bg-slate-200 rounded-lg h-48"
-          ></textarea>
+            value={formData.message}
+            onChange={handleChange}
+            className="w-full py-2 px-4 bg-slate-200 rounded-lg h-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+            disabled={formState.isSubmitting || formState.isSuccess}
+          />
         </div>
 
-        <ButtonMain
-          icon={<Send size={16} strokeWidth={1.75} />}
-          size="base"
-          className="w-full xs:w-auto"
-        >
-          Envoyer le message
-        </ButtonMain>
+        <div className="flex flex-col gap-2 items-start justify-start">
+          <ButtonMain
+            icon={
+              formState.isSuccess ? (
+                <CheckCircle size={16} strokeWidth={1.75} />
+              ) : (
+                <Send size={16} strokeWidth={1.75} />
+              )
+            }
+            size="base"
+            className={`w-full xs:w-auto ${
+              formState.isSuccess ? "bg-green-600" : ""
+            }`}
+            type="submit"
+            disabled={formState.isSubmitting || formState.isSuccess}
+          >
+            {formState.isSubmitting
+              ? "Envoi en cours..."
+              : formState.isSuccess
+              ? "Message envoyé !"
+              : "Envoyer le message"}
+          </ButtonMain>
+
+          {formState.isError && (
+            <div className="flex items-center gap-2 mt-2 text-red-600">
+              <AlertCircle size={16} strokeWidth={1.75} />
+              <p className="text-sm">{formState.message}</p>
+            </div>
+          )}
+        </div>
       </form>
     </section>
   );
