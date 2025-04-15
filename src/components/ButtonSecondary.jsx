@@ -7,22 +7,33 @@ export default function ButtonSecondary({
   size,
   link,
   newTab,
+  className = "",
 }) {
-  // Déterminer padding selon children
   const paddingClass = children ? "px-4 py-2" : "px-2.5 py-2.5";
-
-  // Déterminer taille du texte selon size
   const sizeClass =
-    size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-base"; // par défaut
-  return (
-    <Link href={link} target={newTab && "_blank"} rel="noopener noreferrer">
-      <button
-        onClick={onClick}
-        className={`flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 cursor-pointer transition duration-300 ${paddingClass}`}
-      >
-        {icon && <span>{icon}</span>}
-        {children && <p className={sizeClass}>{children}</p>}
-      </button>
-    </Link>
+    size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-base";
+
+  const buttonContent = (
+    <button
+      onClick={onClick}
+      className={`flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 cursor-pointer transition duration-300 ${paddingClass} ${sizeClass} ${className}`}
+    >
+      {icon && <span>{icon}</span>}
+      {children && <p>{children}</p>}
+    </button>
   );
+
+  if (link) {
+    return (
+      <Link
+        href={link}
+        target={newTab ? "_blank" : undefined}
+        rel="noopener noreferrer"
+      >
+        {buttonContent}
+      </Link>
+    );
+  }
+
+  return buttonContent;
 }
