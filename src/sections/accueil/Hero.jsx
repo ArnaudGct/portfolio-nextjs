@@ -1,4 +1,4 @@
-import DailymotionPlayer from "./DaylimotionPlayer";
+import DailymotionPlayer from "./../../components/DaylimotionPlayer";
 import Tag from "../../components/Tag";
 import TagAvailable from "../../components/TagAvailable";
 

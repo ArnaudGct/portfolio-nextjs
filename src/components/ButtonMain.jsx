@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function ButtonMain({
   icon,
   children,
-  onClick,
   size = "base",
   link = "#",
   newTab,
@@ -30,7 +29,6 @@ export default function ButtonMain({
       className={`${className}`}
     >
       <button
-        onClick={onClick}
         className={`flex flex-row items-center justify-center gap-2 bg-blue-700 text-blue-50 rounded-lg hover:bg-blue-800 cursor-pointer transition duration-300 ${paddingClass} ${className}`}
       >
         {icon && <span>{icon}</span>}

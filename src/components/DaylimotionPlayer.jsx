@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Toggl from "./../../components/Toggl";
+import Toggl from "./Toggl";
 import { Play, Pause } from "lucide-react";
 
 export default function DailymotionPlayer() {
