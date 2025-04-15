@@ -29,7 +29,7 @@ export default function Presentation() {
             </p>
           </div>
           <div>
-            <div className="flex flex-wrap items-center gap-2 mt-2">
+            <div className="flex flex-wrap items-center gap-2">
               <TagAvailable />
               <Tag
                 name="21 ans"
