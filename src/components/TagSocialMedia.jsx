@@ -13,17 +13,17 @@ export default function TagSocialMedia({ name }) {
       border: "border-blue-300",
     },
     instagram: {
-      label: "Instagram / @arnaudgct",
+      label: "Instagram",
       icon: (
         <Image src="/instagram.webp" alt="Instagram" width={16} height={16} />
       ),
-      href: "https://www.instagram.com/arnaudgct",
+      href: "https://www.instagram.com/arnaud_gct/",
       text: "text-[#e94aec]",
       bg: "bg-[#ffedfd]",
       border: "border-[#fdbef0]",
     },
     linkedin: {
-      label: "LinkedIn / Arnaud Graciet",
+      label: "LinkedIn",
       icon: (
         <Image src="/linkedin.webp" alt="LinkedIn" width={16} height={16} />
       ),

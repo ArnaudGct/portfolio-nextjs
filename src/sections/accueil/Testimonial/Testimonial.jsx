@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import ButtonSecondary from "./../../components/ButtonSecondary";
+import ButtonSecondary from "../../../components/ButtonSecondary";
 
 // Import Swiper styles
 import "swiper/css";
@@ -54,7 +54,7 @@ export default function Testimonial() {
   );
 
   return (
-    <div className="max-w-[1440px] mx-auto relative w-[90%] mt-14">
+    <section className="max-w-[1440px] mx-auto relative w-[90%] mt-14">
       <div className="flex gap-2 absolute bottom-0 right-0 z-10 transform translate-y-3/2">
         <ButtonSecondary
           className="prev-button"
@@ -97,6 +97,6 @@ export default function Testimonial() {
           </SwiperSlide>
         ))}
       </Swiper>
-    </div>
+    </section>
   );
 }

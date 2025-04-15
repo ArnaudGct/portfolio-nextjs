@@ -9,7 +9,7 @@ export default function Footer() {
   const pathname = usePathname();
   return (
     <footer className=" bg-blue-50 w-full ">
-      <div className="flex flex-col justify-center items-start lg:flex-row lg:justify-between lg:items-center gap-12 py-16 px-10 sm:px-28 max-w-[1440px] mx-auto">
+      <div className="flex flex-col justify-center items-start lg:flex-row lg:justify-between lg:items-center gap-12 py-16 w-[90%] max-w-[1440px] mx-auto">
         <div className="flex flex-col gap-8 items-start justify-start">
           <div className="flex gap-4 items-center justify-start">
             <Image
