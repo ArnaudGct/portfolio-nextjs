@@ -46,16 +46,15 @@ export default function Videos() {
             ))}
           </div>
         </div>
-        <div>
-          <ButtonMain
-            icon={<ArrowUpRight size={16} />}
-            link="/creations"
-            newTab={false}
-            className="w-full xs:w-auto"
-          >
-            Toutes mes créations
-          </ButtonMain>
-        </div>
+        <ButtonMain
+          icon={<ArrowUpRight size={16} />}
+          link="/creations"
+          newTab={false}
+          size="base"
+          className="w-full xs:w-auto"
+        >
+          Toutes mes créations
+        </ButtonMain>
       </div>
     </section>
   );

@@ -7,7 +7,7 @@ export default function ButtonMain({
   link = "#",
   newTab,
   className = "",
-  type = "button",
+  type, // s'il est défini = bouton, sinon = lien
 }) {
   const paddingClass = {
     sm: children ? "px-3 py-1.5" : "px-2.5 py-1.5",
@@ -21,18 +21,18 @@ export default function ButtonMain({
     lg: "text-lg",
   }[size];
 
+  const classes = `flex flex-row items-center justify-center gap-2 bg-blue-700 text-blue-50 rounded-lg hover:bg-blue-800 cursor-pointer transition duration-300 ${paddingClass} ${className}`;
+
   const content = (
-    <div
-      className={`flex flex-row items-center justify-center gap-2 bg-blue-700 text-blue-50 rounded-lg hover:bg-blue-800 cursor-pointer transition duration-300 ${paddingClass} ${className}`}
-    >
+    <>
       {icon && <span>{icon}</span>}
       {children && <p className={sizeClass}>{children}</p>}
-    </div>
+    </>
   );
 
-  if (type === "submit" || type === "button") {
+  if (type) {
     return (
-      <button type={type} className="contents">
+      <button type={type} className={classes}>
         {content}
       </button>
     );
@@ -43,9 +43,9 @@ export default function ButtonMain({
       href={link}
       target={newTab ? "_blank" : "_self"}
       rel="noopener noreferrer"
-      className="contents"
+      className={`${className}`}
     >
-      {content}
+      <button className={classes}>{content}</button>
     </Link>
   );
 }
