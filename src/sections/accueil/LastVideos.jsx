@@ -37,11 +37,17 @@ export default function Videos() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {videos.map((video) => (
               <Video
-                key={video.id}
-                id={video.id}
+                key={video.id_crea}
+                id={video.id_crea}
                 title={video.titre}
                 url={video.lien}
-                type={video.type}
+                types={
+                  typeof video.type === "string"
+                    ? video.type.split(",").map((t) => t.trim())
+                    : Array.isArray(video.type)
+                    ? video.type
+                    : []
+                }
               />
             ))}
           </div>

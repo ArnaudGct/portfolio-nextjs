@@ -2,17 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import Tag from "./Tag";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
+import { render } from "react-dom";
+import LiteYouTubeEmbed from "react-lite-youtube-embed";
 
-export default function Video({ id, title, type, url }) {
+export default function Video({ id, title, types, url }) {
   const [loading, setLoading] = useState(true); // Pour gérer l'état de chargement
   const [isInView, setIsInView] = useState(false); // Pour vérifier si la vidéo est dans la vue
   const videoRef = useRef(null); // Référence pour l'élément vidéo
-
-  const types = type
-    .split(",") // Séparation uniquement par des virgules
-    .map((t) => t.trim()) // Nettoyage des espaces autour
-    .filter(Boolean) // Filtre les éléments vides
-    .sort(); // Trie les éléments
 
   let youtubeId = "";
   try {
@@ -57,7 +53,7 @@ export default function Video({ id, title, type, url }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="aspect-video relative" ref={videoRef}>
+      <div className="relative aspect-video" ref={videoRef}>
         {/* Skeleton loader */}
         {!isInView || loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-50 opacity-70">
@@ -68,14 +64,20 @@ export default function Video({ id, title, type, url }) {
 
         {/* Lorsque la vidéo est dans la vue, charger l'iframe */}
         {isInView && youtubeId ? (
-          <iframe
-            className="w-full h-full rounded-lg shadow-lg transition-all duration-500"
-            src={`https://www.youtube.com/embed/${youtubeId}`}
+          // <iframe
+          //   className="w-full h-full rounded-lg shadow-lg transition-all duration-500"
+          //   src={`https://www.youtube.com/embed/${youtubeId}`}
+          //   title={title}
+          //   frameBorder="0"
+          //   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          //   allowFullScreen
+          //   onLoad={handleIframeLoad} // Quand l'iframe est chargée, on arrête le chargement
+          // />
+          <LiteYouTubeEmbed
+            id={youtubeId}
             title={title}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            onLoad={handleIframeLoad} // Quand l'iframe est chargée, on arrête le chargement
+            poster="hqdefault"
+            webp
           />
         ) : null}
         {!isInView && !youtubeId && (
@@ -95,9 +97,14 @@ export default function Video({ id, title, type, url }) {
             </div>
           )}
         </div>
-        <div className="flex justify-center items-center p-2 text-blue-700 min-w-9 w-[10%]">
+        <Link
+          href={`/creations/${id}`}
+          passHref
+          legacyBehavior
+          className="flex justify-center items-center p-2 text-blue-700 min-w-9 w-[10%] hover:text-blue-900 transition-colors"
+        >
           <SquareArrowOutUpRight size={16} strokeWidth={1.75} />
-        </div>
+        </Link>
       </div>
     </div>
   );

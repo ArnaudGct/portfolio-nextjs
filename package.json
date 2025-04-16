@@ -9,14 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@number-flow/react": "^0.5.9",
     "@prisma/client": "^6.6.0",
     "framer-motion": "^12.6.5",
     "lucide-react": "^0.487.0",
     "motion": "^12.6.5",
     "next": "15.2.4",
     "nodemailer": "^6.10.1",
+    "number-flow": "^0.5.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-lite-youtube-embed": "^2.4.0",
     "swiper": "^11.2.6"
   },
   "devDependencies": {

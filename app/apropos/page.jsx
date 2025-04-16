@@ -89,7 +89,7 @@ export default function APropos() {
                 {/* MAP */}
                 <div className="relative overflow-hidden w-full h-52 rounded-lg border border-blue-300">
                   <img
-                    src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/400x300?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
+                    src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
                     alt="Map"
                     className="object-cover object-center w-full h-full rounded-lg"
                   />
@@ -236,6 +236,7 @@ export default function APropos() {
           </div>
         </div>
       </div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-[#dfe7ff]/0 to-[#dfe7ff]/75 pointer-events-none"></div>
     </main>
   );
 }
