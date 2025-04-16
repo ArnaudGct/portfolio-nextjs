@@ -1,7 +1,9 @@
+"use client";
 import { Rethink_Sans, Outfit, Covered_By_Your_Grace } from "next/font/google";
 import "./globals.css";
 import Header from "./../src/sections/Header";
 import Footer from "./../src/sections/Footer";
+import { usePathname } from "next/navigation";
 
 const rethinkSans = Rethink_Sans({
   subsets: ["latin"],
@@ -21,19 +23,25 @@ const coveredByYourGrace = Covered_By_Your_Grace({
   weight: ["400"], // choisis les poids que tu veux utiliser
 });
 
-export const metadata = {
-  title: "Arnaud Graciet - Vidéaste freelance",
-  description:
-    "Explorez le portfolio de Arnaud Graciet, monteur vidéo en freelance.",
-};
-
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+
+  const noHeaderRoutes = ["/journal-personnel"];
+  const showHeader = !noHeaderRoutes.includes(pathname);
+
   return (
     <html lang="fr">
+      <head>
+        <title>Arnaud Graciet - Vidéaste freelance</title>
+        <meta
+          name="description"
+          content="Explorez le portfolio de Arnaud Graciet, monteur vidéo en freelance."
+        />
+      </head>
       <body
         className={`${rethinkSans.variable} ${outfit.variable} ${coveredByYourGrace.variable} antialiased`}
       >
-        <Header />
+        {showHeader && <Header />}
         {children}
         <Footer />
       </body>
