@@ -5,7 +5,7 @@ import Link from "next/link";
 import { render } from "react-dom";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 
-export default function Video({ id, title, types, url }) {
+export default function Video({ id, title, tags, url }) {
   const [loading, setLoading] = useState(true); // Pour gérer l'état de chargement
   const [isInView, setIsInView] = useState(false); // Pour vérifier si la vidéo est dans la vue
   const videoRef = useRef(null); // Référence pour l'élément vidéo
@@ -89,9 +89,9 @@ export default function Video({ id, title, types, url }) {
           <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
             {title}
           </p>
-          {types.length > 0 && (
+          {tags.length > 0 && (
             <div className="flex flex-wrap gap-x-2 gap-y-1 mt-2">
-              {types.map((t, index) => (
+              {tags.map((t, index) => (
                 <Tag key={`${id}-${t}-${index}`} name={t} background={false} />
               ))}
             </div>

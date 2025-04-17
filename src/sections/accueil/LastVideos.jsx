@@ -41,11 +41,11 @@ export default function Videos() {
                 id={video.id_crea}
                 title={video.titre}
                 url={video.lien}
-                types={
-                  typeof video.type === "string"
-                    ? video.type.split(",").map((t) => t.trim())
-                    : Array.isArray(video.type)
-                    ? video.type
+                tags={
+                  typeof video.tags === "string"
+                    ? video.tags.split(",").map((t) => t.trim())
+                    : Array.isArray(video.tags)
+                    ? video.tags
                     : []
                 }
               />

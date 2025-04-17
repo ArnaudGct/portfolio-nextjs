@@ -1,14 +1,14 @@
 import { motion, AnimatePresence } from "motion/react";
 
-export default function TagCheckbox({ type, selected, onToggle }) {
+export default function TagRadio({ type, selected, onToggle }) {
   return (
     <button
       onClick={() => onToggle(type)}
-      className={`relative flex items-center gap-2 px-3 py-1 rounded-full text-xs transition 
+      className={`relative flex items-center gap-2 px-3 py-1 rounded-lg text-normal font-medium transition font-rethink-sans cursor-pointer
         ${
           selected
-            ? "bg-green-600 text-white"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            ? "bg-blue-100 text-blue-600"
+            : "bg-white text-blue-600 hover:bg-blue-50"
         }`}
     >
       {/* Checkbox circle */}
@@ -16,7 +16,7 @@ export default function TagCheckbox({ type, selected, onToggle }) {
         <AnimatePresence>
           {selected && (
             <motion.span
-              className="absolute inset-1 rounded-full bg-white"
+              className="absolute inset-1 rounded-full bg-blue-600"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}

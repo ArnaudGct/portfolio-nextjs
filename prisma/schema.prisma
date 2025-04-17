@@ -22,21 +22,6 @@ model categories {
   afficher Boolean
 }
 
-model creations {
-  id_crea               Int      @id @default(autoincrement())
-  titre                 String   @db.VarChar(100)
-  description           String   @db.VarChar(3500)
-  type                  String   @db.VarChar(50)
-  lien                  String   @db.VarChar(500)
-  date                  String   @db.VarChar(50)
-  media_webm            String   @db.VarChar(100)
-  media_mp4             String   @db.VarChar(100)
-  duree                 String   @db.VarChar(25)
-  afficher_competences  String   @db.VarChar(50)
-  afficher              Boolean
-  derniere_modification DateTime @db.DateTime(0)
-}
-
 model experiences {
   id_exp         Int     @id @default(autoincrement())
   date_debut     String  @db.VarChar(50)
@@ -69,12 +54,6 @@ model photos_experiences {
   date     String @db.VarChar(50)
 }
 
-model tags_creations {
-  id_tag               Int     @id @default(autoincrement())
-  titre                String  @db.VarChar(50)
-  afficher_competences Boolean
-}
-
 model utilisateurs {
   id_user  Int     @id @default(autoincrement())
   img      String  @db.VarChar(250)
@@ -82,4 +61,58 @@ model utilisateurs {
   username String  @db.VarChar(50)
   password String  @db.VarChar(50)
   role     String  @db.VarChar(10)
+}
+
+model autre_categories {
+  id_cat Int    @id @default(autoincrement())
+  titre  String @db.VarChar(50)
+}
+
+model autre_tags {
+  id_tag Int    @id @default(autoincrement())
+  titre  String @db.VarChar(50)
+}
+
+model photos {
+  id_photo      Int           @id @default(autoincrement())
+  lien_high     String        @db.VarChar(500)
+  lien_low      String        @db.VarChar(500)
+  id_album      Int
+  photos_albums photos_albums @relation(fields: [id_album], references: [id_album], onDelete: Cascade, map: "fk_foreign")
+
+  @@index([id_album], map: "fk_foreign")
+}
+
+model photos_albums {
+  id_album    Int      @id @default(autoincrement())
+  titre       String   @db.VarChar(100)
+  description String   @db.VarChar(1000)
+  date        DateTime @db.Date
+  photos      photos[]
+}
+
+model photos_tags {
+  id_tag Int    @id @default(autoincrement())
+  titre  String @db.VarChar(50)
+}
+
+model videos {
+  id_vid                Int      @id @default(autoincrement())
+  titre                 String   @db.VarChar(100)
+  description           String   @db.VarChar(3500)
+  tags                  String   @db.VarChar(50)
+  lien                  String   @db.VarChar(500)
+  date                  String   @db.VarChar(50)
+  media_webm            String   @db.VarChar(100)
+  media_mp4             String   @db.VarChar(100)
+  duree                 String   @db.VarChar(25)
+  afficher_competences  String   @db.VarChar(50)
+  afficher              Boolean
+  derniere_modification DateTime @db.DateTime(0)
+}
+
+model videos_tags {
+  id_tag               Int     @id @default(autoincrement())
+  titre                String  @db.VarChar(50)
+  afficher_competences Boolean
 }
