@@ -4,7 +4,7 @@ import Video from "./../../src/components/Video";
 import TagCheckbox from "./../../src/components/TagCheckbox";
 import FilterTag from "./../../src/components/FilterTag";
 import { X } from "lucide-react";
-import { AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import NumberFlow from "@number-flow/react";
 
 export default function Creations() {
@@ -190,17 +190,41 @@ export default function Creations() {
 
         <div className="min-h-[calc(100vh-296px)]">
           {filteredVideos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10">
-              {filteredVideos.map((video) => (
-                <Video
-                  key={video.id_crea}
-                  id={video.id_crea}
-                  title={video.titre}
-                  url={video.lien}
-                  types={video.type}
-                />
-              ))}
-            </div>
+            <AnimatePresence>
+              <motion.div
+                key={filteredVideos.length} // force rerender sur filtre
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10"
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.1, // délai entre chaque vidéo
+                    },
+                  },
+                  hidden: {},
+                }}
+              >
+                {filteredVideos.map((video) => (
+                  <motion.div
+                    key={video.id_crea}
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.9, y: 20 },
+                      visible: { opacity: 1, scale: 1, y: 0 },
+                    }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <Video
+                      id={video.id_crea}
+                      title={video.titre}
+                      url={video.lien}
+                      types={video.type}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
           ) : (
             <div className="flex flex-col justify-center items-center">
               <p className="text-xl font-rethink-sans text-blue-600 font-bold">
