@@ -8,6 +8,7 @@ export default function ButtonSecondary({
   link,
   newTab,
   className = "",
+  isDisabled = false,
 }) {
   const paddingClass = children ? "px-4 py-2" : "px-2.5 py-2.5";
   const sizeClass =
@@ -16,7 +17,9 @@ export default function ButtonSecondary({
   const buttonContent = (
     <button
       onClick={onClick}
-      className={`flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 cursor-pointer transition duration-300 ${paddingClass} ${sizeClass} ${className}`}
+      className={`flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition duration-300 ${paddingClass} ${sizeClass} ${className} ${
+        isDisabled ? "cursor-not-allowed" : "cursor-pointer"
+      }`}
     >
       {icon && <span>{icon}</span>}
       {children && <p>{children}</p>}

@@ -1,3 +1,4 @@
+"use client";
 import { useState, useRef, useEffect } from "react";
 import Tag from "./Tag";
 import { SquareArrowOutUpRight } from "lucide-react";
@@ -85,12 +86,12 @@ export default function Video({ id, title, tags, url }) {
         )}
       </div>
       <div className="w-full flex items-center justify-between">
-        <div className="w-[90%] flex flex-col">
+        <div className="w-[90%] flex flex-col gap-2">
           <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
             {title}
           </p>
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-x-2 gap-y-1 mt-2">
+            <div className="flex flex-wrap gap-x-2 gap-y-1.5">
               {tags.map((t, index) => (
                 <Tag key={`${id}-${t}-${index}`} name={t} background={false} />
               ))}

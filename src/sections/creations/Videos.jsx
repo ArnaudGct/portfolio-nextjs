@@ -12,10 +12,13 @@ export default function Videos() {
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setselectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
+        setIsLoading(true); // ⬅️ début du chargement
+
         const res = await fetch("/api/creations/videos");
         const data = await res.json();
 
@@ -36,7 +39,7 @@ export default function Videos() {
 
           return {
             ...video,
-            tags: cleanedTags,
+            tags: cleanedTags, // ✅ ici on écrase bien le champ "tags"
           };
         });
 
@@ -47,8 +50,11 @@ export default function Videos() {
         setAllTags(uniqueTags);
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des vidéos :", error);
+      } finally {
+        setIsLoading(false); // ⬅️ fin du chargement
       }
     };
+
     fetchVideos();
   }, []);
 
@@ -187,19 +193,21 @@ export default function Videos() {
       </div>
 
       <div className="min-h-[calc(100vh-296px)]">
-        {filteredVideos.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
+          </div>
+        ) : filteredVideos.length > 0 ? (
           <AnimatePresence>
             <motion.div
-              key={filteredVideos.length} // force rerender sur filtre
+              key={filteredVideos.length}
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10"
               initial="hidden"
               animate="visible"
               exit="hidden"
               variants={{
                 visible: {
-                  transition: {
-                    staggerChildren: 0.1, // délai entre chaque vidéo
-                  },
+                  transition: { staggerChildren: 0.1 },
                 },
                 hidden: {},
               }}

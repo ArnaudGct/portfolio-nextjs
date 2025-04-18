@@ -74,11 +74,17 @@ model autre_tags {
 }
 
 model photos {
-  id_photo      Int           @id @default(autoincrement())
-  lien_high     String        @db.VarChar(500)
-  lien_low      String        @db.VarChar(500)
-  id_album      Int
-  photos_albums photos_albums @relation(fields: [id_album], references: [id_album], onDelete: Cascade, map: "fk_foreign")
+  id_photo       Int            @id @default(autoincrement())
+  lien_high      String         @db.VarChar(500)
+  lien_low       String         @db.VarChar(500)
+  largeur        Int
+  hauteur        Int
+  tags           String         @db.VarChar(50)
+  tags_recherche String         @db.VarChar(500)
+  date_ajout     DateTime       @db.DateTime(0)
+  afficher       Boolean
+  id_album       Int?
+  photos_albums  photos_albums? @relation(fields: [id_album], references: [id_album], onDelete: Cascade, map: "fk_foreign")
 
   @@index([id_album], map: "fk_foreign")
 }
@@ -115,4 +121,15 @@ model videos_tags {
   id_tag               Int     @id @default(autoincrement())
   titre                String  @db.VarChar(50)
   afficher_competences Boolean
+}
+
+model autre {
+  id_autre    Int      @id @default(autoincrement())
+  titre       String   @db.VarChar(100)
+  description String   @db.VarChar(3500)
+  lien        String   @db.VarChar(500)
+  categorie   String   @db.VarChar(50)
+  tags        String   @db.VarChar(50)
+  date        DateTime @db.Date
+  afficher    Boolean
 }

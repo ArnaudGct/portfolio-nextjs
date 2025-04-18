@@ -1,89 +1,137 @@
 "use client";
 import { useEffect, useState } from "react";
-import Video from "./../../components/Video";
+import AutreItem from "./../../components/AutreItem";
 import TagCheckbox from "./../../components/TagCheckbox";
 import FilterTag from "./../../components/FilterTag";
 import { motion, AnimatePresence } from "motion/react";
 import NumberFlow from "@number-flow/react";
 
 export default function Autre() {
-  const [videos, setVideos] = useState([]);
-  const [filteredVideos, setFilteredVideos] = useState([]);
+  const [autres, setAutres] = useState([]);
+  const [filteredAutres, setFilteredAutres] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setselectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  console.log(setFilteredAutres);
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    const fetchAutres = async () => {
       try {
-        const res = await fetch("/api/creations/videos");
+        setIsLoading(true); // ⬅️ début du chargement
+
+        const res = await fetch("/api/creations/autre");
         const data = await res.json();
 
-        const cleanedData = data.map((video) => {
+        const cleanedData = data.map((autre) => {
           let cleanedTags = [];
+          let cleanedCategories = [];
 
-          if (typeof video.tags === "string") {
-            cleanedTags = video.tags
+          // Nettoyage des tags
+          if (typeof autre.tags === "string") {
+            cleanedTags = autre.tags
               .split(",")
               .map((tag) => tag.trim())
               .filter((tag) => tag.length > 0);
-          } else if (Array.isArray(video.tags)) {
-            cleanedTags = video.tags
+          } else if (Array.isArray(autre.tags)) {
+            cleanedTags = autre.tags
               .flatMap((tag) => tag.split(","))
               .map((tag) => tag.trim())
               .filter(Boolean);
           }
 
+          // Nettoyage des catégories
+          if (typeof autre.categorie === "string") {
+            cleanedCategories = autre.categorie
+              .split(",")
+              .map((cat) => cat.trim())
+              .filter((cat) => cat.length > 0);
+          } else if (Array.isArray(autre.categorie)) {
+            cleanedCategories = autre.categorie
+              .flatMap((cat) => cat.split(","))
+              .map((cat) => cat.trim())
+              .filter(Boolean);
+          }
+
           return {
-            ...video,
+            ...autre,
             tags: cleanedTags,
+            categories: cleanedCategories, // <-- on ajoute bien ici
           };
         });
 
-        setVideos(cleanedData);
-        setFilteredVideos(cleanedData);
+        setAutres(cleanedData);
+        setFilteredAutres(cleanedData);
 
         const uniqueTags = extractUniqueTags(cleanedData);
         setAllTags(uniqueTags);
       } catch (error) {
-        console.error("❌ Erreur lors de la récupération des vidéos :", error);
+        console.error(
+          "❌ Erreur lors de la récupération des autres créations :",
+          error
+        );
+      } finally {
+        setIsLoading(false); // ⬅️ fin du chargement
       }
     };
-    fetchVideos();
+
+    fetchAutres();
   }, []);
 
-  const extractUniqueTags = (videoData) => {
+  const extractUniqueTags = (autresData) => {
     const tagSet = new Set();
 
-    videoData.forEach((video) => {
-      video.tags.forEach((tag) => {
+    autresData.forEach((autre) => {
+      autre.tags.forEach((tag) => {
         if (tag) tagSet.add(tag);
       });
+
+      // Ajout des catégories aussi
+      if (autre.categories && Array.isArray(autre.categories)) {
+        autre.categories.forEach((cat) => {
+          if (cat) tagSet.add(cat);
+        });
+      }
     });
 
     return Array.from(tagSet).sort();
   };
 
   useEffect(() => {
-    let result = [...videos];
+    let result = [...autres];
 
     if (selectedTags.length > 0) {
-      result = result.filter((video) => {
-        return selectedTags.every((tag) => video.tags.includes(tag));
+      result = result.filter((autre) => {
+        // Fusionne les tags + categories
+        const allTags = [
+          ...(Array.isArray(autre.tags) ? autre.tags : []),
+          ...(Array.isArray(autre.categories) ? autre.categories : []),
+        ];
+
+        return selectedTags.every((tag) => allTags.includes(tag));
       });
     }
 
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (video) =>
-          video.titre.toLowerCase().includes(query) ||
-          (video.description && video.description.toLowerCase().includes(query))
-      );
+
+      result = result.filter((autre) => {
+        const inTitle = autre.titre.toLowerCase().includes(query);
+        const inDescription = autre.description?.toLowerCase().includes(query);
+        const inTags = autre.tags?.some((tag) =>
+          tag.toLowerCase().includes(query)
+        );
+        const inCategories = autre.categories?.some((cat) =>
+          cat.toLowerCase().includes(query)
+        );
+
+        return inTitle || inDescription || inTags || inCategories;
+      });
     }
 
-    setFilteredVideos(result);
-  }, [videos, selectedTags, searchQuery]);
+    setFilteredAutres(result);
+  }, [autres, selectedTags, searchQuery]);
 
   const toggleTag = (tag) => {
     setselectedTags((prev) =>
@@ -92,12 +140,10 @@ export default function Autre() {
   };
 
   const getLastAddedDays = () => {
-    if (!videos || videos.length === 0) return "Aucune vidéo";
+    if (!autres || autres.length === 0) return "Aucune autre création";
 
-    const dates = videos
-      .map((v) =>
-        v.derniere_modification ? new Date(v.derniere_modification) : null
-      )
+    const dates = autres
+      .map((v) => (v.date ? new Date(v.date) : null))
       .filter(Boolean);
 
     if (dates.length === 0) return "Date inconnue";
@@ -108,7 +154,7 @@ export default function Autre() {
 
     return `${diffDays} jour${
       diffDays > 1 ? "s" : ""
-    } depuis l'ajout d'une vidéo`;
+    } depuis l'ajout d'une autre création`;
   };
 
   return (
@@ -117,9 +163,10 @@ export default function Autre() {
         <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
           <div className="flex flex-col">
             <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-              <NumberFlow value={filteredVideos.length} /> vidéo
-              {filteredVideos.length > 1 ? "s" : ""} disponible
-              {filteredVideos.length > 1 ? "s" : ""}
+              <NumberFlow value={filteredAutres.length} /> autre{" "}
+              {filteredAutres.length > 1 ? "s" : ""} création
+              {filteredAutres.length > 1 ? "s" : ""} disponible
+              {filteredAutres.length > 1 ? "s" : ""}
             </p>
             <p className="text-lg text-blue-900">{getLastAddedDays()}</p>
           </div>
@@ -127,7 +174,7 @@ export default function Autre() {
             <div className="flex">
               <input
                 type="text"
-                placeholder="Rechercher une vidéo..."
+                placeholder="Rechercher une création..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full py-2 px-4 bg-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 md:w-64 lg:w-96"
@@ -138,11 +185,11 @@ export default function Autre() {
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
-            {allTags.map((type) => (
+            {allTags.map((tag) => (
               <TagCheckbox
-                key={type}
-                type={type}
-                selected={selectedTags.includes(type)}
+                key={tag}
+                type={tag}
+                selected={selectedTags.includes(tag)}
                 onToggle={toggleTag}
               />
             ))}
@@ -187,37 +234,40 @@ export default function Autre() {
       </div>
 
       <div className="min-h-[calc(100vh-296px)]">
-        {filteredVideos.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
+          </div>
+        ) : filteredAutres.length > 0 ? (
           <AnimatePresence>
             <motion.div
-              key={filteredVideos.length} // force rerender sur filtre
+              key={filteredAutres.length}
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10"
               initial="hidden"
               animate="visible"
               exit="hidden"
               variants={{
                 visible: {
-                  transition: {
-                    staggerChildren: 0.1, // délai entre chaque vidéo
-                  },
+                  transition: { staggerChildren: 0.1 },
                 },
                 hidden: {},
               }}
             >
-              {filteredVideos.map((video) => (
+              {filteredAutres.map((autre) => (
                 <motion.div
-                  key={video.id_crea}
+                  key={autre.id_autre}
                   variants={{
                     hidden: { opacity: 0, scale: 0.9, y: 20 },
                     visible: { opacity: 1, scale: 1, y: 0 },
                   }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 >
-                  <Video
-                    id={video.id_crea}
-                    title={video.titre}
-                    url={video.lien}
-                    tags={video.tags}
+                  <AutreItem
+                    id={autre.id_autre}
+                    title={autre.titre}
+                    url={autre.lien}
+                    categorie={autre.categories}
+                    tags={autre.tags}
                   />
                 </motion.div>
               ))}
@@ -226,7 +276,7 @@ export default function Autre() {
         ) : (
           <div className="flex flex-col justify-center items-center">
             <p className="text-xl font-rethink-sans text-blue-600 font-bold">
-              Oh non ! Aucune vidéo ne correspond à vos critères 😭
+              Oh non ! Aucune autre création ne correspond à vos critères 😭
             </p>
             <p className="text-base text-blue-900">
               Essayez de modifier vos filtres ou votre recherche 🔍
