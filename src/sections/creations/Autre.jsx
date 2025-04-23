@@ -21,13 +21,6 @@ export default function Autre() {
     return [value];
   };
 
-  // Helper function to generate a unique key
-  const generateKey = (item, index) => {
-    if (item.id_autre) return item.id_autre;
-    if (item.id) return item.id;
-    return `item-${index}`;
-  };
-
   // Helper function to normalize tag objects
   const normalizeTag = (tag) => {
     if (typeof tag === "string") {
@@ -249,12 +242,10 @@ export default function Autre() {
                 hidden: {},
               }}
             >
-              {filteredAutres.map((autre, index) => {
-                const safeId = generateKey(autre, index);
-
+              {filteredAutres.map((autre) => {
                 return (
                   <motion.div
-                    key={safeId}
+                    key={autre.id_autre}
                     variants={{
                       hidden: { opacity: 0, scale: 0.9, y: 20 },
                       visible: { opacity: 1, scale: 1, y: 0 },
@@ -262,7 +253,7 @@ export default function Autre() {
                     transition={{ duration: 0.3, ease: "easeOut" }}
                   >
                     <AutreItem
-                      id={safeId}
+                      id={autre.id_autre}
                       title={autre.titre}
                       url={autre.lien || "#"}
                       tags={autre.tags}
