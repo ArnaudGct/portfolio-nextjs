@@ -14,20 +14,65 @@ export default function Autre() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log(setFilteredAutres);
+  // Helper function to ensure a value is an array
+  const ensureArray = (value) => {
+    if (Array.isArray(value)) return value;
+    if (value === null || value === undefined) return [];
+    return [value];
+  };
+
+  // Helper function to generate a unique key
+  const generateKey = (item, index) => {
+    if (item.id_autre) return item.id_autre;
+    if (item.id) return item.id;
+    return `item-${index}`;
+  };
+
+  // Helper function to normalize tag objects
+  const normalizeTag = (tag) => {
+    if (typeof tag === "string") {
+      return { titre: tag, important: false };
+    }
+    if (typeof tag === "object" && tag !== null) {
+      return {
+        titre: tag.titre || String(tag),
+        important: !!tag.important,
+      };
+    }
+    return { titre: String(tag), important: false };
+  };
 
   useEffect(() => {
     const fetchAutres = async () => {
       try {
-        setIsLoading(true); // ⬅️ début du chargement
+        setIsLoading(true);
 
         const res = await fetch("/api/creations/autre");
         const data = await res.json();
 
-        setAutres(data);
-        setFilteredAutres(data);
+        // Clean and normalize data
+        const processedData = data.map((item, index) => {
+          // Process tags to ensure they're objects with titre and important properties
+          const processedTags = ensureArray(item.tags).map(normalizeTag);
 
-        const uniqueTags = extractUniqueTags(data);
+          return {
+            ...item,
+            id_autre: item.id_autre || `autre-${index}`,
+            // Keep titre as is if it's a string, otherwise convert to string
+            titre:
+              typeof item.titre === "string"
+                ? item.titre
+                : item.titre && item.titre.titre
+                ? item.titre.titre
+                : String(item.titre),
+            tags: processedTags,
+          };
+        });
+
+        setAutres(processedData);
+        setFilteredAutres(processedData);
+
+        const uniqueTags = extractUniqueTags(processedData);
         setAllTags(uniqueTags);
       } catch (error) {
         console.error(
@@ -35,24 +80,20 @@ export default function Autre() {
           error
         );
       } finally {
-        setIsLoading(false); // ⬅️ fin du chargement
+        setIsLoading(false);
       }
     };
 
     fetchAutres();
   }, []);
 
-  const extractUniqueTags = (autresData) => {
+  const extractUniqueTags = (autreData) => {
     const tagSet = new Set();
 
-    autresData.forEach((autre) => {
-      autre.tags.forEach((tag) => {
-        if (tag && tag.titre) tagSet.add(tag.titre); // 👈 ajoute seulement le titre
-      });
-
-      if (autre.categories && Array.isArray(autre.categories)) {
-        autre.categories.forEach((cat) => {
-          if (cat) tagSet.add(cat);
+    autreData.forEach((autre) => {
+      if (Array.isArray(autre.tags)) {
+        autre.tags.forEach((tag) => {
+          if (tag && tag.titre) tagSet.add(tag.titre);
         });
       }
     });
@@ -65,31 +106,24 @@ export default function Autre() {
 
     if (selectedTags.length > 0) {
       result = result.filter((autre) => {
-        // Fusionne les tags + categories
-        const allTags = [
-          ...(Array.isArray(autre.tags) ? autre.tags : []),
-          ...(Array.isArray(autre.categories) ? autre.categories : []),
-        ];
-
-        return selectedTags.every((tag) => allTags.includes(tag));
+        return selectedTags.every(
+          (selectedTag) =>
+            Array.isArray(autre.tags) &&
+            autre.tags.some((tag) => tag.titre === selectedTag)
+        );
       });
     }
 
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-
-      result = result.filter((autre) => {
-        const inTitle = autre.titre.toLowerCase().includes(query);
-        const inDescription = autre.description?.toLowerCase().includes(query);
-        const inTags = autre.tags?.some((tag) =>
-          tag.toLowerCase().includes(query)
-        );
-        const inCategories = autre.categories?.some((cat) =>
-          cat.toLowerCase().includes(query)
-        );
-
-        return inTitle || inDescription || inTags || inCategories;
-      });
+      result = result.filter(
+        (autre) =>
+          (typeof autre.titre === "string" &&
+            autre.titre.toLowerCase().includes(query)) ||
+          (autre.description &&
+            typeof autre.description === "string" &&
+            autre.description.toLowerCase().includes(query))
+      );
     }
 
     setFilteredAutres(result);
@@ -215,23 +249,27 @@ export default function Autre() {
                 hidden: {},
               }}
             >
-              {filteredAutres.map((autre) => (
-                <motion.div
-                  key={autre.id_autre}
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.9, y: 20 },
-                    visible: { opacity: 1, scale: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                  <AutreItem
-                    id={autre.id_autre}
-                    title={autre.titre}
-                    url={autre.lien}
-                    tags={autre.tags}
-                  />
-                </motion.div>
-              ))}
+              {filteredAutres.map((autre, index) => {
+                const safeId = generateKey(autre, index);
+
+                return (
+                  <motion.div
+                    key={safeId}
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.9, y: 20 },
+                      visible: { opacity: 1, scale: 1, y: 0 },
+                    }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <AutreItem
+                      id={safeId}
+                      title={autre.titre}
+                      url={autre.lien || "#"}
+                      tags={autre.tags}
+                    />
+                  </motion.div>
+                );
+              })}
             </motion.div>
           </AnimatePresence>
         ) : (
