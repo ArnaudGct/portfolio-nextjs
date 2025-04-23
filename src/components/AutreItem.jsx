@@ -5,10 +5,12 @@ import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function AutreItem({ id, title, categorie, tags, url }) {
+export default function AutreItem({ id, title, tags, url }) {
   const [loading, setLoading] = useState(true); // Pour gérer l'état de chargement
   const [isInView, setIsInView] = useState(false); // Pour vérifier si l'image est dans la vue
   const videoRef = useRef(null); // Référence pour l'élément vidéo
+
+  console.log("AutreItem", id, title, tags, url);
 
   // Observer pour vérifier si l'élément est dans la vue
   useEffect(() => {
@@ -71,25 +73,17 @@ export default function AutreItem({ id, title, categorie, tags, url }) {
           <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
             {title}
           </p>
-          {(categorie.length > 0 || tags.length > 0) && (
+          {tags.length > 0 && (
             <div className="flex flex-wrap gap-x-2 gap-y-1.5">
-              {/* Tags de catégorie */}
-              {categorie.map((c, index) => (
-                <Tag
-                  key={`${id}-cat-${c}-${index}`}
-                  name={c}
-                  background="blue"
-                />
-              ))}
-
-              {/* Tags techniques */}
-              {tags.map((t, index) => (
-                <Tag
-                  key={`${id}-tag-${t}-${index}`}
-                  name={t}
-                  background={false}
-                />
-              ))}
+              {[...tags]
+                .sort((a, b) => (b.important || 0) - (a.important || 0)) // les importants en premier
+                .map((tag, index) => (
+                  <Tag
+                    key={`${id}-tag-${tag.titre}-${index}`}
+                    name={tag.titre}
+                    background={tag.important ? "blue" : false}
+                  />
+                ))}
             </div>
           )}
         </div>

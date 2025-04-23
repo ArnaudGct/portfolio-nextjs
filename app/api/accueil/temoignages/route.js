@@ -2,9 +2,9 @@ import { prisma } from "../../../../lib/prisma"; // Adjust the import path as ne
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const aviss = await prisma.avis.findMany({
+  const temoignages = await prisma.temoignages.findMany({
     where: { afficher: true },
   });
 
-  return NextResponse.json(aviss);
+  return NextResponse.json(temoignages);
 }

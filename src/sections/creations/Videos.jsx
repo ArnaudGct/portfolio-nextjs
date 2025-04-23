@@ -22,31 +22,10 @@ export default function Videos() {
         const res = await fetch("/api/creations/videos");
         const data = await res.json();
 
-        const cleanedData = data.map((video) => {
-          let cleanedTags = [];
+        setVideos(data);
+        setFilteredVideos(data);
 
-          if (typeof video.tags === "string") {
-            cleanedTags = video.tags
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter((tag) => tag.length > 0);
-          } else if (Array.isArray(video.tags)) {
-            cleanedTags = video.tags
-              .flatMap((tag) => tag.split(","))
-              .map((tag) => tag.trim())
-              .filter(Boolean);
-          }
-
-          return {
-            ...video,
-            tags: cleanedTags, // ✅ ici on écrase bien le champ "tags"
-          };
-        });
-
-        setVideos(cleanedData);
-        setFilteredVideos(cleanedData);
-
-        const uniqueTags = extractUniqueTags(cleanedData);
+        const uniqueTags = extractUniqueTags(data);
         setAllTags(uniqueTags);
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des vidéos :", error);

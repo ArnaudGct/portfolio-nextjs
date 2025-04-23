@@ -41,13 +41,7 @@ export default function Videos() {
                 id={video.id_crea}
                 title={video.titre}
                 url={video.lien}
-                tags={
-                  typeof video.tags === "string"
-                    ? video.tags.split(",").map((t) => t.trim())
-                    : Array.isArray(video.tags)
-                    ? video.tags
-                    : []
-                }
+                tags={video.tags}
               />
             ))}
           </div>

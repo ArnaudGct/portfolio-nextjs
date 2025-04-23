@@ -10,7 +10,7 @@ export default function Autre() {
   const [autres, setAutres] = useState([]);
   const [filteredAutres, setFilteredAutres] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [selectedTags, setselectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -24,47 +24,10 @@ export default function Autre() {
         const res = await fetch("/api/creations/autre");
         const data = await res.json();
 
-        const cleanedData = data.map((autre) => {
-          let cleanedTags = [];
-          let cleanedCategories = [];
+        setAutres(data);
+        setFilteredAutres(data);
 
-          // Nettoyage des tags
-          if (typeof autre.tags === "string") {
-            cleanedTags = autre.tags
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter((tag) => tag.length > 0);
-          } else if (Array.isArray(autre.tags)) {
-            cleanedTags = autre.tags
-              .flatMap((tag) => tag.split(","))
-              .map((tag) => tag.trim())
-              .filter(Boolean);
-          }
-
-          // Nettoyage des catégories
-          if (typeof autre.categorie === "string") {
-            cleanedCategories = autre.categorie
-              .split(",")
-              .map((cat) => cat.trim())
-              .filter((cat) => cat.length > 0);
-          } else if (Array.isArray(autre.categorie)) {
-            cleanedCategories = autre.categorie
-              .flatMap((cat) => cat.split(","))
-              .map((cat) => cat.trim())
-              .filter(Boolean);
-          }
-
-          return {
-            ...autre,
-            tags: cleanedTags,
-            categories: cleanedCategories, // <-- on ajoute bien ici
-          };
-        });
-
-        setAutres(cleanedData);
-        setFilteredAutres(cleanedData);
-
-        const uniqueTags = extractUniqueTags(cleanedData);
+        const uniqueTags = extractUniqueTags(data);
         setAllTags(uniqueTags);
       } catch (error) {
         console.error(
@@ -84,10 +47,9 @@ export default function Autre() {
 
     autresData.forEach((autre) => {
       autre.tags.forEach((tag) => {
-        if (tag) tagSet.add(tag);
+        if (tag && tag.titre) tagSet.add(tag.titre); // 👈 ajoute seulement le titre
       });
 
-      // Ajout des catégories aussi
       if (autre.categories && Array.isArray(autre.categories)) {
         autre.categories.forEach((cat) => {
           if (cat) tagSet.add(cat);
@@ -134,7 +96,7 @@ export default function Autre() {
   }, [autres, selectedTags, searchQuery]);
 
   const toggleTag = (tag) => {
-    setselectedTags((prev) =>
+    setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
@@ -205,7 +167,7 @@ export default function Autre() {
                     color="red"
                     isClearAll
                     onRemove={() => {
-                      setselectedTags([]);
+                      setSelectedTags([]);
                       setSearchQuery("");
                     }}
                   />
@@ -266,7 +228,6 @@ export default function Autre() {
                     id={autre.id_autre}
                     title={autre.titre}
                     url={autre.lien}
-                    categorie={autre.categories}
                     tags={autre.tags}
                   />
                 </motion.div>

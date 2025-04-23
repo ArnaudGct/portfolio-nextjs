@@ -64,7 +64,7 @@ export default function FAQ() {
                   )}
                 </motion.div>
                 <span className="text-left font-medium text-blue-900 font-rethink-sans">
-                  {question.question}
+                  {question.titre}
                 </span>
               </div>
             </button>
@@ -93,7 +93,7 @@ export default function FAQ() {
                 >
                   <div
                     className="px-4 pb-6 text-blue-900 text-normal font-normal"
-                    dangerouslySetInnerHTML={{ __html: question.reponse }}
+                    dangerouslySetInnerHTML={{ __html: question.contenu }}
                   ></div>
                 </motion.div>
               )}

@@ -15,25 +15,25 @@ import "./styles.css";
 import { Navigation } from "swiper/modules";
 
 export default function Testimonial() {
-  const [aviss, setAvis] = useState([]);
+  const [temoignages, setTemoignages] = useState([]);
 
   useEffect(() => {
-    const fetchAvis = async () => {
+    const fetchTemoignages = async () => {
       try {
-        const res = await fetch("/api/accueil/avis");
+        const res = await fetch("/api/accueil/temoignages");
         const data = await res.json();
         console.log("✅ Avis reçus :", data);
-        setAvis(data);
+        setTemoignages(data);
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des avis :", error);
       }
     };
 
-    fetchAvis();
+    fetchTemoignages();
   }, []);
 
   // Composant Témoignage
-  const TestimonialCard = ({ avis }) => (
+  const TestimonialCard = ({ temoignage }) => (
     <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 transition-all duration-500 ease-in-out">
       <div className="flex flex-col gap-5">
         <div className="flex gap-5 items-start">
@@ -43,11 +43,11 @@ export default function Testimonial() {
           />
           <p
             className="text-blue-900 text-normal font-normal"
-            dangerouslySetInnerHTML={{ __html: avis.commentaire }}
+            dangerouslySetInnerHTML={{ __html: temoignage.contenu }}
           ></p>
         </div>
         <p className="text-blue-600 font-rethink-sans text-lg font-extrabold text-right">
-          {avis.client}
+          {temoignage.client}
         </p>
       </div>
     </div>
@@ -91,9 +91,9 @@ export default function Testimonial() {
         modules={[Navigation]}
         className="mySwiper"
       >
-        {aviss.map((avis) => (
-          <SwiperSlide key={avis.id}>
-            <TestimonialCard avis={avis} />
+        {temoignages.map((temoignage) => (
+          <SwiperSlide key={temoignage.id_tem}>
+            <TestimonialCard temoignage={temoignage} />
           </SwiperSlide>
         ))}
       </Swiper>

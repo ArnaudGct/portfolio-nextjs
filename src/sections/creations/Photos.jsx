@@ -34,30 +34,14 @@ export default function Photos() {
         const data = await res.json();
 
         const cleanedData = data.map((photo) => {
-          const parseTags = (input) =>
-            typeof input === "string"
-              ? input
-                  .split(",")
-                  .map((t) => t.trim())
-                  .filter(Boolean)
-              : Array.isArray(input)
-              ? input.flatMap((t) =>
-                  t
-                    .split(",")
-                    .map((tag) => tag.trim())
-                    .filter(Boolean)
-                )
-              : [];
-
-          const tags = parseTags(photo.tags);
-          const tagsRecherche = parseTags(photo.tags_recherche);
+          const tagsRecherche = photo.tags_recherche || [];
 
           return {
             ...photo,
-            tags,
-            tagsRecherche,
-            allTags: [...new Set([...tags])], // ✅ seulement les tags visibles
-            allTagsSearch: [...new Set([...tags, ...tagsRecherche])], // ✅ tous les tags pour recherche
+            allTags: photo.tags || [],
+            allTagsSearch: [
+              ...new Set([...(photo.tags || []), ...tagsRecherche]), // Combine les tags classiques et de recherche
+            ],
             date_ajout: photo.date_ajout ? new Date(photo.date_ajout) : null,
           };
         });
@@ -65,11 +49,12 @@ export default function Photos() {
         setPhotos(cleanedData);
         setFilteredPhotos(cleanedData);
 
-        const allUniqueTags = Array.from(
-          new Set(cleanedData.flatMap((p) => p.allTags))
+        // Extraire tous les tags uniques visibles pour l'affichage
+        const allVisibleTags = Array.from(
+          new Set(cleanedData.flatMap((p) => p.allTags || []))
         ).sort();
 
-        setAllTags(allUniqueTags);
+        setAllTags(allVisibleTags); // Mettre à jour les tags visibles
       } catch (err) {
         console.error("Erreur lors de la récupération des photos:", err);
       } finally {
@@ -83,16 +68,20 @@ export default function Photos() {
   useEffect(() => {
     let result = [...photos];
 
+    // Filtrer en fonction des tags sélectionnés
     if (selectedTags.length > 0) {
-      result = result.filter((photo) =>
-        selectedTags.every((tag) => photo.allTags.includes(tag))
+      result = result.filter(
+        (photo) =>
+          selectedTags.every((tag) => photo.allTagsSearch.includes(tag)) // Chercher dans allTagsSearch
       );
     }
 
+    // Recherche par mot-clé
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-      result = result.filter((photo) =>
-        photo.allTagsSearch?.some((tag) => tag.toLowerCase().includes(query))
+      result = result.filter(
+        (photo) =>
+          photo.allTagsSearch?.some((tag) => tag.toLowerCase().includes(query)) // Recherche dans allTagsSearch
       );
     }
 
@@ -232,7 +221,7 @@ export default function Photos() {
             >
               {filteredPhotos.map((photo, index) => (
                 <motion.div
-                  key={`photo-${photo.id_photo}`}
+                  key={`photo-${photo.id_pho}`}
                   variants={{
                     hidden: { opacity: 0, scale: 0.9, y: 20 },
                     visible: { opacity: 1, scale: 1, y: 0 },
