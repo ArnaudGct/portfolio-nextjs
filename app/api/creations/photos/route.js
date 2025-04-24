@@ -4,7 +4,12 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const photos = await prisma.photos.findMany({
-      where: { afficher: true },
+      where: {
+        afficher: true,
+        photos_albums_link: {
+          none: {}, // aucune relation avec un album
+        },
+      },
       orderBy: { date_ajout: "desc" },
       select: {
         id_pho: true,

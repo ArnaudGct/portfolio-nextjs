@@ -3,20 +3,30 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import NumberFlow from "@number-flow/react";
-import { X, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  X,
+  ArrowRight,
+  ArrowLeft,
+  ChevronRight,
+  SquareArrowOutUpRight,
+} from "lucide-react";
 import ButtonMain from "./../../components/ButtonMain";
 import ButtonSecondary from "./../../components/ButtonSecondary";
 import Tag from "./../../components/Tag";
 import TagCheckbox from "./../../components/TagCheckbox";
 import FilterTag from "./../../components/FilterTag";
+import Link from "next/link";
 
 export default function Photos() {
   const [photos, setPhotos] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [filteredPhotos, setFilteredPhotos] = useState([]);
+  const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isAlbumsLoading, setIsAlbumsLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(null);
@@ -40,7 +50,7 @@ export default function Photos() {
             ...photo,
             allTags: photo.tags || [],
             allTagsSearch: [
-              ...new Set([...(photo.tags || []), ...tagsRecherche]), // Combine les tags classiques et de recherche
+              ...new Set([...(photo.tags || []), ...tagsRecherche]),
             ],
             date_ajout: photo.date_ajout ? new Date(photo.date_ajout) : null,
           };
@@ -48,13 +58,6 @@ export default function Photos() {
 
         setPhotos(cleanedData);
         setFilteredPhotos(cleanedData);
-
-        // Extraire tous les tags uniques visibles pour l'affichage
-        const allVisibleTags = Array.from(
-          new Set(cleanedData.flatMap((p) => p.allTags || []))
-        ).sort();
-
-        setAllTags(allVisibleTags); // Mettre à jour les tags visibles
       } catch (err) {
         console.error("Erreur lors de la récupération des photos:", err);
       } finally {
@@ -62,31 +65,61 @@ export default function Photos() {
       }
     };
 
+    const fetchAlbums = async () => {
+      try {
+        setIsAlbumsLoading(true);
+        const res = await fetch("/api/creations/photos_albums");
+        const data = await res.json();
+        setAlbums(data);
+      } catch (err) {
+        console.error("Erreur lors de la récupération des albums:", err);
+      } finally {
+        setIsAlbumsLoading(false);
+      }
+    };
+
     fetchPhotos();
+    fetchAlbums();
   }, []);
 
   useEffect(() => {
-    let result = [...photos];
+    const tagsFromPhotos = photos.flatMap((p) => p.allTags || []);
+    const tagsFromAlbums = albums.flatMap((a) => a.tags || []);
+    const uniqueTags = Array.from(
+      new Set([...tagsFromPhotos, ...tagsFromAlbums])
+    ).sort();
 
-    // Filtrer en fonction des tags sélectionnés
+    setAllTags(uniqueTags);
+  }, [photos, albums]);
+
+  useEffect(() => {
+    let resultPhotos = [...photos];
+    let resultAlbums = [...albums];
+
     if (selectedTags.length > 0) {
-      result = result.filter(
-        (photo) =>
-          selectedTags.every((tag) => photo.allTagsSearch.includes(tag)) // Chercher dans allTagsSearch
+      resultPhotos = resultPhotos.filter((photo) =>
+        selectedTags.every((tag) => photo.allTagsSearch.includes(tag))
+      );
+
+      resultAlbums = resultAlbums.filter((album) =>
+        selectedTags.every((tag) => album.tags.includes(tag))
       );
     }
 
-    // Recherche par mot-clé
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (photo) =>
-          photo.allTagsSearch?.some((tag) => tag.toLowerCase().includes(query)) // Recherche dans allTagsSearch
+      resultPhotos = resultPhotos.filter((photo) =>
+        photo.allTagsSearch?.some((tag) => tag.toLowerCase().includes(query))
+      );
+
+      resultAlbums = resultAlbums.filter((album) =>
+        album.tags?.some((tag) => tag.toLowerCase().includes(query))
       );
     }
 
-    setFilteredPhotos(result);
-  }, [photos, selectedTags, searchQuery]);
+    setFilteredPhotos(resultPhotos);
+    setFilteredAlbums(resultAlbums);
+  }, [photos, albums, selectedTags, searchQuery]);
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -116,16 +149,41 @@ export default function Photos() {
     }
   };
 
-  const getLastAddedDays = () => {
-    if (!photos.length) return "Aucune photo";
-    const dates = photos.map((p) => p.date_ajout).filter(Boolean);
-    if (!dates.length) return "Date inconnue";
+  const getLastAdded = () => {
+    const photoDates = photos
+      .map(
+        (p) => p.date_ajout && { type: "photo", date: new Date(p.date_ajout) }
+      )
+      .filter(Boolean);
+    const albumDates = albums
+      .map((a) => a.date && { type: "album", date: new Date(a.date) })
+      .filter(Boolean);
 
-    const latest = new Date(Math.max(...dates));
-    const diffDays = Math.ceil(
-      (new Date().getTime() - latest.getTime()) / (1000 * 3600 * 24)
+    const allEntries = [...photoDates, ...albumDates];
+    if (!allEntries.length) return "Date inconnue";
+
+    const latest = allEntries.reduce((latest, current) =>
+      current.date > latest.date ? current : latest
     );
-    return `${diffDays} jour${diffDays > 1 ? "s" : ""} depuis l'ajout`;
+
+    const now = new Date();
+    const diffMs = now.getTime() - latest.date.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    let timeText = "";
+    if (diffMinutes < 60) {
+      timeText = `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""}`;
+    } else if (diffHours < 24) {
+      timeText = `${diffHours} heure${diffHours > 1 ? "s" : ""}`;
+    } else {
+      timeText = `${diffDays} jour${diffDays > 1 ? "s" : ""}`;
+    }
+
+    const article = latest.type === "album" ? "un" : "une";
+
+    return `${timeText} depuis l'ajout d'${article} ${latest.type}`;
   };
 
   return (
@@ -134,11 +192,13 @@ export default function Photos() {
         <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
           <div className="flex flex-col">
             <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
+              <NumberFlow value={filteredAlbums.length} /> album
+              {filteredAlbums.length > 1 ? "s" : ""} et{" "}
               <NumberFlow value={filteredPhotos.length} /> photo
               {filteredPhotos.length > 1 ? "s" : ""} disponible
-              {filteredPhotos.length > 1 ? "s" : ""}
+              {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
             </p>
-            <p className="text-lg text-blue-900">{getLastAddedDays()}</p>
+            <p className="text-lg text-blue-900">{getLastAdded()}</p>
           </div>
           <div className="w-full md:w-auto relative">
             <div className="flex">
@@ -199,7 +259,153 @@ export default function Photos() {
         )}
       </div>
 
-      <div className="min-h-[calc(100vh-296px)]">
+      <div className="min-h-[calc(100vh-296px)] flex flex-col gap-10">
+        {/* Albums */}
+        {isAlbumsLoading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
+          </div>
+        ) : filteredAlbums.length > 0 ? (
+          <motion.div
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: {
+                transition: { staggerChildren: 0.1 },
+              },
+              hidden: {},
+            }}
+          >
+            {filteredAlbums.map((album) => (
+              <motion.div
+                key={`album-${album.id_alb}`}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.9, y: 20 },
+                  visible: { opacity: 1, scale: 1, y: 0 },
+                }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="rounded-lg overflow-hidden"
+              >
+                <Link href={`/albums/${album.id_alb}`}>
+                  <div className="cursor-pointer flex flex-col gap-4">
+                    <div className="relative h-40 w-full overflow-hidden bg-slate-100">
+                      {/* Album Preview - Showing up to 5 photos */}
+                      {album.photos.length > 0 ? (
+                        <div className="w-full h-full grid grid-cols-3 grid-rows-2 gap-1 p-1">
+                          {/* First photo larger */}
+                          {album.photos[0] && (
+                            <div className="col-span-2 row-span-2 relative rounded-md overflow-hidden">
+                              <Image
+                                src={album.photos[0].lien_low}
+                                alt={album.titre}
+                                width={300}
+                                height={200}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+
+                          {/* Up to 4 more photos in smaller frames */}
+                          {album.photos.slice(1, 5).map((photo, idx) => (
+                            <div
+                              key={idx}
+                              className="relative rounded-md overflow-hidden"
+                            >
+                              <Image
+                                src={photo.lien_low}
+                                alt={`${album.titre} photo ${idx + 2}`}
+                                width={100}
+                                height={100}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <p className="text-slate-400">Aucune photo</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* <div className="p-4">
+                      <div className="flex items-center justify-between text-blue-600">
+                        <p className="font-bold text-lg text-blue-600">
+                          {album.titre}
+                        </p>
+                        <ChevronRight size={20} />
+                      </div>
+
+                      <span className="text-sm text-blue-400">
+                        {album.photos.length} photo
+                        {album.photos.length > 1 ? "s" : ""}
+                      </span>
+
+                      <div className="flex justify-between items-center mt-3">
+                        {album.date && (
+                          <span className="text-xs text-slate-400">
+                            {new Date(album.date).toLocaleDateString("fr-FR", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </span>
+                        )}
+                      </div>
+                    </div> */}
+
+                    <div className="w-full flex items-center justify-between">
+                      <div className="w-[90%] flex flex-col gap-2">
+                        <div className="flex flex-col">
+                          <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
+                            {album.titre}
+                          </p>
+                          <span className="text-sm text-blue-400">
+                            {album.photos.length} photo
+                            {album.photos.length > 1 ? "s" : ""}
+                          </span>
+                        </div>
+
+                        {album.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-x-2 gap-y-1.5">
+                            <Tag name="Album" background={true} />
+                            {album.tags.map((t, index) => (
+                              <Tag
+                                key={`${t}-${index}`}
+                                name={t}
+                                background={false}
+                              />
+                            ))}
+                          </div>
+                        )}
+
+                        {/* {album.date && (
+                            <span className="text-sm text-slate-400">
+                              {new Date(album.date).toLocaleDateString(
+                                "fr-FR",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                }
+                              )}
+                            </span>
+                          )} */}
+                      </div>
+                      <div className="flex justify-center items-center p-2 text-blue-700 min-w-9 w-[10%] hover:text-blue-900 transition-colors">
+                        <SquareArrowOutUpRight size={16} strokeWidth={1.75} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : null}
+
+        {/* Photos */}
+
         {isLoading ? (
           <div className="flex justify-center items-center min-h-[200px]">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
@@ -230,7 +436,7 @@ export default function Photos() {
                 >
                   <div
                     className="cursor-pointer"
-                    onClick={() => handleImageClick(index)} // Ouvre la modale en fonction de l'index
+                    onClick={() => handleImageClick(index)}
                   >
                     <Image
                       src={photo.lien_low}
@@ -244,20 +450,23 @@ export default function Photos() {
               ))}
             </motion.div>
           </AnimatePresence>
-        ) : (
-          <div className="flex flex-col justify-center items-center">
-            <p className="text-xl font-rethink-sans text-blue-600 font-bold">
-              Oh non ! Aucune photo ne correspond à vos critères 😭
-            </p>
-            <p className="text-base text-blue-900">
-              Essayez de modifier vos filtres ou votre recherche 🔍
-            </p>
-          </div>
-        )}
+        ) : null}
+        {!isAlbumsLoading &&
+          !isLoading &&
+          filteredAlbums.length === 0 &&
+          filteredPhotos.length === 0 && (
+            <div className="flex flex-col justify-center items-center py-10">
+              <p className="text-xl font-rethink-sans text-blue-600 font-bold">
+                Aucun contenu disponible pour le moment 😢
+              </p>
+              <p className="text-base text-blue-900">
+                Essayez de revenir plus tard ou ajustez vos filtres 🔍
+              </p>
+            </div>
+          )}
       </div>
 
-      {/* Modale */}
-
+      {/* Modal code - this remains the same as your original code */}
       <AnimatePresence>
         {isModalOpen && currentPhotoIndex !== null && (
           <motion.div
@@ -268,7 +477,6 @@ export default function Photos() {
             transition={{ duration: 0.3 }}
             onClick={closeModal}
           >
-            {/* Overlay avec animation indépendante */}
             <motion.div
               className="absolute inset-0 bg-black/80"
               initial={{ opacity: 0 }}
@@ -277,7 +485,6 @@ export default function Photos() {
               transition={{ duration: 0.3 }}
             />
 
-            {/* Contenu du modal avec animation - sans header */}
             <motion.div
               className="relative w-full max-w-6xl h-full max-h-[90vh] flex flex-col bg-white rounded-xl overflow-hidden shadow-2xl m-4 md:m-6 lg:m-8"
               onClick={(e) => e.stopPropagation()}
@@ -291,7 +498,6 @@ export default function Photos() {
                 duration: 0.4,
               }}
             >
-              {/* Bouton fermer repositionné en haut à droite */}
               <motion.div
                 className="absolute top-3 right-3 z-20"
                 whileHover={{ scale: 1.1 }}
@@ -303,12 +509,9 @@ export default function Photos() {
                   onClick={closeModal}
                   icon={<X size={16} strokeWidth={1.75} />}
                 />
-                {/* <span className="text-white text-xl">&times;</span> */}
               </motion.div>
 
-              {/* Container principal pour l'image - maintenant sans header au-dessus */}
               <div className="relative flex-grow flex items-center justify-center bg-slate-100 overflow-hidden">
-                {/* Flèches latérales - visibles uniquement sur desktop et tablette */}
                 <motion.div
                   disabled={currentPhotoIndex === 0}
                   className={`absolute left-4 z-10 hidden md:flex items-center justify-center`}
@@ -327,7 +530,6 @@ export default function Photos() {
                   />
                 </motion.div>
 
-                {/* Image avec animation de chargement */}
                 <motion.div
                   className="w-full h-full flex items-center justify-center p-4"
                   initial={{ opacity: 0 }}
@@ -345,7 +547,6 @@ export default function Photos() {
                   />
                 </motion.div>
 
-                {/* Flèche droite - visible uniquement sur desktop et tablette */}
                 <motion.div
                   disabled={currentPhotoIndex === filteredPhotos.length - 1}
                   className={`absolute right-4 z-10 hidden md:flex items-center justify-center`}
@@ -376,7 +577,6 @@ export default function Photos() {
                 </motion.div>
               </div>
 
-              {/* Barre de navigation mobile - visible uniquement sur mobile */}
               <motion.div
                 className="flex md:hidden justify-center items-center gap-8 py-3 bg-slate-100 border-t border-blue-200"
                 initial={{ opacity: 0, y: 10 }}
@@ -435,7 +635,6 @@ export default function Photos() {
                 </motion.div>
               </motion.div>
 
-              {/* Footer avec animation */}
               <motion.div
                 className="p-4 bg-white border-t border-gray-200"
                 initial={{ opacity: 0, y: 20 }}
