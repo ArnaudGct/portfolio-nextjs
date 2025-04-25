@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import NumberFlow from "@number-flow/react";
+import AlbumsGallery from "./AlbumsGallery";
 import {
   X,
   ArrowRight,
@@ -10,11 +11,11 @@ import {
   ChevronRight,
   SquareArrowOutUpRight,
 } from "lucide-react";
-import ButtonMain from "./../../components/ButtonMain";
-import ButtonSecondary from "./../../components/ButtonSecondary";
-import Tag from "./../../components/Tag";
-import TagCheckbox from "./../../components/TagCheckbox";
-import FilterTag from "./../../components/FilterTag";
+import ButtonMain from "../../../components/ButtonMain";
+import ButtonSecondary from "../../../components/ButtonSecondary";
+import Tag from "../../../components/Tag";
+import TagCheckbox from "../../../components/TagCheckbox";
+import FilterTag from "../../../components/FilterTag";
 import Link from "next/link";
 
 export default function Photos() {
@@ -267,7 +268,7 @@ export default function Photos() {
           </div>
         ) : filteredAlbums.length > 0 ? (
           <motion.div
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            className="grid grid-cols-1 gap-6 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             initial="hidden"
             animate="visible"
             variants={{
@@ -287,40 +288,78 @@ export default function Photos() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="rounded-lg overflow-hidden"
               >
-                <Link href={`/albums/${album.id_alb}`}>
-                  <div className="cursor-pointer flex flex-col gap-4">
-                    <div className="relative h-40 w-full overflow-hidden bg-slate-100">
-                      {/* Album Preview - Showing up to 5 photos */}
+                <Link href={`/creations/album/${album.id_alb}`}>
+                  <div className="cursor-pointer flex flex-col gap-4 rounded-lg">
+                    <div className="relative h-52 w-full overflow-hidden rounded-lg bg-slate-100">
                       {album.photos.length > 0 ? (
-                        <div className="w-full h-full grid grid-cols-3 grid-rows-2 gap-1 p-1">
-                          {/* First photo larger */}
-                          {album.photos[0] && (
-                            <div className="col-span-2 row-span-2 relative rounded-md overflow-hidden">
-                              <Image
-                                src={album.photos[0].lien_low}
-                                alt={album.titre}
-                                width={300}
-                                height={200}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          )}
+                        <div className="absolute inset-0 w-full h-full transition-transform duration-500 hover:scale-105">
+                          <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
+                            {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
+                            {album.photos[0] && (
+                              <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden">
+                                <Image
+                                  src={album.photos[0].lien_low}
+                                  alt={album.titre}
+                                  fill
+                                  sizes="(max-width: 768px) 50vw, 25vw"
+                                  className="object-cover rounded-lg"
+                                  priority
+                                />
+                              </div>
+                            )}
 
-                          {/* Up to 4 more photos in smaller frames */}
-                          {album.photos.slice(1, 5).map((photo, idx) => (
-                            <div
-                              key={idx}
-                              className="relative rounded-md overflow-hidden"
-                            >
-                              <Image
-                                src={photo.lien_low}
-                                alt={`${album.titre} photo ${idx + 2}`}
-                                width={100}
-                                height={100}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                            {/* Photo 2 – colonne droite ligne 1 */}
+                            {album.photos[1] && (
+                              <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <Image
+                                  src={album.photos[1].lien_low}
+                                  alt={`${album.titre} photo 2`}
+                                  fill
+                                  sizes="(max-width: 768px) 50vw, 25vw"
+                                  className="object-cover rounded-lg"
+                                />
+                              </div>
+                            )}
+
+                            {/* Photo 3 – colonne droite ligne 2 */}
+                            {album.photos[2] && (
+                              <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <Image
+                                  src={album.photos[2].lien_low}
+                                  alt={`${album.titre} photo 3`}
+                                  fill
+                                  sizes="(max-width: 768px) 50vw, 25vw"
+                                  className="object-cover rounded-lg"
+                                />
+                              </div>
+                            )}
+
+                            {/* Photo 4 – affichée uniquement en md+ */}
+                            {album.photos[3] && (
+                              <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <Image
+                                  src={album.photos[3].lien_low}
+                                  alt={`${album.titre} photo 4`}
+                                  fill
+                                  sizes="25vw"
+                                  className="object-cover rounded-lg"
+                                />
+                              </div>
+                            )}
+
+                            {/* Photo 5 – affichée uniquement en md+ */}
+                            {album.photos[4] && (
+                              <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <Image
+                                  src={album.photos[4].lien_low}
+                                  alt={`${album.titre} photo 5`}
+                                  fill
+                                  sizes="25vw"
+                                  className="object-cover rounded-lg"
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -433,24 +472,22 @@ export default function Photos() {
                     visible: { opacity: 1, scale: 1, y: 0 },
                   }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="group cursor-pointer overflow-hidden rounded-lg"
+                  onClick={() => handleImageClick(index)}
                 >
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => handleImageClick(index)}
-                  >
-                    <Image
-                      src={photo.lien_low}
-                      alt="bibou"
-                      width={500}
-                      height={300}
-                      className="w-full h-auto object-cover rounded-lg"
-                    />
-                  </div>
+                  <Image
+                    src={photo.lien_low}
+                    alt="bibou"
+                    width={500}
+                    height={300}
+                    className="w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
+                  />
                 </motion.div>
               ))}
             </motion.div>
           </AnimatePresence>
-        ) : null}
+        ) : // <AlbumsGallery album={filteredPhotos} />
+        null}
         {!isAlbumsLoading &&
           !isLoading &&
           filteredAlbums.length === 0 &&
@@ -635,7 +672,7 @@ export default function Photos() {
                 </motion.div>
               </motion.div>
 
-              <motion.div
+              <div
                 className="p-4 bg-white border-t border-gray-200"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -644,7 +681,7 @@ export default function Photos() {
                 <div className="flex flex-wrap gap-2 mt-2">
                   {filteredPhotos[currentPhotoIndex].tags.map(
                     (tag, tagIndex) => (
-                      <motion.div
+                      <div
                         key={`${tag}-${tagIndex}`}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -654,12 +691,12 @@ export default function Photos() {
                         }}
                       >
                         <Tag name={tag} />
-                      </motion.div>
+                      </div>
                     )
                   )}
                 </div>
 
-                <motion.div
+                <div
                   className="justify-between items-center mt-4 text-sm text-gray-500 md:flex hidden"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -680,8 +717,8 @@ export default function Photos() {
                       })}
                     </p>
                   )}
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

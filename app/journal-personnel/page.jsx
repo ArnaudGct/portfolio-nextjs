@@ -6,6 +6,7 @@ import Link from "next/link";
 import FormattedDate from "./../../src/components/FormattedDate";
 import Image from "next/image";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
+import Breadcrumb from "./../../src/components/Breadcrumb";
 
 export default function JournalPersonnel() {
   const [experiences, setExperiences] = useState([]);
@@ -79,24 +80,12 @@ export default function JournalPersonnel() {
   return (
     <main>
       <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 mt-20 mb-20">
-        <div className="flex flex-row items-center gap-4">
-          <ButtonSecondary
-            link="/apropos"
-            icon={<ArrowLeft size={16} strokeWidth={1.75} />}
-          >
-            Retour
-          </ButtonSecondary>
-          <div className="hidden xs:flex items-center justify-start">
-            <Link
-              href={"/apropos"}
-              className="text-blue-300 hover:underline cursor-pointer"
-            >
-              À propos
-            </Link>
-            <span className="mx-2 text-blue-300">/</span>
-            <p className="text-blue-600 font-medium">Journal personnel</p>
-          </div>
-        </div>
+        <Breadcrumb
+          pages={[
+            { name: "À propos", path: "/apropos" },
+            { name: "Journal personnel", path: "/journal-personnel" },
+          ]}
+        />
 
         <div className="flex flex-col gap-8">
           <div>

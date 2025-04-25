@@ -26,8 +26,12 @@ const coveredByYourGrace = Covered_By_Your_Grace({
 export default function RootLayout({ children }) {
   const pathname = usePathname();
 
+  // Vérifie si l'URL contient /creations/album/[id_alb]
+  const isAlbumPage = pathname.match(/^\/creations\/album\/\d+/);
+
+  // Exclure la page dynamique de l'affichage du Header
   const noHeaderRoutes = ["/journal-personnel"];
-  const showHeader = !noHeaderRoutes.includes(pathname);
+  const showHeader = !noHeaderRoutes.includes(pathname) && !isAlbumPage;
 
   return (
     <html lang="fr">

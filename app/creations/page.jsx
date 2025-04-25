@@ -1,12 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TagRadio from "./../../src/components/TagRadio";
 import Videos from "./../../src/sections/creations/Videos";
-import Photos from "./../../src/sections/creations/Photos";
+import Photos from "../../src/sections/creations/Photos/Photos";
 import Autre from "./../../src/sections/creations/Autre";
 
 export default function Creations() {
-  const [selectedType, setSelectedType] = useState("Vidéos");
+  // Récupérer l'état initial depuis localStorage, ou "Vidéos" si pas de valeur
+  const [selectedType, setSelectedType] = useState(() => {
+    const savedType = localStorage.getItem("selectedType");
+    return savedType ? savedType : "Vidéos";
+  });
+
+  // Mettre à jour localStorage lorsque l'état change
+  useEffect(() => {
+    localStorage.setItem("selectedType", selectedType);
+  }, [selectedType]);
 
   const renderContent = () => {
     switch (selectedType) {

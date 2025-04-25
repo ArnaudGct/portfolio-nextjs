@@ -8,11 +8,11 @@ import TagUtilities from "./../../src/components/TagUtilities";
 
 export default function APropos() {
   return (
-    <main>
+    <main className="min-h-[calc(100vh-450px)]">
       <div className="mt-24 mb-20">
         <div className="max-w-[1440px] mx-auto w-[90%]">
           {/* Conteneur principal - change l'ordre en responsive */}
-          <div className="grid grid-cols-1 md:grid-cols-2 md:order-2 lg:grid-cols-[auto_1fr] gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:order-2 lg:grid-cols-[auto_1fr] gap-6 sm:gap-10">
             {/* Section "Qui suis-je?" - apparaît en premier sur mobile */}
             <div className="flex flex-col gap-4 bg-white rounded-lg order-1 lg:order-2 lg:col-start-2">
               <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
