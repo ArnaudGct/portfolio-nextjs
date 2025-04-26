@@ -11,7 +11,10 @@ model autre {
   id_autre        Int               @id @default(autoincrement())
   titre           String            @db.VarChar(100)
   description     String            @db.VarChar(3500)
-  lien            String            @db.VarChar(500)
+  miniature       String            @db.VarChar(500)
+  lien_github     String            @db.VarChar(500)
+  lien_figma      String            @db.VarChar(500)
+  lien_site       String            @db.VarChar(500)
   categorie       String            @db.VarChar(50)
   tags            String            @db.VarChar(50)
   date            DateTime          @db.Date

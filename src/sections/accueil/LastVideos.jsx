@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Video from "../../components/Video";
+import Video from "../../components/VideoItem";
 import ButtonMain from "../../components/ButtonMain";
 import { ArrowUpRight } from "lucide-react";
 

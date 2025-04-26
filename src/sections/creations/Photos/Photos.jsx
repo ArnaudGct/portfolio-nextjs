@@ -288,8 +288,11 @@ export default function Photos() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="rounded-lg overflow-hidden"
               >
-                <Link href={`/creations/album/${album.id_alb}`}>
-                  <div className="cursor-pointer flex flex-col gap-4 rounded-lg">
+                <Link
+                  href={`/creations/album/${album.id_alb}`}
+                  className="cursor-pointer"
+                >
+                  <div className="flex flex-col gap-4 rounded-lg">
                     <div className="relative h-52 w-full overflow-hidden rounded-lg bg-slate-100">
                       {album.photos.length > 0 ? (
                         <div className="absolute inset-0 w-full h-full transition-transform duration-500 hover:scale-105">
@@ -477,7 +480,7 @@ export default function Photos() {
                 >
                   <Image
                     src={photo.lien_low}
-                    alt="bibou"
+                    alt={photo.titre}
                     width={500}
                     height={300}
                     className="w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"

@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import AutreItem from "./../../components/AutreItem";
-import TagCheckbox from "./../../components/TagCheckbox";
-import FilterTag from "./../../components/FilterTag";
+import AutreItem from "./../../../components/AutreItem";
+import TagCheckbox from "./../../../components/TagCheckbox";
+import FilterTag from "./../../../components/FilterTag";
 import { motion, AnimatePresence } from "motion/react";
 import NumberFlow from "@number-flow/react";
 
@@ -255,7 +255,7 @@ export default function Autre() {
                     <AutreItem
                       id={autre.id_autre}
                       title={autre.titre}
-                      url={autre.lien || "#"}
+                      miniature={autre.miniature || "#"}
                       tags={autre.tags}
                     />
                   </motion.div>

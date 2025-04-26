@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import TagRadio from "./../../src/components/TagRadio";
-import Videos from "./../../src/sections/creations/Videos";
+import Videos from "../../src/sections/creations/Videos/Videos";
 import Photos from "../../src/sections/creations/Photos/Photos";
-import Autre from "./../../src/sections/creations/Autre";
+import Autre from "../../src/sections/creations/Autre/Autre";
 
 export default function Creations() {
   // Récupérer l'état initial depuis localStorage, ou "Vidéos" si pas de valeur

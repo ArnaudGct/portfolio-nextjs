@@ -6,7 +6,7 @@ import Link from "next/link";
 import { render } from "react-dom";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 
-export default function Video({ id, title, tags, url }) {
+export default function VideoItem({ id, title, tags, url }) {
   const [loading, setLoading] = useState(true); // Pour gérer l'état de chargement
   const [isInView, setIsInView] = useState(false); // Pour vérifier si la vidéo est dans la vue
   const videoRef = useRef(null); // Référence pour l'élément vidéo
@@ -85,28 +85,29 @@ export default function Video({ id, title, tags, url }) {
           <p className="text-red-500">Lien invalide</p>
         )}
       </div>
-      <div className="w-full flex items-center justify-between">
-        <div className="w-[90%] flex flex-col gap-2">
-          <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
-            {title}
-          </p>
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-x-2 gap-y-1.5">
-              {tags.map((t, index) => (
-                <Tag key={`${id}-${t}-${index}`} name={t} background={false} />
-              ))}
-            </div>
-          )}
+      <Link href={`/creations/video/${id}`}>
+        <div className="w-full flex items-center justify-between">
+          <div className="w-[90%] flex flex-col gap-2">
+            <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
+              {title}
+            </p>
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-x-2 gap-y-1.5">
+                {tags.map((t, index) => (
+                  <Tag
+                    key={`${id}-${t}-${index}`}
+                    name={t}
+                    background={false}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex justify-center items-center p-2 text-blue-700 min-w-9 w-[10%] hover:text-blue-900 transition-colors">
+            <SquareArrowOutUpRight size={16} strokeWidth={1.75} />
+          </div>
         </div>
-        <Link
-          href={`/creations/${id}`}
-          passHref
-          legacyBehavior
-          className="flex justify-center items-center p-2 text-blue-700 min-w-9 w-[10%] hover:text-blue-900 transition-colors"
-        >
-          <SquareArrowOutUpRight size={16} strokeWidth={1.75} />
-        </Link>
-      </div>
+      </Link>
     </div>
   );
 }

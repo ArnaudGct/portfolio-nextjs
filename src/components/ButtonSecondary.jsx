@@ -14,29 +14,30 @@ export default function ButtonSecondary({
   const sizeClass =
     size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-base";
 
-  const buttonContent = (
-    <button
-      onClick={onClick}
-      className={`flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition duration-300 ${paddingClass} ${sizeClass} ${className} ${
-        isDisabled ? "cursor-not-allowed" : "cursor-pointer"
-      }`}
-    >
-      {icon && <span>{icon}</span>}
-      {children && <p>{children}</p>}
-    </button>
-  );
+  const classes = `flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition duration-300 ${paddingClass} ${sizeClass} ${className} ${
+    isDisabled ? "cursor-not-allowed" : "cursor-pointer"
+  }`;
 
+  // If we have a link, render the component as a Link
   if (link) {
     return (
       <Link
         href={link}
-        target={newTab ? "_blank" : undefined}
+        target={newTab ? "_blank" : "_self"}
         rel="noopener noreferrer"
+        className={classes}
+        onClick={onClick}
       >
-        {buttonContent}
+        {icon && <span>{icon}</span>}
+        {children && <p>{children}</p>}
       </Link>
     );
   }
 
-  return buttonContent;
+  return (
+    <button onClick={onClick} className={classes} disabled={isDisabled}>
+      {icon && <span>{icon}</span>}
+      {children && <p>{children}</p>}
+    </button>
+  );
 }

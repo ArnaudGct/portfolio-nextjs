@@ -28,10 +28,16 @@ export default function RootLayout({ children }) {
 
   // Vérifie si l'URL contient /creations/album/[id_alb]
   const isAlbumPage = pathname.match(/^\/creations\/album\/\d+/);
+  const isVideoPage = pathname.match(/^\/creations\/video\/\d+/);
+  const isAutrePage = pathname.match(/^\/creations\/autre\/\d+/);
 
   // Exclure la page dynamique de l'affichage du Header
   const noHeaderRoutes = ["/journal-personnel"];
-  const showHeader = !noHeaderRoutes.includes(pathname) && !isAlbumPage;
+  const showHeader =
+    !noHeaderRoutes.includes(pathname) &&
+    !isAlbumPage &&
+    !isVideoPage &&
+    !isAutrePage;
 
   return (
     <html lang="fr">

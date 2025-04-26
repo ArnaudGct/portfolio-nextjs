@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import Video from "./../../components/Video";
-import TagCheckbox from "./../../components/TagCheckbox";
-import FilterTag from "./../../components/FilterTag";
+import VideoItem from "../../../components/VideoItem";
+import TagCheckbox from "../../../components/TagCheckbox";
+import FilterTag from "../../../components/FilterTag";
 import { motion, AnimatePresence } from "motion/react";
 import NumberFlow from "@number-flow/react";
 
@@ -193,15 +193,15 @@ export default function Videos() {
             >
               {filteredVideos.map((video) => (
                 <motion.div
-                  key={video.id_crea}
+                  key={video.id_vid}
                   variants={{
                     hidden: { opacity: 0, scale: 0.9, y: 20 },
                     visible: { opacity: 1, scale: 1, y: 0 },
                   }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 >
-                  <Video
-                    id={video.id_crea}
+                  <VideoItem
+                    id={video.id_vid}
                     title={video.titre}
                     url={video.lien}
                     tags={video.tags}
