@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import Tag from "./Tag";
+import Tag from "../../../components/Tag";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";

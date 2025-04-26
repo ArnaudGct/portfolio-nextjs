@@ -36,9 +36,14 @@ async function getVideoDetails(id_vid) {
   }
 }
 
-export default async function VideoDetails({ params }) {
+export default async function VideoDetails({ params, searchParams }) {
   const { id_vid } = await params;
   const video = await getVideoDetails(id_vid);
+
+  const { from } = searchParams; // <= ici on récupère "from"
+
+  const backLink = from === "home" ? "/" : "/creations";
+  const backLinkText = from === "home" ? "Accueil" : "Mes créations";
 
   if (!video) {
     return (
@@ -47,7 +52,7 @@ export default async function VideoDetails({ params }) {
           Vidéo non trouvé
         </h2>
         <Link
-          href="/creations"
+          href={backLink}
           className="mt-4 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
         >
           <ArrowLeft size={16} /> Retour aux albums
@@ -61,8 +66,11 @@ export default async function VideoDetails({ params }) {
       <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 mt-20 mb-20">
         <Breadcrumb
           pages={[
-            { name: "Mes créations", path: "/creations" },
-            { name: video.titre, path: `/creations/video/${video.id_vid}` },
+            { name: backLinkText, path: backLink }, // Pas de `{}` autour des variables
+            {
+              name: video.titre,
+              path: `${backLink}/video/${video.id_vid}`, // Correction ici aussi, pas de `${{ backLink }}`
+            },
           ]}
         />
 

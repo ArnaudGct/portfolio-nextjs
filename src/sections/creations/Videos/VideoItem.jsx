@@ -1,12 +1,12 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import Tag from "./Tag";
+import Tag from "../../../components/Tag";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import { render } from "react-dom";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 
-export default function VideoItem({ id, title, tags, url }) {
+export default function VideoItem({ id, title, tags, url, pageCurrent }) {
   const [loading, setLoading] = useState(true); // Pour gérer l'état de chargement
   const [isInView, setIsInView] = useState(false); // Pour vérifier si la vidéo est dans la vue
   const videoRef = useRef(null); // Référence pour l'élément vidéo
@@ -85,7 +85,7 @@ export default function VideoItem({ id, title, tags, url }) {
           <p className="text-red-500">Lien invalide</p>
         )}
       </div>
-      <Link href={`/creations/video/${id}`}>
+      <Link href={`/creations/video/${id}?from=${pageCurrent}`}>
         <div className="w-full flex items-center justify-between">
           <div className="w-[90%] flex flex-col gap-2">
             <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">

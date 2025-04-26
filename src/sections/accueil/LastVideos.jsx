@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Video from "../../components/VideoItem";
+import Video from "../creations/Videos/VideoItem";
 import ButtonMain from "../../components/ButtonMain";
 import { ArrowUpRight } from "lucide-react";
 
@@ -37,11 +37,12 @@ export default function Videos() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {videos.map((video) => (
               <Video
-                key={video.id_crea}
-                id={video.id_crea}
+                key={video.id_vid}
+                id={video.id_vid}
                 title={video.titre}
                 url={video.lien}
                 tags={video.tags}
+                pageCurrent="home"
               />
             ))}
           </div>

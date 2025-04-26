@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import AutreItem from "./../../../components/AutreItem";
+import AutreItem from "./AutreItem";
 import TagCheckbox from "./../../../components/TagCheckbox";
 import FilterTag from "./../../../components/FilterTag";
 import { motion, AnimatePresence } from "motion/react";

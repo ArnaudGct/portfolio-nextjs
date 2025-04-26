@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import VideoItem from "../../../components/VideoItem";
+import VideoItem from "./VideoItem";
 import TagCheckbox from "../../../components/TagCheckbox";
 import FilterTag from "../../../components/FilterTag";
 import { motion, AnimatePresence } from "motion/react";
@@ -205,6 +205,7 @@ export default function Videos() {
                     title={video.titre}
                     url={video.lien}
                     tags={video.tags}
+                    pageCurrent="creations"
                   />
                 </motion.div>
               ))}
