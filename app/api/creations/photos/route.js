@@ -17,6 +17,7 @@ export async function GET() {
         lien_low: true,
         largeur: true,
         hauteur: true,
+        alt: true,
         date_ajout: true,
         photos_tags_link: {
           select: {
@@ -46,6 +47,7 @@ export async function GET() {
       lien_low: photo.lien_low,
       largeur: photo.largeur,
       hauteur: photo.hauteur,
+      alt: photo.alt,
       date_ajout: photo.date_ajout,
       tags: photo.photos_tags_link.map((tagLink) => tagLink.photos_tags.titre),
       tags_recherche: photo.photos_tags_recherche_link.map(

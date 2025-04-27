@@ -18,6 +18,7 @@ export async function GET() {
                 lien_low: true,
                 largeur: true,
                 hauteur: true,
+                alt: true,
               },
             },
           },
@@ -44,6 +45,7 @@ export async function GET() {
         lien_low: photoLink.photos.lien_low,
         largeur: photoLink.photos.largeur,
         hauteur: photoLink.photos.hauteur,
+        alt: photoLink.photos.alt,
       })),
       tags: album.photos_albums_tags_link.map(
         (tagLink) => tagLink.photos_tags.titre

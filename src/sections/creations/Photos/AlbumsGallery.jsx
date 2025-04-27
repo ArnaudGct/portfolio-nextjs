@@ -92,7 +92,7 @@ export default function AlbumsGallery({ album }) {
               >
                 <Image
                   src={photoLink.photos.lien_low}
-                  alt={`Photo ${index + 1} de l'album ${album.titre}`}
+                  alt={photoLink.photos.alt}
                   width={500}
                   height={300}
                   className="w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
@@ -175,7 +175,7 @@ export default function AlbumsGallery({ album }) {
                 >
                   <Image
                     src={photos[currentPhotoIndex].lien_high}
-                    alt="bibou"
+                    alt={photoLink.photos.alt}
                     width={1200}
                     height={800}
                     className="max-w-full max-h-[calc(90vh-10rem)] object-contain"

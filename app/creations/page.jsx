@@ -6,16 +6,30 @@ import Photos from "../../src/sections/creations/Photos/Photos";
 import Autre from "../../src/sections/creations/Autre/Autre";
 
 export default function Creations() {
-  // Récupérer l'état initial depuis localStorage, ou "Vidéos" si pas de valeur
-  const [selectedType, setSelectedType] = useState(() => {
+  // Utiliser un état pour suivre si le composant est monté côté client
+  const [isClient, setIsClient] = useState(false);
+
+  // État pour le type sélectionné avec une valeur par défaut
+  const [selectedType, setSelectedType] = useState("Vidéos");
+
+  // Vérifier si on est côté client au chargement du composant
+  useEffect(() => {
+    setIsClient(true);
+
+    // Récupérer la valeur depuis localStorage
     const savedType = localStorage.getItem("selectedType");
-    return savedType ? savedType : "Vidéos";
-  });
+    if (savedType) {
+      setSelectedType(savedType);
+    }
+  }, []);
 
   // Mettre à jour localStorage lorsque l'état change
+  // Exécuté uniquement après le premier rendu quand isClient est true
   useEffect(() => {
-    localStorage.setItem("selectedType", selectedType);
-  }, [selectedType]);
+    if (isClient) {
+      localStorage.setItem("selectedType", selectedType);
+    }
+  }, [selectedType, isClient]);
 
   const renderContent = () => {
     switch (selectedType) {

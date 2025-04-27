@@ -302,7 +302,7 @@ export default function Photos() {
                               <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden">
                                 <Image
                                   src={album.photos[0].lien_low}
-                                  alt={album.titre}
+                                  alt={album.photos[0].alt}
                                   fill
                                   sizes="(max-width: 768px) 50vw, 25vw"
                                   className="object-cover rounded-lg"
@@ -316,7 +316,7 @@ export default function Photos() {
                               <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
                                 <Image
                                   src={album.photos[1].lien_low}
-                                  alt={`${album.titre} photo 2`}
+                                  alt={album.photos[1].alt}
                                   fill
                                   sizes="(max-width: 768px) 50vw, 25vw"
                                   className="object-cover rounded-lg"
@@ -329,7 +329,7 @@ export default function Photos() {
                               <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
                                 <Image
                                   src={album.photos[2].lien_low}
-                                  alt={`${album.titre} photo 3`}
+                                  alt={album.photos[2].alt}
                                   fill
                                   sizes="(max-width: 768px) 50vw, 25vw"
                                   className="object-cover rounded-lg"
@@ -342,7 +342,7 @@ export default function Photos() {
                               <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
                                 <Image
                                   src={album.photos[3].lien_low}
-                                  alt={`${album.titre} photo 4`}
+                                  alt={album.photos[3].alt}
                                   fill
                                   sizes="25vw"
                                   className="object-cover rounded-lg"
@@ -355,7 +355,7 @@ export default function Photos() {
                               <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
                                 <Image
                                   src={album.photos[4].lien_low}
-                                  alt={`${album.titre} photo 5`}
+                                  alt={album.photos[4].alt}
                                   fill
                                   sizes="25vw"
                                   className="object-cover rounded-lg"
@@ -480,7 +480,7 @@ export default function Photos() {
                 >
                   <Image
                     src={photo.lien_low}
-                    alt={photo.titre}
+                    alt={photo.alt}
                     width={500}
                     height={300}
                     className="w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
@@ -579,7 +579,7 @@ export default function Photos() {
                 >
                   <Image
                     src={filteredPhotos[currentPhotoIndex].lien_high}
-                    alt="bibou"
+                    alt={filteredPhotos[currentPhotoIndex].alt}
                     width={1200}
                     height={800}
                     className="max-w-full max-h-[calc(90vh-10rem)] object-contain"

@@ -26,6 +26,7 @@ async function getAlbumDetails(id_alb) {
                 lien_high: true,
                 largeur: true,
                 hauteur: true,
+                alt: true,
               },
             },
           },

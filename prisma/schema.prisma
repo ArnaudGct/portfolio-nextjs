@@ -70,6 +70,7 @@ model photos {
   lien_low                   String                       @db.VarChar(500)
   largeur                    Int
   hauteur                    Int
+  alt                        String                       @db.VarChar(500)
   date_ajout                 DateTime                     @db.DateTime(0)
   afficher                   Boolean
   photos_albums_link         photos_albums_link[]
