@@ -6,6 +6,7 @@ import ButtonMain from "../../../components/ButtonMain"; // idem
 import Tag from "../../../components/Tag"; // idem
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { ArrowUpRight } from "lucide-react"; // Assurez-vous que ce chemin est correct
+import ReactMarkdown from "react-markdown";
 
 export default function VideosGallery({ video }) {
   console.log("Video:", video);
@@ -73,12 +74,9 @@ export default function VideosGallery({ video }) {
           </div>
           <div>
             {video.description && (
-              <p
-                className="text-lg text-blue-900"
-                dangerouslySetInnerHTML={{
-                  __html: video.description,
-                }}
-              ></p>
+              <p className="text-lg text-blue-900">
+                <ReactMarkdown>{video.description}</ReactMarkdown>
+              </p>
             )}
           </div>
         </div>

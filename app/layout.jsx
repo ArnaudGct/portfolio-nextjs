@@ -49,10 +49,10 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body
-        className={`${rethinkSans.variable} ${outfit.variable} ${coveredByYourGrace.variable} antialiased`}
+        className={`${rethinkSans.variable} ${outfit.variable} ${coveredByYourGrace.variable} antialiased flex flex-col min-h-screen`}
       >
         {showHeader && <Header />}
-        {children}
+        <div className="flex-grow">{children}</div>
         <Footer />
       </body>
     </html>

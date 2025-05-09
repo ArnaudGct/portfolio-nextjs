@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const experiences = await prisma.experiences.findMany({
-    where: { afficher: true, categorie: "personnel" },
-    orderBy: { date_debut: "desc" },
+    where: { afficher: true },
+    orderBy: { date: "desc" },
   });
 
   return NextResponse.json(experiences);

@@ -7,6 +7,7 @@ import Tag from "../../../components/Tag"; // idem
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { ArrowUpRight } from "lucide-react"; // Assurez-vous que ce chemin est correct
 import { SiFigma, SiGithub } from "@icons-pack/react-simple-icons";
+import ReactMarkdown from "react-markdown";
 
 export default function VideosGallery({ autre }) {
   console.log("Autre:", autre);
@@ -101,12 +102,9 @@ export default function VideosGallery({ autre }) {
           </div>
           <div>
             {autre.description && (
-              <p
-                className="text-lg text-blue-900"
-                dangerouslySetInnerHTML={{
-                  __html: autre.description,
-                }}
-              ></p>
+              <p className="text-lg text-blue-900">
+                <ReactMarkdown>{autre.description}</ReactMarkdown>
+              </p>
             )}
           </div>
         </div>
