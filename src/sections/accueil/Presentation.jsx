@@ -8,7 +8,6 @@ export default function Presentation() {
   return (
     <section className="relative w-[90%] max-w-[1440px] mx-auto mt-20 flex flex-col sm:flex-row gap-5 md:gap-8 items-start sm:items-center justify-center sm:justify-start">
       <div className="relative flex items-stretch h-[500px] lg:h-[350px] w-full sm:w-[70%] lg:w-[50%] lg:max-w-[350px]">
-        {" "}
         {/* Définis une hauteur */}
         <Image
           src="/arnaud_graciet-accueil.webp"
@@ -19,7 +18,7 @@ export default function Presentation() {
         />
       </div>
       <div className="flex flex-col gap-7 items-start w-full z-2">
-        <div>
+        <div className="flex flex-col gap-2">
           <div className="flex flex-col items-start justify-start">
             <p className="text-blue-400 text-xl font-normal font-rethink-sans">
               Arnaud
@@ -28,22 +27,20 @@ export default function Presentation() {
               Graciet
             </p>
           </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <TagAvailable />
-              <Tag
-                name="21 ans"
-                background={true}
-                icon={<Cake size={14} strokeWidth={1.75} />}
-              />
-              <Tag
-                name="La Rochelle"
-                background={true}
-                icon={<MapPin size={14} strokeWidth={1.75} />}
-              />
-              <Tag name="monteur vidéo" background={false} />
-              <Tag name="cadreur" background={false} />
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <TagAvailable />
+            <Tag
+              name="21 ans"
+              background={true}
+              icon={<Cake size={14} strokeWidth={1.75} />}
+            />
+            <Tag
+              name="La Rochelle"
+              background={true}
+              icon={<MapPin size={14} strokeWidth={1.75} />}
+            />
+            <Tag name="monteur vidéo" background={false} />
+            <Tag name="cadreur" background={false} />
           </div>
         </div>
         <div>
@@ -69,7 +66,7 @@ export default function Presentation() {
           En savoir plus
         </ButtonMain>
       </div>
-      <div className="w-72 h-72 right-0 bottom-0 sm:top-0 z-1 absolute rounded-full bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_var(--blue-200,_#C5D3FF)_0%,_rgba(197,_211,_255,_0)_100%)] opacity-40"></div>
+      <div className="w-72 h-72 right-0 bottom-0 sm:top-0 z-1 absolute rounded-full bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_var(--blue-200,_#C5D3FF)_0%,_rgba(197,_211,_255,_0)_100%)] dark:bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_var(--blue-900,_#1E3A8A)_0%,_rgba(30,_58,_138,_0)_100%)] opacity-40 dark:opacity-30"></div>
     </section>
   );
 }

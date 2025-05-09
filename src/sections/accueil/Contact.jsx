@@ -88,7 +88,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="flex flex-col gap-12 lg:flex-row items-start lg:items-center justify-center lg:justify-between w-[90%] mt-36 mb-20 mx-auto max-w-[1440px]">
+    <section className="flex flex-col gap-12 lg:flex-row items-start lg:items-center justify-center lg:justify-between w-[90%] mt-36 pb-20 mx-auto max-w-[1440px]">
       <div className="w-full flex flex-col gap-8 items-start justify-start">
         <div className="flex gap-4 items-center justify-start">
           <Image
@@ -158,7 +158,7 @@ export default function Contact() {
               placeholder="Prénom"
               value={formData.firstName}
               onChange={handleChange}
-              className="w-full py-2 px-4 bg-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
               disabled={formState.isSubmitting || formState.isSuccess}
             />
@@ -168,7 +168,7 @@ export default function Contact() {
               placeholder="Nom"
               value={formData.lastName}
               onChange={handleChange}
-              className="w-full py-2 px-4 bg-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
               disabled={formState.isSubmitting || formState.isSuccess}
             />
@@ -179,7 +179,7 @@ export default function Contact() {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full py-2 px-4 bg-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
             disabled={formState.isSubmitting || formState.isSuccess}
           />
@@ -188,7 +188,7 @@ export default function Contact() {
             placeholder="Message"
             value={formData.message}
             onChange={handleChange}
-            className="w-full py-2 px-4 bg-slate-200 rounded-lg h-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg h-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
             disabled={formState.isSubmitting || formState.isSuccess}
           />

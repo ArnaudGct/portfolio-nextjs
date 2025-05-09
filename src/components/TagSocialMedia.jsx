@@ -18,9 +18,9 @@ export default function TagSocialMedia({ name }) {
         <Image src="/instagram.webp" alt="Instagram" width={16} height={16} />
       ),
       href: "https://www.instagram.com/arnaud_gct/",
-      text: "text-[#e94aec]",
-      bg: "bg-[#ffedfd]",
-      border: "border-[#fdbef0]",
+      text: "text-[#e94aec] dark:text-[#f87df0]",
+      bg: "bg-[#ffedfd] dark:bg-[#4d0055]/30",
+      border: "border-[#fdbef0] dark:border-[#9b3d8c]",
     },
     linkedin: {
       label: "LinkedIn",
@@ -28,9 +28,9 @@ export default function TagSocialMedia({ name }) {
         <Image src="/linkedin.webp" alt="LinkedIn" width={16} height={16} />
       ),
       href: "https://www.linkedin.com/in/arnaud-graciet/",
-      text: "text-[#4a82ec]",
-      bg: "bg-[#edf8ff]",
-      border: "border-[#bddcff]",
+      text: "text-[#4a82ec] dark:text-[#6a9aff]",
+      bg: "bg-[#edf8ff] dark:bg-[#0a275a]/30",
+      border: "border-[#bddcff] dark:border-[#2a5db3]",
     },
   };
 

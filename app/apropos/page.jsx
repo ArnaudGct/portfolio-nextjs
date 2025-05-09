@@ -11,8 +11,8 @@ import Link from "next/link";
 
 export default function APropos() {
   return (
-    <main className="">
-      <div className="mt-24 mb-20">
+    <main className="bg-white">
+      <div className="pt-24 pb-20">
         <div className="max-w-[1440px] mx-auto w-[90%]">
           {/* Conteneur principal - change l'ordre en responsive */}
           <div className="grid grid-cols-1 md:grid-cols-2 md:order-2 lg:grid-cols-[auto_1fr] gap-6 sm:gap-10">
@@ -141,9 +141,9 @@ export default function APropos() {
                   logoAlt="Logo Premiere Pro"
                   label="Première Pro"
                   description="Montage vidéo professionnel."
-                  bgColor="#edf3ff"
-                  borderColor="#a2b5ff"
-                  textColor="#4e4aec"
+                  bgColor="bg-[#edf3ff] dark:bg-[#1e1b4b]"
+                  borderColor="border-[#a2b5ff] dark:border-[#4338ca]"
+                  textColor="text-[#4e4aec] dark:text-[#818cf8]"
                   rounded={false}
                   link="https://www.adobe.com/fr/products/premiere.html"
                   newTab={true}
@@ -154,9 +154,9 @@ export default function APropos() {
                   logoAlt="Logo After Effects"
                   label="After Effects"
                   description="Création d'effets spéciaux et animation graphique."
-                  bgColor="#edf3ff"
-                  borderColor="#a2b5ff"
-                  textColor="#4e4aec"
+                  bgColor="bg-[#edf3ff] dark:bg-[#1e1b4b]"
+                  borderColor="border-[#a2b5ff] dark:border-[#4338ca]"
+                  textColor="text-[#4e4aec] dark:text-[#818cf8]"
                   rounded={false}
                   link="https://www.adobe.com/fr/products/aftereffects.html"
                   newTab={true}
@@ -167,9 +167,9 @@ export default function APropos() {
                   logoAlt="Logo Artlist"
                   label="Artlist"
                   description="Musique libre de droits pour créateurs."
-                  bgColor="#fffeed"
-                  borderColor="#ffe6a2"
-                  textColor="#ecae4a"
+                  bgColor="bg-[#fffeed] dark:bg-[#422006]"
+                  borderColor="border-[#ffe6a2] dark:border-[#d97706]"
+                  textColor="text-[#ecae4a] dark:text-[#fbbf24]"
                   rounded={true}
                   link="https://artlist.io/"
                   newTab={true}
@@ -180,9 +180,9 @@ export default function APropos() {
                   logoAlt="Logo de Figma"
                   label="Figma"
                   description="Design collaboratif et prototypage."
-                  bgColor="#ffeeed"
-                  borderColor="#ffa5a2"
-                  textColor="#ec4a4a"
+                  bgColor="bg-[#ffeeed] dark:bg-[#450a0a]"
+                  borderColor="border-[#ffa5a2] dark:border-[#dc2626]"
+                  textColor="text-[#ec4a4a] dark:text-[#f87171]"
                   rounded={false}
                   link="https://www.figma.com/"
                   newTab={true}
@@ -193,9 +193,9 @@ export default function APropos() {
                   logoAlt="Logo de Eagle"
                   label="Eagle"
                   description="Gestion de fichiers pour designers."
-                  bgColor="#e8f3ff"
-                  borderColor="#66a9f9"
-                  textColor="#3186ff"
+                  bgColor="bg-[#e8f3ff] dark:bg-[#0c4a6e]"
+                  borderColor="border-[#66a9f9] dark:border-[#0284c7]"
+                  textColor="text-[#3186ff] dark:text-[#38bdf8]"
                   rounded={true}
                   link="https://eagle.cool/"
                   newTab={true}
@@ -206,9 +206,9 @@ export default function APropos() {
                   logoAlt="Logo de Notion"
                   label="Notion"
                   description="Prise de notes et gestion de projets."
-                  bgColor="#f8fafc"
-                  borderColor="#cbd5e1"
-                  textColor="#475569"
+                  bgColor="bg-[#F8FAFC] dark:bg-[#1e1e1e]"
+                  borderColor="border-[#CBD5E1] dark:border-[#3f3f46]"
+                  textColor="text-[#475569] dark:text-[#e1e1e1]"
                   rounded={false}
                   link="https://www.notion.so/"
                   newTab={true}
@@ -219,9 +219,9 @@ export default function APropos() {
                   logoAlt="Logo de Toggl Track"
                   label="Toggl Track"
                   description="Suivi du temps pour la productivité."
-                  bgColor="#ffedff"
-                  borderColor="#ffa2d2"
-                  textColor="#ec4abb"
+                  bgColor="bg-[#ffedff] dark:bg-[#4a044e]"
+                  borderColor="border-[#ffa2d2] dark:border-[#c026d3]"
+                  textColor="text-[#ec4abb] dark:text-[#e879f9]"
                   rounded={false}
                   link="https://toggl.com/track/"
                   newTab={true}
@@ -231,7 +231,7 @@ export default function APropos() {
           </div>
         </div>
       </div>
-      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-[#dfe7ff]/0 to-[#dfe7ff]/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
     </main>
   );
 }

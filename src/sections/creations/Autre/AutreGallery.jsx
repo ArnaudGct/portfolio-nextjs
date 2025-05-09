@@ -100,11 +100,9 @@ export default function VideosGallery({ autre }) {
               </ButtonSecondary>
             </div>
           </div>
-          <div>
+          <div className="text-lg text-blue-900">
             {autre.description && (
-              <p className="text-lg text-blue-900">
-                <ReactMarkdown>{autre.description}</ReactMarkdown>
-              </p>
+              <ReactMarkdown>{autre.description}</ReactMarkdown>
             )}
           </div>
         </div>

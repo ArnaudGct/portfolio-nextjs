@@ -2,42 +2,65 @@ import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
-  // Déclare un état pour détecter si le code s'exécute dans un navigateur
-  const [isDark, setIsDark] = useState(false);
+  // État initial à undefined pour éviter un rendu incorrect
+  const [isDark, setIsDark] = useState(undefined);
 
+  // Synchroniser l'état avec le localStorage au montage du composant
   useEffect(() => {
-    // Vérifie si nous sommes dans un environnement navigateur
     if (typeof window !== "undefined") {
-      // Détecte la préférence de l'utilisateur uniquement dans le navigateur
-      const prefersDarkMode = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setIsDark(prefersDarkMode);
+      // Récupérer la préférence du localStorage
+      const savedTheme = localStorage.getItem("theme");
 
-      // Applique le thème actuel à l'élément racine
-      const root = window.document.documentElement;
-      if (prefersDarkMode) {
-        root.classList.add("dark");
+      if (savedTheme) {
+        setIsDark(savedTheme === "dark");
       } else {
-        root.classList.remove("dark");
+        // Détecter la préférence système si aucun thème n'est sauvegardé
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        setIsDark(prefersDark);
+        localStorage.setItem("theme", prefersDark ? "dark" : "light");
       }
     }
-  }, []); // Le tableau vide signifie qu'on l'exécute une seule fois au montage
+  }, []);
 
-  // Effet pour changer de thème si l'utilisateur modifie l'état
+  // Appliquer le thème quand l'état change
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (isDark !== undefined && typeof window !== "undefined") {
       const root = window.document.documentElement;
+
       if (isDark) {
         root.classList.add("dark");
+        localStorage.setItem("theme", "dark");
       } else {
         root.classList.remove("dark");
+        localStorage.setItem("theme", "light");
       }
     }
   }, [isDark]);
 
+  // Fonction pour changer le thème
+  const toggleTheme = (value) => {
+    setIsDark(value);
+  };
+
+  // Écouter les changements de thème depuis d'autres onglets
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "theme") {
+        setIsDark(e.newValue === "dark");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // Ne pas rendre le bouton tant que isDark n'est pas défini
+  if (isDark === undefined) return null;
+
   return (
-    <div className="relative w-17 h-full flex items-center justify-between px-2.5 bg-blue-50 rounded-lg transition-colors duration-300">
+    <div className="relative w-17 h-full flex items-center justify-between px-[2px] bg-blue-50 rounded-lg transition-colors duration-300">
       {/* Switch indicator */}
       <span
         className={`absolute left-1 top-1 bottom-1 w-7 rounded-lg bg-blue-200 transition-transform duration-300 ${
@@ -45,19 +68,22 @@ export default function ThemeToggle() {
         }`}
       />
 
-      {/* Soleil */}
-      <Sun
-        size={16}
-        onClick={() => setIsDark(false)}
-        className="text-blue-600 z-10 cursor-pointer"
-      />
+      {/* Boutons avec zone de clic étendue */}
+      <button
+        onClick={() => toggleTheme(false)}
+        className="flex items-center justify-center w-8 h-full p-2 z-10 cursor-pointer"
+        aria-label="Mode clair"
+      >
+        <Sun size={16} className="text-blue-600" />
+      </button>
 
-      {/* Lune */}
-      <Moon
-        size={16}
-        onClick={() => setIsDark(true)}
-        className="text-blue-600 z-10 cursor-pointer"
-      />
+      <button
+        onClick={() => toggleTheme(true)}
+        className="flex items-center justify-center w-8 h-full p-2 z-10 cursor-pointer"
+        aria-label="Mode sombre"
+      >
+        <Moon size={16} className="text-blue-600" />
+      </button>
     </div>
   );
 }

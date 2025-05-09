@@ -78,7 +78,7 @@ export default function MediaCard({
             {subtitleText && (
               <p
                 className="text-sm font-rethink-sans"
-                style={{ color: labelColor }}
+                style={{ color: titleColor }}
               >
                 - {subtitleText}
               </p>

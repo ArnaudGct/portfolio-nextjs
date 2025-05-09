@@ -62,7 +62,7 @@ export default async function AutreDetails({ params }) {
 
   return (
     <main className="min-h-[calc(100vh-450px)]">
-      <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 mt-20 mb-20">
+      <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 mt-20 pb-20">
         <Breadcrumb
           pages={[
             { name: "Mes créations", path: "/creations" },
@@ -72,7 +72,7 @@ export default async function AutreDetails({ params }) {
 
         <AutreGallery autre={autre} />
       </div>
-      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-[#dfe7ff]/0 to-[#dfe7ff]/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
     </main>
   );
 }

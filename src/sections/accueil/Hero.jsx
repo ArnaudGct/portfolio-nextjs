@@ -6,19 +6,17 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen overflow-hidden">
       {/* Arrière-plan : fond blanc + grille */}
-      <div className="absolute z-12 top-0 left-0 w-full h-14 bg-gradient-to-t from-[#dfe7ff]/0 to-[#dfe7ff]/75"></div>
+      <div className="absolute top-0 left-0 w-full z-12 h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
       <div
         className="absolute inset-0 z-9 bg-repeat bg-white"
         style={{
           backgroundImage: "url('/grille.svg')",
         }}
       />
-
       {/* Vidéo */}
       <div className="absolute left-0 top-[64px] w-full h-[calc(100vh-64px)] z-10">
         <DailymotionPlayer />
       </div>
-
       {/* "Faux trou" = texte + copie de la grille + fond blanc */}
       <div
         className="w-full sm:w-auto rounded-b-lg sm:rounded-br-lg sm:rounded-bl-none absolute top-[64px] left-0 bg-white z-11 px-6 sm:px-10 pb-4 pt-2 "
