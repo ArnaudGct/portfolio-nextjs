@@ -58,7 +58,7 @@ export default function AlbumsGallery({ album }) {
               hidden: {},
             }}
           >
-            {album.photos_albums_link.map((photoLink, index) => (
+            {photos.map((photoLink, index) => (
               // <div
               //   key={index}
               //   className="group block relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl"
@@ -81,7 +81,7 @@ export default function AlbumsGallery({ album }) {
               //   </div>
               // </div>
               <motion.div
-                key={`photo-${photoLink.photos.id_pho}`}
+                key={`photo-${photoLink.id_pho}`}
                 variants={{
                   hidden: { opacity: 0, scale: 0.9, y: 20 },
                   visible: { opacity: 1, scale: 1, y: 0 },
@@ -91,8 +91,8 @@ export default function AlbumsGallery({ album }) {
                 onClick={() => handleImageClick(index)}
               >
                 <Image
-                  src={photoLink.photos.lien_low}
-                  alt={photoLink.photos.alt}
+                  src={photoLink.lien_low}
+                  alt={photoLink.alt}
                   width={500}
                   height={300}
                   className="w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
@@ -175,7 +175,7 @@ export default function AlbumsGallery({ album }) {
                 >
                   <Image
                     src={photos[currentPhotoIndex].lien_high}
-                    alt={photoLink.photos.alt}
+                    alt={photos[currentPhotoIndex].alt}
                     width={1200}
                     height={800}
                     className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
@@ -292,10 +292,10 @@ export default function AlbumsGallery({ album }) {
                   <p className="text-blue-600 font-medium">
                     {currentPhotoIndex + 1} / {photos.length}
                   </p>
-                  {photos[currentPhotoIndex].date_ajout && (
+                  {photos[currentPhotoIndex].date && (
                     <p className="text-blue-300">
                       Ajoutée le{" "}
-                      {photos[currentPhotoIndex].date_ajout.toLocaleDateString(
+                      {photos[currentPhotoIndex].date.toLocaleDateString(
                         "fr-FR",
                         {
                           day: "numeric",

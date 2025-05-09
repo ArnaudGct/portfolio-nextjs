@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ButtonSecondary from "./../../src/components/ButtonSecondary";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -7,6 +7,7 @@ import FormattedDate from "./../../src/components/FormattedDate";
 import Image from "next/image";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import Breadcrumb from "./../../src/components/Breadcrumb";
+import ReactMarkdown from "react-markdown";
 
 export default function JournalPersonnel() {
   const [experiences, setExperiences] = useState([]);
@@ -114,7 +115,7 @@ export default function JournalPersonnel() {
                   <div className="ml-10 flex flex-col gap-4">
                     <div className="flex flex-col">
                       <p className="text-blue-600 font-rethink-sans font-extrabold text-xl">
-                        <FormattedDate date={experience.date_debut} />
+                        <FormattedDate date={experience.date} />
                       </p>
                       <p className="text-blue-500 text-lg">
                         {experience.titre}
@@ -122,12 +123,9 @@ export default function JournalPersonnel() {
                     </div>
 
                     <div className="flex flex-col items-start justify-center lg:flex-row lg:justify-between gap-6">
-                      <p
-                        className="text-blue-900 flex flex-col gap-4 w-full"
-                        dangerouslySetInnerHTML={{
-                          __html: experience.description,
-                        }}
-                      ></p>
+                      <p className="text-blue-900 flex flex-col gap-4 w-full">
+                        <ReactMarkdown>{experience.description}</ReactMarkdown>
+                      </p>
 
                       {experience.url_img && (
                         <div className="w-full lg:w-[50%] lg:min-w-[400px]">

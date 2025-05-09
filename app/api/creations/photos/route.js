@@ -10,7 +10,7 @@ export async function GET() {
           none: {}, // aucune relation avec un album
         },
       },
-      orderBy: { date_ajout: "desc" },
+      orderBy: { date: "desc" },
       select: {
         id_pho: true,
         lien_high: true,
@@ -18,7 +18,7 @@ export async function GET() {
         largeur: true,
         hauteur: true,
         alt: true,
-        date_ajout: true,
+        date: true,
         photos_tags_link: {
           select: {
             photos_tags: {
@@ -48,7 +48,7 @@ export async function GET() {
       largeur: photo.largeur,
       hauteur: photo.hauteur,
       alt: photo.alt,
-      date_ajout: photo.date_ajout,
+      date: photo.date,
       tags: photo.photos_tags_link.map((tagLink) => tagLink.photos_tags.titre),
       tags_recherche: photo.photos_tags_recherche_link.map(
         (tagLink) => tagLink.photos_tags_recherche.titre

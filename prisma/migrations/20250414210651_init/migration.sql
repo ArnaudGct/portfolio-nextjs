@@ -40,7 +40,7 @@ CREATE TABLE `creations` (
 -- CreateTable
 CREATE TABLE `experiences` (
     `id_exp` INTEGER NOT NULL AUTO_INCREMENT,
-    `date_debut` VARCHAR(50) NOT NULL,
+    `date` VARCHAR(50) NOT NULL,
     `date_fin` VARCHAR(10) NOT NULL,
     `titre` VARCHAR(150) NOT NULL,
     `description` VARCHAR(10000) NOT NULL,

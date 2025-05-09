@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -8,6 +9,8 @@ export default function TagUtilities({
   logoAlt = "Logo",
   label,
   description = "",
+  link = null,
+  newTab = true,
   bgColor = "#edf3ff",
   borderColor = "#a2b5ff",
   textColor = "#4e4aec",
@@ -15,18 +18,9 @@ export default function TagUtilities({
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  return (
-    <div
-      className="relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full cursor-pointer"
-      style={{
-        backgroundColor: bgColor,
-        borderColor: borderColor,
-      }}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-      onFocus={() => setShowTooltip(true)}
-      onBlur={() => setShowTooltip(false)}
-    >
+  // Contenu du tag
+  const tagContent = (
+    <>
       {/* Image */}
       {logoSrc && (
         <div className="relative h-6 w-6 flex-shrink-0">
@@ -88,6 +82,44 @@ export default function TagUtilities({
           </motion.div>
         )}
       </AnimatePresence>
+    </>
+  );
+
+  // Rendu avec lien ou div simple selon la présence d'un lien
+  if (link) {
+    return (
+      <Link
+        href={link}
+        target={newTab ? "_blank" : "_self"}
+        rel={newTab ? "noopener noreferrer" : ""}
+        className="relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full transition-transform hover:scale-105"
+        style={{
+          backgroundColor: bgColor,
+          borderColor: borderColor,
+        }}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        onFocus={() => setShowTooltip(true)}
+        onBlur={() => setShowTooltip(false)}
+      >
+        {tagContent}
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      className="relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full cursor-pointer"
+      style={{
+        backgroundColor: bgColor,
+        borderColor: borderColor,
+      }}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onFocus={() => setShowTooltip(true)}
+      onBlur={() => setShowTooltip(false)}
+    >
+      {tagContent}
     </div>
   );
 }

@@ -40,21 +40,13 @@ model autre_tags_link {
 }
 
 model experiences {
-  id_exp         Int     @id @default(autoincrement())
-  date_debut     String  @db.VarChar(50)
-  date_fin       String  @db.VarChar(10)
-  titre          String  @db.VarChar(150)
-  description    String  @db.VarChar(10000)
-  url_img        String  @db.VarChar(250)
-  position_img   String  @db.VarChar(50)
-  position       String  @db.VarChar(10)
-  categorie      String  @db.VarChar(25)
-  img_logo       String  @db.VarChar(250)
-  nom_entreprise String  @db.VarChar(50)
-  url_entreprise String  @db.VarChar(1000)
-  type_emploi    String  @db.VarChar(50)
-  poste_actuel   Int
-  afficher       Boolean
+  id_exp       Int      @id @default(autoincrement())
+  date         DateTime @db.Date
+  titre        String   @db.VarChar(150)
+  description  String   @db.VarChar(10000)
+  url_img      String   @db.VarChar(250)
+  position_img String   @db.VarChar(50)
+  afficher     Boolean
 }
 
 model faq {
@@ -71,7 +63,7 @@ model photos {
   largeur                    Int
   hauteur                    Int
   alt                        String                       @db.VarChar(500)
-  date_ajout                 DateTime                     @db.DateTime(0)
+  date                       DateTime                     @db.Date
   afficher                   Boolean
   photos_albums_link         photos_albums_link[]
   photos_tags_link           photos_tags_link[]
@@ -108,6 +100,7 @@ model photos_experiences {
 model photos_tags {
   id_tags                 Int                       @id @default(autoincrement())
   titre                   String                    @db.VarChar(50)
+  important               Boolean
   photos_albums_tags_link photos_albums_tags_link[]
   photos_tags_link        photos_tags_link[]
 }
@@ -146,7 +139,7 @@ model videos {
   description           String             @db.VarChar(3500)
   tags                  String             @db.VarChar(50)
   lien                  String             @db.VarChar(500)
-  date                  String             @db.VarChar(50)
+  date                  DateTime           @db.Date
   media_webm            String             @db.VarChar(100)
   media_mp4             String             @db.VarChar(100)
   duree                 String             @db.VarChar(25)
@@ -159,6 +152,7 @@ model videos {
 model videos_tags {
   id_tags          Int                @id @default(autoincrement())
   titre            String             @db.VarChar(50)
+  important        Boolean
   videos_tags_link videos_tags_link[]
 }
 
@@ -175,6 +169,7 @@ model videos_tags_link {
 model photos_tags_recherche {
   id_tags                    Int                          @id @default(autoincrement())
   titre                      String                       @db.VarChar(50)
+  important                  Boolean
   photos_tags_recherche_link photos_tags_recherche_link[]
 }
 
@@ -196,4 +191,54 @@ model photos_albums_tags_link {
 
   @@id([id_alb, id_tags])
   @@index([id_tags], map: "fk_photos_albums_tags")
+}
+
+model account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@index([userId], map: "account_userId_fkey")
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+
+  @@index([userId], map: "session_userId_fkey")
+}
+
+model user {
+  id            String   @id
+  name          String   @db.Text
+  email         String   @unique
+  emailVerified Boolean
+  image         String?  @db.Text
+  createdAt     DateTime
+  updatedAt     DateTime
+}
+
+model verification {
+  id         String    @id
+  identifier String    @db.Text
+  value      String    @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
 }

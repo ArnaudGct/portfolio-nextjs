@@ -53,7 +53,7 @@ export default function Photos() {
             allTagsSearch: [
               ...new Set([...(photo.tags || []), ...tagsRecherche]),
             ],
-            date_ajout: photo.date_ajout ? new Date(photo.date_ajout) : null,
+            date: photo.date ? new Date(photo.date) : null,
           };
         });
 
@@ -152,9 +152,7 @@ export default function Photos() {
 
   const getLastAdded = () => {
     const photoDates = photos
-      .map(
-        (p) => p.date_ajout && { type: "photo", date: new Date(p.date_ajout) }
-      )
+      .map((p) => p.date && { type: "photo", date: new Date(p.date) })
       .filter(Boolean);
     const albumDates = albums
       .map((a) => a.date && { type: "album", date: new Date(a.date) })
@@ -708,12 +706,12 @@ export default function Photos() {
                   <p className="text-blue-600 font-medium">
                     {currentPhotoIndex + 1} / {filteredPhotos.length}
                   </p>
-                  {filteredPhotos[currentPhotoIndex].date_ajout && (
+                  {filteredPhotos[currentPhotoIndex].date && (
                     <p className="text-blue-300">
                       Ajoutée le{" "}
                       {filteredPhotos[
                         currentPhotoIndex
-                      ].date_ajout.toLocaleDateString("fr-FR", {
+                      ].date.toLocaleDateString("fr-FR", {
                         day: "numeric",
                         month: "long",
                         year: "numeric",

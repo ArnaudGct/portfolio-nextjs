@@ -5,10 +5,13 @@ import Tag from "./../../src/components/Tag";
 import TagAvailable from "./../../src/components/TagAvailable";
 import MediaCard from "./../../src/components/MediaCard";
 import TagUtilities from "./../../src/components/TagUtilities";
+import SpotifyMediaCard from "./../../src/components/SpotifyMediaCard";
+import LetterboxdMediaCard from "./../../src/components/LetterboxdMediaCard";
+import Link from "next/link";
 
 export default function APropos() {
   return (
-    <main className="min-h-[calc(100vh-450px)]">
+    <main className="">
       <div className="mt-24 mb-20">
         <div className="max-w-[1440px] mx-auto w-[90%]">
           {/* Conteneur principal - change l'ordre en responsive */}
@@ -87,12 +90,22 @@ export default function APropos() {
             <div className="order-3 lg:order-3 lg:col-start-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* MAP */}
-                <div className="relative overflow-hidden w-full h-52 rounded-lg border border-blue-300">
-                  <img
-                    src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
-                    alt="Map"
-                    className="object-cover object-center w-full h-full rounded-lg"
-                  />
+                <Link
+                  href="https://maps.apple.com/place?z=15&auid=6034166720712255280&address=17000+La+Rochelle%2C+France&coordinate=46.1622489%2C-1.1550672&name=La+Rochelle&lsp=6489"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative overflow-hidden w-full h-52 rounded-lg border border-blue-300 transition-shadow duration-300 ease-in-out hover:shadow-lg"
+                >
+                  <div className="relative w-full h-full">
+                    <Image
+                      src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
+                      alt="Carte de La Rochelle"
+                      fill
+                      sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 33vw"
+                      className="object-cover object-center rounded-lg transition-transform duration-500 ease-in-out group-hover:scale-105"
+                      priority
+                    />
+                  </div>
                   <div className="absolute bottom-2 left-4 flex flex-col items-start z-10">
                     <p className="text-sm text-blue-300 font-rethink-sans">
                       J'habite à
@@ -102,43 +115,11 @@ export default function APropos() {
                     </p>
                   </div>
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#4e4aec]/0 to-[#4e4aec] z-5"></div>
-                </div>
-
+                </Link>
                 {/* MediaCards */}
                 <div className="flex flex-col gap-4">
-                  {/* MediaCard 1 */}
-                  <div className="h-24">
-                    <MediaCard
-                      imageSrc="/apocalypse.webp"
-                      imageAlt="Pochette d'album d'Apocalypse"
-                      imageType="cover"
-                      labelText="Son du moment"
-                      titleText="Nanani Nanana"
-                      bgColor="#a52a1a"
-                      borderColor="#ff6a6a"
-                      labelColor="#ffa2a2"
-                      titleColor="#FFEDED"
-                      logoSrc="/spotify.webp"
-                      logoAlt="Logo de Spotify"
-                    />
-                  </div>
-
-                  {/* MediaCard 2 */}
-                  <div className="h-24">
-                    <MediaCard
-                      imageSrc="/interstellar.webp"
-                      imageAlt="Affiche d'Interstellar"
-                      imageType="poster"
-                      labelText="Film préféré"
-                      titleText="Interstellar"
-                      bgColor="#1a66a5"
-                      borderColor="#5e9eda"
-                      labelColor="#a2dbff"
-                      titleColor="#edf3ff"
-                      logoSrc="/letterboxd.webp"
-                      logoAlt="Letterboxd"
-                    />
-                  </div>
+                  <SpotifyMediaCard />
+                  <LetterboxdMediaCard />
                 </div>
               </div>
             </div>
@@ -164,6 +145,8 @@ export default function APropos() {
                   borderColor="#a2b5ff"
                   textColor="#4e4aec"
                   rounded={false}
+                  link="https://www.adobe.com/fr/products/premiere.html"
+                  newTab={true}
                 />
 
                 <TagUtilities
@@ -175,6 +158,8 @@ export default function APropos() {
                   borderColor="#a2b5ff"
                   textColor="#4e4aec"
                   rounded={false}
+                  link="https://www.adobe.com/fr/products/aftereffects.html"
+                  newTab={true}
                 />
 
                 <TagUtilities
@@ -186,6 +171,8 @@ export default function APropos() {
                   borderColor="#ffe6a2"
                   textColor="#ecae4a"
                   rounded={true}
+                  link="https://artlist.io/"
+                  newTab={true}
                 />
 
                 <TagUtilities
@@ -197,6 +184,8 @@ export default function APropos() {
                   borderColor="#ffa5a2"
                   textColor="#ec4a4a"
                   rounded={false}
+                  link="https://www.figma.com/"
+                  newTab={true}
                 />
 
                 <TagUtilities
@@ -208,6 +197,8 @@ export default function APropos() {
                   borderColor="#66a9f9"
                   textColor="#3186ff"
                   rounded={true}
+                  link="https://eagle.cool/"
+                  newTab={true}
                 />
 
                 <TagUtilities
@@ -219,6 +210,8 @@ export default function APropos() {
                   borderColor="#cbd5e1"
                   textColor="#475569"
                   rounded={false}
+                  link="https://www.notion.so/"
+                  newTab={true}
                 />
 
                 <TagUtilities
@@ -230,6 +223,8 @@ export default function APropos() {
                   borderColor="#ffa2d2"
                   textColor="#ec4abb"
                   rounded={false}
+                  link="https://toggl.com/track/"
+                  newTab={true}
                 />
               </div>
             </div>
