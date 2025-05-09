@@ -1,4 +1,5 @@
 import DailymotionPlayer from "./../../components/DaylimotionPlayer";
+import VimeoPlayer from "./../../components/VimeoPlayer";
 import Tag from "../../components/Tag";
 import TagAvailable from "../../components/TagAvailable";
 
@@ -17,7 +18,9 @@ export default function Hero() {
       <div className="absolute left-0 top-[64px] w-full h-[calc(100vh-64px)] z-10">
         <DailymotionPlayer />
       </div>
-      {/* "Faux trou" = texte + copie de la grille + fond blanc */}
+      {/* <div className="absolute left-0 top-[64px] w-full h-[calc(100vh-64px)] z-10">
+        <VimeoPlayer />
+      </div> */}
       <div
         className="w-full sm:w-auto rounded-b-lg sm:rounded-br-lg sm:rounded-bl-none absolute top-[64px] left-0 bg-white z-11 px-6 sm:px-10 pb-4 pt-2 "
         style={{
