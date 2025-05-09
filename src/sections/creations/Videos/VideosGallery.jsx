@@ -72,11 +72,9 @@ export default function VideosGallery({ video }) {
               </ButtonSecondary>
             </div>
           </div>
-          <div>
+          <div className="text-lg text-blue-900">
             {video.description && (
-              <p className="text-lg text-blue-900">
-                <ReactMarkdown>{video.description}</ReactMarkdown>
-              </p>
+              <ReactMarkdown>{video.description}</ReactMarkdown>
             )}
           </div>
         </div>

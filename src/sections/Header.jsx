@@ -103,11 +103,11 @@ export default function Header() {
         }}
         animate={{
           backgroundColor: isScrolled
-            ? "rgba(255, 255, 255, 0.9)"
-            : "rgba(255, 255, 255, 0)",
+            ? "var(--header-bg-scrolled)"
+            : "var(--header-bg-transparent)",
           boxShadow: isScrolled
-            ? "0px 4px 8px rgba(0, 0, 0, 0.1)"
-            : "0px 0px 0px rgba(0, 0, 0, 0)",
+            ? "0px 4px 8px var(--header-shadow-color)"
+            : "0px 0px 0px var(--header-shadow-color-transparent)",
           backdropFilter: isScrolled ? "blur(8px)" : "blur(0px)",
           WebkitBackdropFilter: isScrolled ? "blur(8px)" : "blur(0px)", // Safari support
         }}
@@ -337,12 +337,12 @@ export default function Header() {
           style={{
             backgroundColor:
               isMenuOpen || isScrolled
-                ? "rgba(255, 255, 255, 0.9)"
-                : "rgba(255, 255, 255, 0)",
+                ? "var(--header-bg-scrolled)"
+                : "var(--header-bg-transparent)",
             boxShadow:
               isMenuOpen || isScrolled
-                ? "0 2px 8px rgba(223, 231, 255, 0.4)"
-                : "none",
+                ? "0px 4px 8px var(--header-shadow-color)"
+                : "0px 0px 0px var(--header-shadow-color-transparent)",
             transition: "background-color 0.3s ease, box-shadow 0.3s ease",
             WebkitBackdropFilter:
               isMenuOpen || isScrolled ? "blur(8px)" : "blur(0px", // Safari support

@@ -11,9 +11,9 @@ export default function TagUtilities({
   description = "",
   link = null,
   newTab = true,
-  bgColor = "#edf3ff",
-  borderColor = "#a2b5ff",
-  textColor = "#4e4aec",
+  bgColor = "",
+  borderColor = "",
+  textColor = "",
   rounded = true,
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -38,8 +38,7 @@ export default function TagUtilities({
 
       {/* Nom du logiciel */}
       <p
-        className="font-medium whitespace-nowrap overflow-hidden text-ellipsis"
-        style={{ color: textColor }}
+        className={`font-medium whitespace-nowrap overflow-hidden text-ellipsis ${textColor}`}
       >
         {label}
       </p>
@@ -48,7 +47,7 @@ export default function TagUtilities({
       <AnimatePresence>
         {description && showTooltip && (
           <motion.div
-            className="absolute z-10 w-max max-w-xs left-1/2 bottom-full mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded shadow-lg"
+            className="absolute z-10 w-max max-w-xs left-1/2 bottom-full mb-2 px-3 py-2 bg-slate-800 dark:bg-slate-700 text-white text-sm rounded shadow-lg"
             initial={{ opacity: 0, y: 10, scale: 0.9, translateX: "-50%" }}
             animate={{
               opacity: 1,
@@ -73,7 +72,7 @@ export default function TagUtilities({
             {description}
             {/* Flèche */}
             <motion.div
-              className="absolute left-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800"
+              className="absolute left-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-slate-800 dark:border-t-slate-700"
               style={{ marginLeft: "-4px" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -92,11 +91,7 @@ export default function TagUtilities({
         href={link}
         target={newTab ? "_blank" : "_self"}
         rel={newTab ? "noopener noreferrer" : ""}
-        className="relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full transition-transform hover:scale-105"
-        style={{
-          backgroundColor: bgColor,
-          borderColor: borderColor,
-        }}
+        className={`relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full transition-transform hover:scale-105 ${bgColor} ${borderColor}`}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         onFocus={() => setShowTooltip(true)}
@@ -109,11 +104,7 @@ export default function TagUtilities({
 
   return (
     <div
-      className="relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full cursor-pointer"
-      style={{
-        backgroundColor: bgColor,
-        borderColor: borderColor,
-      }}
+      className={`relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full cursor-pointer ${bgColor} ${borderColor}`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
       onFocus={() => setShowTooltip(true)}

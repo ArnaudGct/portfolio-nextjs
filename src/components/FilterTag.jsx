@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { motion } from "framer-motion"; // Corrigé le chemin ici aussi !
+import { motion } from "framer-motion";
 
 export default function FilterTag({
   label,
@@ -9,24 +9,24 @@ export default function FilterTag({
 }) {
   const colorClasses = {
     green: {
-      bg: "bg-green-100",
-      text: "text-green-800",
-      hover: "hover:text-green-600",
+      bg: "bg-green-100 dark:bg-green-900/30",
+      text: "text-green-800 dark:text-green-300",
+      hover: "hover:text-green-600 dark:hover:text-green-200",
     },
     yellow: {
-      bg: "bg-yellow-100",
-      text: "text-yellow-800",
-      hover: "hover:text-yellow-600",
+      bg: "bg-yellow-100 dark:bg-yellow-900/30",
+      text: "text-yellow-800 dark:text-yellow-300",
+      hover: "hover:text-yellow-600 dark:hover:text-yellow-200",
     },
     red: {
-      bg: "bg-red-100",
-      text: "text-red-800",
-      hover: "hover:bg-red-200",
+      bg: "bg-red-100 dark:bg-red-900/30",
+      text: "text-red-800 dark:text-red-300",
+      hover: "hover:bg-red-200 dark:hover:bg-red-800/50",
     },
     gray: {
-      bg: "bg-gray-100",
-      text: "text-gray-800",
-      hover: "hover:bg-gray-200",
+      bg: "bg-gray-100 dark:bg-gray-800",
+      text: "text-gray-800 dark:text-gray-300",
+      hover: "hover:bg-gray-200 dark:hover:bg-gray-700",
     },
   };
 
@@ -34,7 +34,7 @@ export default function FilterTag({
 
   return (
     <motion.div
-      layout // <--- Ajout magique ici
+      layout
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}

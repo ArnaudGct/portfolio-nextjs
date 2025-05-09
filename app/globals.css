@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --color-blue-50: #edf3ff;
   --color-blue-100: #dfe7ff;
@@ -23,6 +25,12 @@
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
   --color-slate-950: #020617;
+
+  --color-white: #ffffff;
+  --header-bg-scrolled: rgba(255, 255, 255, 0.9);
+  --header-bg-transparent: rgba(255, 255, 255, 0);
+  --header-shadow-color: rgba(0, 0, 0, 0.1);
+  --header-shadow-color-transparent: rgba(0, 0, 0, 0);
 }
 
 @theme inline {
@@ -33,28 +41,35 @@
 }
 
 .dark {
-  --color-blue-50: #333;
-  --color-blue-100: #dfe7ff;
-  --color-blue-200: #c5d3ff;
-  --color-blue-300: #1a194d;
-  --color-blue-400: #7d8cfc;
-  --color-blue-500: #5e66f6;
-  --color-blue-600: #4e4aec;
-  --color-blue-700: #3933cf;
-  --color-blue-800: #2f2ca7;
-  --color-blue-900: #2b2b84;
-  --color-blue-950: #1a194d;
-  --color-slate-50: #f8fafc;
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cbd5e1;
-  --color-slate-400: #94a3b8;
+  --color-blue-50: #1a194d;
+  --color-blue-100: #222264;
+  --color-blue-200: #2b2b84;
+  --color-blue-300: #2f2ca7;
+  --color-blue-400: #3933cf;
+  --color-blue-500: #4e4aec;
+  --color-blue-600: #5e66f6;
+  --color-blue-700: #7d8cfc;
+  --color-blue-800: #9faaff;
+  --color-blue-900: #c5d3ff;
+  --color-blue-950: #dfe7ff;
+  /* Slate - version sombre */
+  --color-slate-50: #020617;
+  --color-slate-100: #0f172a;
+  --color-slate-200: #1e293b;
+  --color-slate-300: #334155;
+  --color-slate-400: #475569;
   --color-slate-500: #64748b;
-  --color-slate-600: #475569;
-  --color-slate-700: #334155;
-  --color-slate-800: #1e293b;
-  --color-slate-900: #0f172a;
-  --color-slate-950: #020617;
+  --color-slate-600: #94a3b8;
+  --color-slate-700: #cbd5e1;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #f1f5f9;
+  --color-slate-950: #f8fafc;
+
+  --color-white: #111827;
+  --header-bg-scrolled: rgba(17, 24, 39, 0.9);
+  --header-bg-transparent: rgba(17, 24, 39, 0);
+  --header-shadow-color: rgba(0, 0, 0, 0.3);
+  --header-shadow-color-transparent: rgba(0, 0, 0, 0);
 }
 
 body {

@@ -7,7 +7,7 @@ import Contact from "./../src/sections/accueil/Contact";
 
 export default function Home() {
   return (
-    <main>
+    <main className="bg-white">
       <Hero />
       <Presentation />
       <LastVideos />

@@ -1,10 +1,8 @@
 module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "./app/**/*.{js,jsx,ts,tsx}"],
   darkMode: "class",
   theme: {
     extend: {
-      screens: {
-        xs: "425px", // 👉 nouveau breakpoint personnalisé
-      },
       colors: {
         blue: {
           50: "var(--color-blue-50)",
@@ -32,6 +30,18 @@ module.exports = {
           900: "var(--color-slate-900)",
           950: "var(--color-slate-950)",
         },
+        white: "var(--color-white)",
+      },
+      fontFamily: {
+        outfit: ["var(--font-outfit)"],
+        "rethink-sans": ["var(--font-rethink-sans)"],
+        "covered-by-your-grace": ["var(--font-covered-by-your-grace)"],
+      },
+      screens: {
+        xs: "var(--breakpoint-xs)",
+      },
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
       },
     },
   },
