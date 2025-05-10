@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export default function FilterTag({
   label,
-  color = "gray",
+  color = "slate",
   onRemove,
   isClearAll = false,
 }) {
@@ -23,14 +23,14 @@ export default function FilterTag({
       text: "text-red-800 dark:text-red-300",
       hover: "hover:bg-red-200 dark:hover:bg-red-800/50",
     },
-    gray: {
-      bg: "bg-gray-100 dark:bg-gray-800",
-      text: "text-gray-800 dark:text-gray-300",
-      hover: "hover:bg-gray-200 dark:hover:bg-gray-700",
+    slate: {
+      bg: "bg-slate-100 dark:bg-slate-800",
+      text: "text-slate-800 dark:text-slate-300",
+      hover: "hover:bg-slate-200 dark:hover:bg-slate-700",
     },
   };
 
-  const styles = colorClasses[color] || colorClasses.gray;
+  const styles = colorClasses[color] || colorClasses.slate;
 
   return (
     <motion.div

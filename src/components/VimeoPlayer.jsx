@@ -286,7 +286,7 @@ export default function VimeoPlayer() {
             <h3 className="text-lg font-bold text-red-600 mb-2">
               Erreur de chargement
             </h3>
-            <p className="text-gray-700 mb-4">
+            <p className="text-slate-700 mb-4">
               Le lecteur vidéo n'a pas pu être chargé correctement.
             </p>
             <button

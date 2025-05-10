@@ -271,7 +271,7 @@ export default function AlbumsGallery({ album }) {
                 </motion.div>
               </motion.div>
 
-              <div className="p-4 bg-white border-t border-gray-200">
+              <div className="p-4 bg-white border-t border-slate-200">
                 {/* <div className="flex flex-wrap gap-2 mt-2">
                   {tags.map((tag, tagIndex) => (
                     <motion.div
@@ -288,7 +288,7 @@ export default function AlbumsGallery({ album }) {
                   ))}
                 </div> */}
 
-                <div className="justify-between items-center mt-4 text-sm text-gray-500 md:flex hidden">
+                <div className="justify-between items-center mt-4 text-sm text-slate-500 md:flex hidden">
                   <p className="text-blue-600 font-medium">
                     {currentPhotoIndex + 1} / {photos.length}
                   </p>

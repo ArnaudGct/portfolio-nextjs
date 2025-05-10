@@ -47,7 +47,7 @@ export default async function AutreDetails({ params }) {
   if (!autre) {
     return (
       <div className="flex flex-col items-center justify-center h-96">
-        <h2 className="text-2xl font-semibold text-gray-500">
+        <h2 className="text-2xl font-semibold text-slate-500">
           Vidéo non trouvé
         </h2>
         <Link
