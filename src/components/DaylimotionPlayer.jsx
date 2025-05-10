@@ -180,10 +180,10 @@ export default function DailymotionPlayer() {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       {/* Background thumbnail - reste visible jusqu'à ce que le lecteur soit complètement prêt */}
       <div
-        className="absolute inset-0 z-1"
+        className="absolute inset-0 z-1 overflow-hidden"
         style={{
           backgroundImage: `url(${thumbnailUrl})`,
           backgroundSize: "cover",
