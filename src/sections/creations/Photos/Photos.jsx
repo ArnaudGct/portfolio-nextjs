@@ -674,7 +674,7 @@ export default function Photos() {
               </motion.div>
 
               <div
-                className="p-4 bg-white border-t border-gray-200"
+                className="p-4 bg-white border-t border-slate-200"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.3 }}
@@ -698,7 +698,7 @@ export default function Photos() {
                 </div>
 
                 <div
-                  className="justify-between items-center mt-4 text-sm text-gray-500 md:flex hidden"
+                  className="justify-between items-center mt-4 text-sm text-slate-500 md:flex hidden"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.3 }}

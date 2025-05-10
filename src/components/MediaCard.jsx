@@ -41,7 +41,9 @@ export default function MediaCard({
         border: `1px solid ${borderColor}`,
       }}
     >
-      <div className="w-full flex items-center gap-4">
+      {/* Structure modifiée pour avoir le logo centré verticalement */}
+      <div className="flex items-center gap-4 min-w-0 w-full">
+        {/* Bloc de gauche: image */}
         <div
           className={`relative ${containerDimensions} overflow-hidden rounded-lg flex-shrink-0`}
         >
@@ -61,6 +63,8 @@ export default function MediaCard({
             />
           )}
         </div>
+
+        {/* Bloc central: contenu textuel avec flex-1 pour prendre l'espace disponible */}
         <div className="min-w-0 flex-1">
           <p
             className="text-sm font-rethink-sans"
@@ -68,33 +72,32 @@ export default function MediaCard({
           >
             {labelText}
           </p>
-          <div className="flex flex-wrap gap-1 items-center">
+          <div className="min-w-0">
             <p
               className="text-lg font-rethink-sans font-bold truncate"
               style={{ color: titleColor }}
             >
               {titleText}
+              {subtitleText && (
+                <span className="ml-1 text-sm">- {subtitleText}</span>
+              )}
             </p>
-            {subtitleText && (
-              <p
-                className="text-sm font-rethink-sans"
-                style={{ color: titleColor }}
-              >
-                - {subtitleText}
-              </p>
-            )}
           </div>
         </div>
+
+        {/* Bloc de droite: logo, centré verticalement */}
+        {logoSrc && (
+          <div className="flex items-center self-stretch pl-2">
+            <Image
+              src={logoSrc}
+              alt={logoAlt || "Logo"}
+              width={16}
+              height={16}
+              className="flex-shrink-0"
+            />
+          </div>
+        )}
       </div>
-      {logoSrc && (
-        <Image
-          src={logoSrc}
-          alt={logoAlt || "Logo"}
-          width={16}
-          height={16}
-          className="flex-shrink-0 ml-2"
-        />
-      )}
     </div>
   );
 

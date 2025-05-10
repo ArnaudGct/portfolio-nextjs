@@ -114,7 +114,7 @@ export default function JournalPersonnel() {
   };
 
   return (
-    <main className="bg-white dark:bg-gray-900">
+    <main className="bg-white dark:bg-slate-900">
       <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-20 pb-20">
         <Breadcrumb
           pages={[
@@ -234,7 +234,7 @@ export default function JournalPersonnel() {
           </div>
         </div>
       </div>
-      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 dark:from-gray-900/0 dark:to-gray-900/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 dark:from-slate-900/0 dark:to-slate-900/75 pointer-events-none"></div>
     </main>
   );
 }

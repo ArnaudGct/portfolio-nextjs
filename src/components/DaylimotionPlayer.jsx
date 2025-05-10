@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Toggl from "./Toggl";
-import { Play, Pause, Loader2 } from "lucide-react";
+import { Play, Pause, Loader2, RefreshCw } from "lucide-react";
 
 export default function DailymotionPlayer() {
   const playerRef = useRef(null);
@@ -11,62 +11,92 @@ export default function DailymotionPlayer() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
+  const [loadTimeout, setLoadTimeout] = useState(false);
   const scriptLoadAttempts = useRef(0);
+  const playerInitAttempts = useRef(0);
+  const timeoutRef = useRef(null);
   const videoId = "k64y7uhzsITk5IzREtu";
   const thumbnailUrl = `https://www.dailymotion.com/thumbnail/video/${videoId}`;
 
   // Gérer le script Dailymotion avec une approche plus robuste
   useEffect(() => {
     let isMounted = true;
-    const maxAttempts = 3;
+    const maxScriptAttempts = 3;
+    const maxPlayerAttempts = 3;
 
+    // Fonction pour nettoyer les timeouts
+    const clearTimeouts = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+
+    // Fonction pour charger le script Dailymotion
     function loadDailymotionScript() {
       return new Promise((resolve, reject) => {
         if (typeof window === "undefined") return reject("Window not defined");
 
         // Vérifier si le script est déjà chargé
-        if (typeof window.dailymotion !== "undefined") {
+        if (window.dailymotion) {
+          console.log("Script Dailymotion déjà chargé");
           return resolve(window.dailymotion);
         }
 
+        console.log("Chargement du script Dailymotion...");
         const script = document.createElement("script");
         script.id = "dailymotionScript";
         script.src = "https://geo.dailymotion.com/libs/player/xkmhv.js";
         script.async = true;
 
-        script.onload = () => resolve(window.dailymotion);
-        script.onerror = (e) => reject(e);
+        // Définir un timeout pour le chargement du script
+        const scriptTimeout = setTimeout(() => {
+          reject(new Error("Timeout lors du chargement du script Dailymotion"));
+        }, 10000); // 10 secondes de timeout
+
+        script.onload = () => {
+          console.log("Script Dailymotion chargé avec succès");
+          clearTimeout(scriptTimeout);
+          // Attendre un court instant pour s'assurer que l'API est bien initialisée
+          setTimeout(() => resolve(window.dailymotion), 200);
+        };
+
+        script.onerror = (e) => {
+          clearTimeout(scriptTimeout);
+          reject(new Error("Erreur de chargement du script Dailymotion"));
+        };
 
         document.body.appendChild(script);
       });
     }
 
-    async function initializePlayer() {
+    // Fonction pour créer le lecteur
+    async function createPlayer() {
+      if (!isMounted) return;
+      if (!window.dailymotion) {
+        console.error("L'API Dailymotion n'est pas disponible");
+        setLoadError(true);
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        setIsLoading(true);
-        setLoadError(false);
-        setPlayerReady(false);
+        console.log("Création du lecteur...");
+        playerInitAttempts.current += 1;
 
-        if (scriptLoadAttempts.current >= maxAttempts) {
-          setLoadError(true);
-          setIsLoading(false);
-          return;
-        }
-
-        scriptLoadAttempts.current += 1;
-
-        const dailymotionAPI = await loadDailymotionScript();
-
-        // Attendre que le conteneur DOM soit disponible
+        // S'assurer que le DOM est prêt
         if (!playerRef.current) {
-          setTimeout(initializePlayer, 200);
+          console.log(
+            "Conteneur DOM non disponible, nouvelle tentative dans 300ms"
+          );
+          timeoutRef.current = setTimeout(createPlayer, 300);
           return;
         }
 
-        const playerInstance = await dailymotionAPI.createPlayer(
+        const playerInstance = await window.dailymotion.createPlayer(
           "my-dailymotion-player",
           {
-            video: "k64y7uhzsITk5IzREtu",
+            video: videoId,
             params: {
               loop: "true",
               scaleMode: "fill",
@@ -75,38 +105,74 @@ export default function DailymotionPlayer() {
               "ui-logo": false,
               controls: false,
               autoplay: true,
+              muted: true,
+              // Précharger la vidéo
+              startup_quality: "240",
+              "queue-enable": false,
             },
           }
         );
 
         if (isMounted) {
+          console.log("Lecteur créé avec succès");
           setPlayer(playerInstance);
 
-          // Attendre un peu plus longtemps avant de masquer le loader
+          // Définir un timeout pour la préparation du lecteur
+          const readyTimeout = setTimeout(() => {
+            if (isMounted && !playerReady) {
+              console.log("Timeout de préparation du lecteur atteint");
+              setLoadTimeout(true);
+              setIsLoading(false);
+            }
+          }, 8000); // 8 secondes maximum pour le chargement
+
           playerInstance.on("playback_ready", () => {
             if (isMounted) {
-              // On attend que la vidéo soit vraiment prête à être affichée
-              setTimeout(() => {
+              console.log("Lecteur prêt à lire");
+              clearTimeout(readyTimeout);
+
+              // Attendre que la vidéo soit vraiment prête
+              timeoutRef.current = setTimeout(() => {
                 setIsLoading(false);
                 setPlayerReady(true);
+                setLoadTimeout(false);
               }, 500);
             }
           });
 
           playerInstance.on("playing", () => {
-            if (isMounted) setIsPlaying(true);
+            if (isMounted) {
+              console.log("Lecture démarrée");
+              setIsPlaying(true);
+              setLoadTimeout(false);
+              setPlayerReady(true);
+              setIsLoading(false);
+            }
           });
 
           playerInstance.on("pause", () => {
             if (isMounted) setIsPlaying(false);
           });
 
+          playerInstance.on("error", (error) => {
+            console.error("Erreur du lecteur Dailymotion:", error);
+            if (isMounted && playerInitAttempts.current < maxPlayerAttempts) {
+              // Réessayer de créer le lecteur
+              timeoutRef.current = setTimeout(createPlayer, 1500);
+            } else {
+              setLoadError(true);
+              setIsLoading(false);
+            }
+          });
+
           // Gérer le défilement
           const handleScroll = () => {
-            if (window.scrollY <= 10) {
-              playerInstance.play();
-            } else {
-              playerInstance.pause();
+            if (playerInstance && typeof playerInstance.play === "function") {
+              if (window.scrollY <= 10) {
+                playerInstance.play();
+              } else {
+                playerInstance.pause();
+              }
             }
           };
 
@@ -114,12 +180,53 @@ export default function DailymotionPlayer() {
           return () => window.removeEventListener("scroll", handleScroll);
         }
       } catch (error) {
-        console.error(
-          "Erreur lors du chargement du lecteur Dailymotion:",
-          error
+        console.error("Erreur lors de la création du lecteur:", error);
+        if (isMounted && playerInitAttempts.current < maxPlayerAttempts) {
+          timeoutRef.current = setTimeout(createPlayer, 1500);
+        } else {
+          setLoadError(true);
+          setIsLoading(false);
+        }
+      }
+    }
+
+    // Fonction principale d'initialisation
+    async function initializePlayer() {
+      if (!isMounted) return;
+
+      try {
+        setIsLoading(true);
+        setLoadError(false);
+        setPlayerReady(false);
+        setLoadTimeout(false);
+
+        if (scriptLoadAttempts.current >= maxScriptAttempts) {
+          console.error(
+            "Nombre maximal de tentatives de chargement du script atteint"
+          );
+          setLoadError(true);
+          setIsLoading(false);
+          return;
+        }
+
+        scriptLoadAttempts.current += 1;
+        console.log(
+          `Tentative de chargement du script ${scriptLoadAttempts.current}/${maxScriptAttempts}`
         );
-        if (isMounted) {
-          setTimeout(initializePlayer, 1500);
+
+        // Charger le script Dailymotion
+        await loadDailymotionScript();
+
+        // Créer le lecteur
+        createPlayer();
+      } catch (error) {
+        console.error("Erreur lors de l'initialisation:", error);
+        if (isMounted && scriptLoadAttempts.current < maxScriptAttempts) {
+          // Attendre un peu plus avant de réessayer le chargement du script
+          timeoutRef.current = setTimeout(initializePlayer, 2000);
+        } else {
+          setLoadError(true);
+          setIsLoading(false);
         }
       }
     }
@@ -129,54 +236,79 @@ export default function DailymotionPlayer() {
 
     return () => {
       isMounted = false;
+      clearTimeouts();
+
+      // Nettoyer le lecteur s'il existe
+      if (player && typeof player.destroy === "function") {
+        try {
+          player.destroy();
+        } catch (e) {
+          console.error("Erreur lors de la destruction du lecteur:", e);
+        }
+      }
     };
   }, []);
 
   // Toggle Mute
   const toggleMute = () => {
-    if (player) {
-      if (muted) {
-        player.setMute(false);
-      } else {
-        player.setMute(true);
+    if (player && typeof player.setMute === "function") {
+      try {
+        player.setMute(!muted);
+        setMuted(!muted);
+      } catch (e) {
+        console.error("Erreur lors du changement de l'état muet:", e);
       }
-      setMuted(!muted);
     }
   };
 
   // Fonction pour démarrer ou mettre en pause la vidéo
   const togglePlay = () => {
-    if (player) {
-      if (isPlaying) {
+    if (!player) return;
+
+    try {
+      if (isPlaying && typeof player.pause === "function") {
         player.pause();
-      } else {
+      } else if (!isPlaying && typeof player.play === "function") {
         player.play();
       }
+    } catch (e) {
+      console.error("Erreur lors du changement de l'état de lecture:", e);
     }
   };
 
   // Fonction pour retenter le chargement si erreur
   const retryLoading = () => {
     scriptLoadAttempts.current = 0;
+    playerInitAttempts.current = 0;
     setLoadError(false);
+    setLoadTimeout(false);
 
     // Supprimer l'ancien script pour un chargement propre
     const existingScript = document.getElementById("dailymotionScript");
     if (existingScript) existingScript.remove();
 
+    // Nettoyer les références globales
+    if (typeof window !== "undefined") {
+      if (window.dailymotion) {
+        window.dailymotion = undefined;
+      }
+      if (window.dmAsyncInit) {
+        window.dmAsyncInit = undefined;
+      }
+    }
+
     // Réinitialiser le lecteur
     setPlayer(null);
 
-    // Déclencher un nouveau chargement
-    const timer = setTimeout(() => {
-      if (typeof window !== "undefined" && window.dailymotion) {
-        createPlayer();
-      } else {
-        window.location.reload();
-      }
-    }, 500);
+    // Si le div existe encore, le vider
+    if (playerRef.current) {
+      playerRef.current.innerHTML = "";
+    }
 
-    return () => clearTimeout(timer);
+    // Déclencher un nouveau chargement avec un court délai
+    setTimeout(() => {
+      window.location.reload(); // Solution la plus fiable pour recharger complètement
+    }, 300);
   };
 
   return (
@@ -200,6 +332,15 @@ export default function DailymotionPlayer() {
           <div className="flex flex-col items-center gap-4">
             <Loader2 size={40} className="text-white animate-spin" />
             <p className="text-white font-medium">Chargement de la vidéo...</p>
+            {loadTimeout && (
+              <button
+                onClick={retryLoading}
+                className="mt-2 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <RefreshCw size={16} />
+                <span>Chargement lent, cliquez pour recharger</span>
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -211,14 +352,15 @@ export default function DailymotionPlayer() {
             <h3 className="text-lg font-bold text-red-600 mb-2">
               Erreur de chargement
             </h3>
-            <p className="text-gray-700 mb-4">
+            <p className="text-slate-700 mb-4">
               Le lecteur vidéo n'a pas pu être chargé correctement.
             </p>
             <button
               onClick={retryLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto"
             >
-              Réessayer
+              <RefreshCw size={16} />
+              <span>Réessayer</span>
             </button>
           </div>
         </div>
@@ -241,7 +383,7 @@ export default function DailymotionPlayer() {
             className="text-slate-300 text-sm font-normal font-rethink-sans"
             onClick={togglePlay}
           >
-            {isPlaying ? "Lecture" : "Pause"}
+            {isPlaying ? "Pause" : "Lecture"}
           </p>
         </div>
         <div className="flex items-center gap-1 cursor-pointer">
