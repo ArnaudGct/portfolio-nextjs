@@ -114,7 +114,7 @@ export default function JournalPersonnel() {
   };
 
   return (
-    <main className="bg-white dark:bg-slate-900">
+    <main className="bg-white">
       <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-20 pb-20">
         <Breadcrumb
           pages={[
@@ -125,10 +125,10 @@ export default function JournalPersonnel() {
 
         <div className="flex flex-col gap-8">
           <div>
-            <p className="text-3xl font-extrabold font-rethink-sans text-blue-600 dark:text-blue-400">
+            <p className="text-3xl font-extrabold font-rethink-sans text-blue-600">
               Mon journal personnel
             </p>
-            <p className="text-lg text-blue-900 dark:text-blue-100">
+            <p className="text-lg text-blue-900">
               De YouTube au freelance, en passant par la création d'applications
               et des concours de court-métrage, je tente toujours à repousser
               mes limites.
@@ -136,7 +136,7 @@ export default function JournalPersonnel() {
           </div>
 
           <div className="relative">
-            <div className="border-l-1 border-blue-300 dark:border-blue-700 absolute left-2 top-0 bottom-0"></div>
+            <div className="border-l-1 border-blue-300 absolute left-2 top-0 bottom-0"></div>
 
             {loading ? (
               // Afficher 3 skeletons pendant le chargement
@@ -146,7 +146,7 @@ export default function JournalPersonnel() {
                 <SkeletonExperience />
               </>
             ) : experiences.length === 0 ? (
-              <p className="ml-10 text-blue-900 dark:text-blue-100">
+              <p className="ml-10 text-blue-900">
                 Aucune expérience à afficher pour le moment.
               </p>
             ) : (
@@ -157,20 +157,20 @@ export default function JournalPersonnel() {
 
                 return (
                   <div key={id} className="relative flex items-center mb-8">
-                    <div className="absolute left-0 top-6 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+                    <div className="absolute left-0 top-6 w-4 h-4 bg-blue-600 rounded-full"></div>
 
                     <div className="ml-10 flex flex-col gap-4">
                       <div className="flex flex-col">
-                        <p className="text-blue-600 dark:text-blue-400 font-rethink-sans font-extrabold text-xl">
+                        <p className="text-blue-600 font-rethink-sans font-extrabold text-xl">
                           <FormattedDate date={experience.date} />
                         </p>
-                        <p className="text-blue-500 dark:text-blue-300 text-lg">
+                        <p className="text-blue-500 text-lg">
                           {experience.titre}
                         </p>
                       </div>
 
                       <div className="flex flex-col items-start justify-center lg:flex-row lg:justify-between gap-6">
-                        <div className="text-blue-900 dark:text-blue-100 flex flex-col gap-4 w-full">
+                        <div className="text-blue-900 flex flex-col gap-4 w-full">
                           <ReactMarkdown>
                             {experience.description}
                           </ReactMarkdown>
@@ -200,7 +200,7 @@ export default function JournalPersonnel() {
                                   data-id={id}
                                   data-type="video"
                                   ref={(el) => (videoRefs.current[id] = el)}
-                                  className="w-full h-[300px] bg-blue-100 dark:bg-blue-900/30 rounded-lg animate-pulse"
+                                  className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse"
                                 />
                               )
                             ) : (
@@ -219,7 +219,7 @@ export default function JournalPersonnel() {
                                     className="w-full object-cover rounded-lg aspect-video transition-opacity duration-500 opacity-100"
                                   />
                                 ) : (
-                                  <div className="w-full h-[300px] bg-blue-100 dark:bg-blue-900/30 rounded-lg animate-pulse" />
+                                  <div className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse" />
                                 )}
                               </div>
                             )}
@@ -234,7 +234,7 @@ export default function JournalPersonnel() {
           </div>
         </div>
       </div>
-      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 dark:from-slate-900/0 dark:to-slate-900/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
     </main>
   );
 }

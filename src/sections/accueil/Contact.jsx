@@ -52,15 +52,13 @@ export default function Contact() {
     });
 
     try {
-      const response = await fetch("/api/accueil/contact", {
+      const response = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
 
       if (response.ok) {
         setFormState({
@@ -72,7 +70,8 @@ export default function Contact() {
         // Réinitialiser le formulaire
         setFormData({ firstName: "", lastName: "", email: "", message: "" });
       } else {
-        throw new Error(data.message || "Une erreur est survenue");
+        const data = await response.json();
+        throw new Error(data.error || "Une erreur est survenue");
       }
     } catch (error) {
       console.error("Erreur lors de l'envoi du formulaire:", error);
@@ -88,7 +87,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="flex flex-col gap-12 lg:flex-row items-start lg:items-center justify-center lg:justify-between w-[90%] mt-36 pb-20 mx-auto max-w-[1440px]">
+    <section className="flex flex-col gap-12 lg:flex-row items-start lg:items-center justify-center lg:justify-between w-[90%] mx-auto max-w-[1440px]">
       <div className="w-full flex flex-col gap-8 items-start justify-start">
         <div className="flex gap-4 items-center justify-start">
           <Image
@@ -213,8 +212,8 @@ export default function Contact() {
             {formState.isSubmitting
               ? "Envoi en cours..."
               : formState.isSuccess
-              ? "Message envoyé !"
-              : "Envoyer le message"}
+                ? "Message envoyé !"
+                : "Envoyer le message"}
           </ButtonMain>
 
           {formState.isError && (

@@ -72,9 +72,25 @@ export default function Footer() {
           </ul>
           <div className="flex flex-col items-start lg:items-end justify-start">
             <p className="text-blue-700 text-sm font-normal font-rethink-sans mt-4">
-              Site web designé sur <span className="font-bold">Figma</span> et
-              développé en <span className="font-bold">Next.js</span> par Arnaud
-              Graciet.
+              Site web designé sur{" "}
+              <Link
+                href="https://www.figma.com/design/dOuGAgIR48yjWsPXHWQKEy/Portfolio---Version-public?node-id=0-1&t=wD0zYEQkVPHqQpbU-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold"
+              >
+                Figma
+              </Link>{" "}
+              et développé en{" "}
+              <Link
+                href="https://github.com/ArnaudGct/portfolio-next"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold"
+              >
+                Next.js
+              </Link>{" "}
+              par Arnaud Graciet.
             </p>
             <p className="text-blue-700 text-sm font-normal font-rethink-sans">
               © 2025 Arnaud Graciet. Tous droits réservés.

@@ -23,7 +23,7 @@ export default function Videos() {
   }, []);
 
   return (
-    <section className="w-full bg-blue-50 py-16 mt-20">
+    <section className="w-full bg-blue-50 py-16">
       <div className="flex flex-col gap-10 max-w-[1440px] mx-auto w-[90%]">
         <div className="flex flex-col gap-6 w-full">
           <div className="flex flex-col">

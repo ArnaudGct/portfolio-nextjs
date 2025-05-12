@@ -31,7 +31,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="flex flex-col lg:flex-row gap-8 w-[90%] mt-20 max-w-[1440px] mx-auto">
+    <section className="flex flex-col lg:flex-row gap-8 w-[90%] max-w-[1440px] mx-auto">
       <div>
         <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
           Questions fréquentes
