@@ -6,30 +6,60 @@ import Photos from "../../src/sections/creations/Photos/Photos";
 import Autre from "../../src/sections/creations/Autre/Autre";
 
 export default function Creations() {
+  // État pour le type sélectionné avec une valeur par défaut
+  const [selectedType, setSelectedType] = useState("Vidéos");
   // Utiliser un état pour suivre si le composant est monté côté client
   const [isClient, setIsClient] = useState(false);
 
-  // État pour le type sélectionné avec une valeur par défaut
-  const [selectedType, setSelectedType] = useState("Vidéos");
-
-  // Vérifier si on est côté client au chargement du composant
+  // Effectuer la récupération depuis localStorage une seule fois au montage
   useEffect(() => {
+    // Marquer que nous sommes côté client
     setIsClient(true);
 
-    // Récupérer la valeur depuis localStorage
-    const savedType = localStorage.getItem("selectedType");
-    if (savedType) {
-      setSelectedType(savedType);
+    try {
+      // Récupérer la valeur depuis localStorage
+      const savedType = localStorage.getItem("selectedType");
+      // Ne mettre à jour l'état que si une valeur valide est trouvée
+      if (savedType && ["Vidéos", "Photos", "Autre"].includes(savedType)) {
+        setSelectedType(savedType);
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'accès au localStorage:", error);
     }
   }, []);
 
-  // Mettre à jour localStorage lorsque l'état change
-  // Exécuté uniquement après le premier rendu quand isClient est true
-  useEffect(() => {
-    if (isClient) {
-      localStorage.setItem("selectedType", selectedType);
+  // Fonction pour gérer le changement de type
+  const handleTypeChange = (newType) => {
+    setSelectedType(newType);
+
+    try {
+      // Sauvegarder dans localStorage uniquement quand l'utilisateur change activement le type
+      localStorage.setItem("selectedType", newType);
+    } catch (error) {
+      console.error("Erreur lors de l'écriture dans localStorage:", error);
     }
-  }, [selectedType, isClient]);
+  };
+
+  // Rendre un placeholder pendant le chargement côté client
+  if (!isClient) {
+    return (
+      <main className="bg-white">
+        <div className="flex flex-col gap-8 w-[90%] pt-24 pb-20 mx-auto max-w-[1440px]">
+          <div className="flex gap-4 flex-wrap">
+            {/* Placeholders pour les boutons */}
+            {["Vidéos", "Photos", "Autre"].map((type) => (
+              <div
+                key={type}
+                className="h-10 w-28 bg-blue-100/40 rounded-full animate-pulse"
+              ></div>
+            ))}
+          </div>
+          {/* Placeholder pour le contenu */}
+          <div className="min-h-[calc(100vh-296px)] w-full bg-blue-50/20 rounded-lg"></div>
+        </div>
+      </main>
+    );
+  }
 
   const renderContent = () => {
     switch (selectedType) {
@@ -52,7 +82,7 @@ export default function Creations() {
               key={type}
               type={type}
               selected={selectedType === type}
-              onToggle={setSelectedType}
+              onToggle={handleTypeChange} // Utilisez la nouvelle fonction
             />
           ))}
         </div>

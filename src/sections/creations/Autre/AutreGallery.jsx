@@ -1,16 +1,16 @@
 "use client";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion"; // Corrige aussi `motion/react` en `framer-motion`
-import ButtonSecondary from "../../../components/ButtonSecondary"; // ou adapte le chemin
-import ButtonMain from "../../../components/ButtonMain"; // idem
-import Tag from "../../../components/Tag"; // idem
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import { ArrowUpRight } from "lucide-react"; // Assurez-vous que ce chemin est correct
+import { useState } from "react"; // Ajout de useState
+import ButtonSecondary from "../../../components/ButtonSecondary";
+import Tag from "../../../components/Tag";
+import { ArrowUpRight, Loader2 } from "lucide-react"; // Ajout de Loader2
 import { SiFigma, SiGithub } from "@icons-pack/react-simple-icons";
 import ReactMarkdown from "react-markdown";
 
 export default function VideosGallery({ autre }) {
   console.log("Autre:", autre);
+  // État pour suivre le chargement de l'image
+  const [imageLoading, setImageLoading] = useState(true);
 
   function formatDate(dateString) {
     if (!dateString) return "";
@@ -25,23 +25,26 @@ export default function VideosGallery({ autre }) {
   return (
     <section>
       <div className="flex flex-col gap-8">
-        <Image
-          src={autre.miniature}
-          alt={autre.titre}
-          width={1920}
-          height={1080}
-          className="w-full h-auto rounded-lg object-cover"
-          priority
-        />
-        {/* {youtubeId ? (
-          <LiteYouTubeEmbed
-            id={youtubeId}
-            title={video.titre}
-            poster="hqdefault"
-            webp
+        {/* Container pour l'image et le spinner */}
+        <div className="relative w-full">
+          {/* Spinner qui s'affiche uniquement pendant le chargement */}
+          {imageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-blue-50 rounded-lg">
+              <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+            </div>
+          )}
+
+          <Image
+            src={autre.miniature}
+            alt={autre.titre}
+            width={1920}
+            height={1080}
+            className={`w-full h-auto rounded-lg object-cover ${imageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-300"}`}
+            priority
+            onLoad={() => setImageLoading(false)}
           />
-        ) : null}
-        {!youtubeId && <p className="text-red-500">Lien invalide</p>} */}
+        </div>
+
         <div className="flex flex-col gap-8 w-full">
           <div className="flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-start sm:gap-4 w-full">
             <div className="flex flex-col gap-4">
@@ -53,11 +56,6 @@ export default function VideosGallery({ autre }) {
                   {formatDate(autre.date)}
                 </p>
               </div>
-              {/* <div className="flex flex-wrap gap-x-2 gap-y-1.5">
-                {autre.autre_tags_link.map((tag, index) => (
-                    <Tag key={index} name={tag.autre_tags.titre} />
-                  ))}
-              </div> */}
               {autre.autre_tags_link.length > 0 && (
                 <div className="flex flex-wrap gap-x-2 gap-y-1.5">
                   {autre.autre_tags_link

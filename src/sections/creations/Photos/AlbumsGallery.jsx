@@ -2,15 +2,19 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion"; // Corrige aussi `motion/react` en `framer-motion`
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
-import ButtonSecondary from "../../../components/ButtonSecondary"; // ou adapte le chemin
-import ButtonMain from "../../../components/ButtonMain"; // idem
-import Tag from "../../../components/Tag"; // idem
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowRight, X, Loader2 } from "lucide-react"; // Ajout du Loader2
+import ButtonSecondary from "../../../components/ButtonSecondary";
+import ButtonMain from "../../../components/ButtonMain";
+import Tag from "../../../components/Tag";
 
 export default function AlbumsGallery({ album }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(null);
+  // Nouvel état pour suivre le chargement des images dans la grille
+  const [loadingImages, setLoadingImages] = useState({});
+  // Nouvel état pour suivre le chargement de l'image dans le modal
+  const [modalImageLoading, setModalImageLoading] = useState(true);
 
   console.log("Album dans AlbumsGallery:", album);
 
@@ -19,6 +23,8 @@ export default function AlbumsGallery({ album }) {
   const handleImageClick = (index) => {
     setCurrentPhotoIndex(index);
     setIsModalOpen(true);
+    // Réinitialiser l'état de chargement de l'image modale
+    setModalImageLoading(true);
   };
 
   const closeModal = () => {
@@ -28,21 +34,28 @@ export default function AlbumsGallery({ album }) {
 
   const handleNextPhoto = () => {
     if (currentPhotoIndex < photos.length - 1) {
+      setModalImageLoading(true);
       setCurrentPhotoIndex(currentPhotoIndex + 1);
     }
   };
 
   const handlePrevPhoto = () => {
     if (currentPhotoIndex > 0) {
+      setModalImageLoading(true);
       setCurrentPhotoIndex(currentPhotoIndex - 1);
     }
+  };
+
+  const handleImageLoad = (id) => {
+    setLoadingImages((prev) => ({
+      ...prev,
+      [id]: false,
+    }));
   };
 
   return (
     <section>
       <div>
-        {/* Navigation et en-tête */}
-
         {/* Galerie de photos */}
         <AnimatePresence>
           <motion.div
@@ -58,47 +71,48 @@ export default function AlbumsGallery({ album }) {
               hidden: {},
             }}
           >
-            {photos.map((photoLink, index) => (
-              // <div
-              //   key={index}
-              //   className="group block relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl"
-              //   onClick={() => handleImageClick(index)}
-              // >
-              //   <div className="aspect-square relative overflow-hidden">
-              //     <Image
-              //       src={photoLink.photos.lien_low}
-              //       alt={`Photo ${index + 1} de l'album ${album.titre}`}
-              //       fill
-              //       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              //       className="object-cover transition-transform duration-500 group-hover:scale-105"
-              //       placeholder="blur"
-              //       blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzIDIiPjwvc3ZnPg=="
-              //     />
-              //     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              //     <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-              //       <span className="text-sm font-medium">Voir les détails</span>
-              //     </div>
-              //   </div>
-              // </div>
-              <motion.div
-                key={`photo-${photoLink.id_pho}`}
-                variants={{
-                  hidden: { opacity: 0, scale: 0.9, y: 20 },
-                  visible: { opacity: 1, scale: 1, y: 0 },
-                }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="group cursor-pointer overflow-hidden rounded-lg"
-                onClick={() => handleImageClick(index)}
-              >
-                <Image
-                  src={photoLink.lien_low}
-                  alt={photoLink.alt}
-                  width={500}
-                  height={300}
-                  className="w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
-                />
-              </motion.div>
-            ))}
+            {photos.map((photoLink, index) => {
+              // Initialiser l'état de chargement pour cette image si ce n'est pas déjà fait
+              if (loadingImages[photoLink.id_pho] === undefined) {
+                setLoadingImages((prev) => ({
+                  ...prev,
+                  [photoLink.id_pho]: true,
+                }));
+              }
+
+              return (
+                <motion.div
+                  key={`photo-${photoLink.id_pho}`}
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.9, y: 20 },
+                    visible: { opacity: 1, scale: 1, y: 0 },
+                  }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="group cursor-pointer overflow-hidden rounded-lg relative"
+                  onClick={() => handleImageClick(index)}
+                >
+                  {/* Spinner pour les images de la grille */}
+                  {loadingImages[photoLink.id_pho] && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-100 rounded-lg z-10">
+                      <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+                    </div>
+                  )}
+
+                  <Image
+                    src={photoLink.lien_low}
+                    alt={photoLink.alt}
+                    width={500}
+                    height={300}
+                    className={`w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
+                      loadingImages[photoLink.id_pho]
+                        ? "opacity-0"
+                        : "opacity-100 transition-opacity duration-300"
+                    }`}
+                    onLoad={() => handleImageLoad(photoLink.id_pho)}
+                  />
+                </motion.div>
+              );
+            })}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -167,19 +181,31 @@ export default function AlbumsGallery({ album }) {
                 </motion.div>
 
                 <motion.div
-                  className="w-full h-full flex items-center justify-center p-4"
+                  className="w-full h-full flex items-center justify-center p-4 relative"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.5 }}
                   key={`photo-${currentPhotoIndex}`}
                 >
+                  {/* Spinner pour l'image modale */}
+                  {modalImageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-100 z-10">
+                      <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
+                    </div>
+                  )}
+
                   <Image
                     src={photos[currentPhotoIndex].lien_high}
                     alt={photos[currentPhotoIndex].alt}
                     width={1200}
                     height={800}
-                    className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
+                    className={`max-w-full max-h-[calc(90vh-10rem)] object-contain ${
+                      modalImageLoading
+                        ? "opacity-0"
+                        : "opacity-100 transition-opacity duration-300"
+                    }`}
                     priority
+                    onLoad={() => setModalImageLoading(false)}
                   />
                 </motion.div>
 
@@ -311,8 +337,6 @@ export default function AlbumsGallery({ album }) {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Modal, navigation etc. ici avec AnimatePresence */}
-      {/* Tu réutilises le code existant que tu as déjà écrit pour le modal */}
     </section>
   );
 }
