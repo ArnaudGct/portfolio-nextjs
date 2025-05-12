@@ -6,7 +6,7 @@ import ButtonMain from "./../../components/ButtonMain";
 
 export default function Presentation() {
   return (
-    <section className="relative w-[90%] max-w-[1440px] mx-auto mt-20 flex flex-col sm:flex-row gap-5 md:gap-8 items-start sm:items-center justify-center sm:justify-start">
+    <section className="relative w-[90%] max-w-[1440px] mx-auto flex flex-col sm:flex-row gap-5 md:gap-8 items-start sm:items-center justify-center sm:justify-start">
       <div className="relative flex items-stretch h-[500px] lg:h-[350px] w-full sm:w-[70%] lg:w-[50%] lg:max-w-[350px]">
         {/* Définis une hauteur */}
         <Image

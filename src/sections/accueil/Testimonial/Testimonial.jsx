@@ -12,7 +12,7 @@ import "swiper/css/navigation";
 import "./styles.css";
 
 // import required modules
-import { Navigation } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 
 export default function Testimonial() {
   const [temoignages, setTemoignages] = useState([]);
@@ -54,7 +54,7 @@ export default function Testimonial() {
   );
 
   return (
-    <section className="max-w-[1440px] mx-auto relative w-[90%] mt-14">
+    <section className="max-w-[1440px] mx-auto relative w-[90%]">
       <div className="flex gap-2 absolute bottom-0 right-0 z-10 transform translate-y-3/2">
         <ButtonSecondary
           className="prev-button"
@@ -70,6 +70,10 @@ export default function Testimonial() {
         slidesPerView={1}
         spaceBetween={10}
         loop={true}
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: false,
+        }}
         breakpoints={{
           640: {
             slidesPerView: 1,
@@ -88,7 +92,7 @@ export default function Testimonial() {
           nextEl: ".next-button",
           prevEl: ".prev-button",
         }}
-        modules={[Navigation]}
+        modules={[Navigation, Autoplay]}
         className="mySwiper"
       >
         {temoignages.map((temoignage) => (

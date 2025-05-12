@@ -7,13 +7,19 @@ import Contact from "./../src/sections/accueil/Contact";
 
 export default function Home() {
   return (
-    <main className="bg-white">
+    <main className="bg-white flex flex-col w-full gap-24">
       <Hero />
-      <Presentation />
-      <LastVideos />
-      <FAQ />
-      <Testimonial />
-      <Contact />
+      <div className="flex flex-col w-full gap-28 mb-28">
+        <Presentation />
+        <LastVideos />
+        <div className="flex flex-col gap-16">
+          <FAQ />
+          <Testimonial />
+        </div>
+        <div className="w-full mt-16">
+          <Contact />
+        </div>
+      </div>
     </main>
   );
 }
