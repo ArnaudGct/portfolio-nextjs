@@ -14,6 +14,7 @@ import {
 import ButtonMain from "./../components/ButtonMain";
 import ButtonSecondary from "./../components/ButtonSecondary";
 import ThemeToggle from "./../components/ThemeToggl";
+import TextRollover from "../components/TextRollover";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,8 +45,11 @@ export default function Header() {
   const smoothPositionY = useSpring(headerPositionY, springConfig);
 
   const pathname = usePathname();
-  const linkClass = (href) =>
+  const linkClassText = (href) =>
     pathname === href ? "text-blue-700" : "text-blue-900";
+
+  const linkClassBg = (href) =>
+    pathname === href ? "bg-blue-700" : "bg-blue-900";
 
   // 🔧 Mesure de la largeur réelle des icônes
   const iconsRef = useRef(null);
@@ -131,24 +135,29 @@ export default function Header() {
           </Link>
           <nav className="flex justify-between items-center">
             <ul className="flex gap-8">
-              <Link
+              <TextRollover
                 href="/"
-                className={`${linkClass("/")} relative font-normal`}
-              >
-                <li className="py-5">Accueil</li>
-              </Link>
-              <Link
+                text="Accueil"
+                isActive={pathname === "/"}
+                className="font-normal py-5"
+                itemHeight={28}
+              />
+
+              <TextRollover
                 href="/apropos"
-                className={`${linkClass("/apropos")} relative font-normal`}
-              >
-                <li className="py-5">À propos</li>
-              </Link>
-              <Link
+                text="À propos"
+                isActive={pathname === "/apropos"}
+                className="font-normal py-5"
+                itemHeight={28}
+              />
+
+              <TextRollover
                 href="/creations"
-                className={`${linkClass("/creations")} relative font-normal`}
-              >
-                <li className="py-5">Mes créations</li>
-              </Link>
+                text="Mes créations"
+                isActive={pathname === "/creations"}
+                className="font-normal py-5"
+                itemHeight={28}
+              />
             </ul>
           </nav>
         </div>
@@ -279,21 +288,21 @@ export default function Header() {
               >
                 <Link
                   href="/"
-                  className={`${linkClass("/")} font-normal`}
+                  className={`${linkClassText("/")} font-normal`}
                   onClick={toggleMenu}
                 >
                   Accueil
                 </Link>
                 <Link
                   href="/apropos"
-                  className={`${linkClass("/apropos")} font-normal`}
+                  className={`${linkClassText("/apropos")} font-normal`}
                   onClick={toggleMenu}
                 >
                   À propos
                 </Link>
                 <Link
                   href="/creations"
-                  className={`${linkClass("/creations")} font-normal`}
+                  className={`${linkClassText("/creations")} font-normal`}
                   onClick={toggleMenu}
                 >
                   Mes créations

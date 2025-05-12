@@ -4,6 +4,7 @@ import Tag from "./../components/Tag";
 import TagSocialMedia from "./../components/TagSocialMedia";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import TextRollover from "../components/TextRollover";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -39,36 +40,37 @@ export default function Footer() {
         </div>
         <div className="flex flex-col gap-8 items-start lg:items-end justify-start">
           <ul className="flex flex-wrap gap-x-6 gap-y-2 items-start justify-start">
-            <li
-              className={`text-normal font-medium font-rethink-sans ${
-                pathname === "/" ? "text-blue-700" : "text-blue-900"
-              }`}
-            >
-              <Link href="/">Accueil</Link>
-            </li>
-            <li
-              className={`text-normal font-medium font-rethink-sans ${
-                pathname === "/apropos" ? "text-blue-700" : "text-blue-900"
-              }`}
-            >
-              <Link href="/apropos">À propos</Link>
-            </li>
-            <li
-              className={`text-normal font-medium font-rethink-sans ${
-                pathname === "/creations" ? "text-blue-700" : "text-blue-900"
-              }`}
-            >
-              <Link href="/creations">Mes créations</Link>
-            </li>
-            <li
-              className={`text-normal font-medium font-rethink-sans ${
-                pathname === "/mentions-legales"
-                  ? "text-blue-700"
-                  : "text-blue-900"
-              }`}
-            >
-              <Link href="/mentions-legales">Mentions légales</Link>
-            </li>
+            <TextRollover
+              href="/"
+              text="Accueil"
+              isActive={pathname === "/"}
+              className="font-medium font-rethink-sans"
+              itemHeight={23}
+            />
+
+            <TextRollover
+              href="/apropos"
+              text="À propos"
+              isActive={pathname === "/apropos"}
+              className="font-medium font-rethink-sans"
+              itemHeight={23}
+            />
+
+            <TextRollover
+              href="/creations"
+              text="Mes créations"
+              isActive={pathname === "/creations"}
+              className="font-medium font-rethink-sans"
+              itemHeight={23}
+            />
+
+            <TextRollover
+              href="/mentions-legales"
+              text="Mentions légales"
+              isActive={pathname === "/mentions-legales"}
+              className="font-medium font-rethink-sans"
+              itemHeight={23}
+            />
           </ul>
           <div className="flex flex-col items-start lg:items-end justify-start">
             <p className="text-blue-700 text-sm font-normal font-rethink-sans mt-4">
