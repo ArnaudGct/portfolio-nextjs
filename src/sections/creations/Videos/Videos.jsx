@@ -13,11 +13,13 @@ export default function Videos() {
   const [selectedTags, setselectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isVisuallyLoading, setIsVisuallyLoading] = useState(true);
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        setIsLoading(true); // ⬅️ début du chargement
+        setIsLoading(true);
+        setIsVisuallyLoading(true);
 
         const res = await fetch("/api/creations/videos");
         const data = await res.json();
@@ -27,10 +29,19 @@ export default function Videos() {
 
         const uniqueTags = extractUniqueTags(data);
         setAllTags(uniqueTags);
+
+        // Marquer que le chargement réel est terminé
+        setIsLoading(false);
+
+        // Imposer un délai minimum pour l'affichage du skeleton
+        const minLoadingTime = 300; // 600ms minimum
+        setTimeout(() => {
+          setIsVisuallyLoading(false);
+        }, minLoadingTime);
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des vidéos :", error);
-      } finally {
-        setIsLoading(false); // ⬅️ fin du chargement
+        setIsLoading(false);
+        setIsVisuallyLoading(false);
       }
     };
 
@@ -172,10 +183,44 @@ export default function Videos() {
       </div>
 
       <div className="min-h-[calc(100vh-296px)]">
-        {isLoading ? (
-          <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
-          </div>
+        {isVisuallyLoading ? (
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10"
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+          >
+            {/* Génération de 6 cartes squelettes pour les vidéos */}
+            {[...Array(6)].map((_, index) => (
+              <div
+                key={`video-skeleton-${index}`}
+                className="rounded-lg overflow-hidden"
+              >
+                <div className="flex flex-col gap-4">
+                  {/* Placeholder pour la miniature vidéo (ratio 16:9) */}
+                  <div className="relative w-full aspect-video bg-blue-100/40 rounded-lg">
+                    {/* Icône de lecture au centre */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-blue-200/50"></div>
+                    </div>
+                  </div>
+                  <div className="w-full flex flex-col gap-3">
+                    {/* Placeholder pour le titre */}
+                    <div className="w-3/4 h-6 bg-blue-100/40 rounded-md"></div>
+                    {/* Placeholders pour les tags */}
+                    <div className="flex gap-2 mt-1">
+                      <div className="w-16 h-5 bg-blue-100/40 rounded-full"></div>
+                      <div className="w-20 h-5 bg-blue-100/40 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </motion.div>
         ) : filteredVideos.length > 0 ? (
           <AnimatePresence>
             <motion.div

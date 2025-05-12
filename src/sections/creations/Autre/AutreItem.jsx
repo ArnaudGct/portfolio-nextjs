@@ -65,7 +65,7 @@ export default function AutreItem({ id, title, tags, miniature }) {
               fill
               className="object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 33vw"
-              onLoadingComplete={handleImageLoad} // Cette fonction est appelée lorsque l'image est chargée
+              onLoad={handleImageLoad} // Cette fonction est appelée lorsque l'image est chargée
             />
           )}
         </div>

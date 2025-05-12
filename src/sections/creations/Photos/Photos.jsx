@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   ChevronRight,
   SquareArrowOutUpRight,
+  Loader2,
 } from "lucide-react";
 import ButtonMain from "../../../components/ButtonMain";
 import ButtonSecondary from "../../../components/ButtonSecondary";
@@ -28,9 +29,13 @@ export default function Photos() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isAlbumsLoading, setIsAlbumsLoading] = useState(true);
-
+  const [isVisuallyLoading, setIsVisuallyLoading] = useState(true);
+  const [isAlbumsVisuallyLoading, setIsAlbumsVisuallyLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(null);
+
+  const [albumImageLoadingStates, setAlbumImageLoadingStates] = useState({});
+  const [photoLoadingState, setPhotoLoadingState] = useState({});
 
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? "hidden" : "auto";
@@ -41,6 +46,7 @@ export default function Photos() {
     const fetchPhotos = async () => {
       try {
         setIsLoading(true);
+        setIsVisuallyLoading(true);
         const res = await fetch("/api/creations/photos");
         const data = await res.json();
 
@@ -59,6 +65,15 @@ export default function Photos() {
 
         setPhotos(cleanedData);
         setFilteredPhotos(cleanedData);
+
+        // Marquer que le chargement réel est terminé
+        setIsLoading(false);
+
+        // Imposer un délai minimum pour l'affichage du skeleton
+        const minLoadingTime = 300; // 600ms minimum
+        setTimeout(() => {
+          setIsVisuallyLoading(false);
+        }, minLoadingTime);
       } catch (err) {
         console.error("Erreur lors de la récupération des photos:", err);
       } finally {
@@ -69,9 +84,19 @@ export default function Photos() {
     const fetchAlbums = async () => {
       try {
         setIsAlbumsLoading(true);
+        setIsAlbumsVisuallyLoading(true);
         const res = await fetch("/api/creations/photos_albums");
         const data = await res.json();
         setAlbums(data);
+
+        // Marquer que le chargement réel est terminé
+        setIsAlbumsLoading(false);
+
+        // Imposer un délai minimum pour l'affichage du skeleton
+        const minLoadingTime = 300; // 600ms minimum
+        setTimeout(() => {
+          setIsAlbumsVisuallyLoading(false);
+        }, minLoadingTime);
       } catch (err) {
         console.error("Erreur lors de la récupération des albums:", err);
       } finally {
@@ -93,34 +118,126 @@ export default function Photos() {
     setAllTags(uniqueTags);
   }, [photos, albums]);
 
+  // Améliorer la fonction resetLoadingStates pour réinitialiser TOUS les états de chargement
+  const resetLoadingStates = () => {
+    // Réinitialiser immédiatement les skeletons pour qu'ils n'apparaissent pas lors du filtrage
+    setIsVisuallyLoading(false);
+    setIsAlbumsVisuallyLoading(false);
+
+    // IMPORTANT: Réinitialiser les états de chargement des images individuelles
+    // pour les éléments déjà chargés
+    setAlbumImageLoadingStates({});
+    setPhotoLoadingState({});
+  };
+
+  // Modifier le useEffect de filtrage pour réinitialiser d'abord puis définir les nouveaux états
   useEffect(() => {
+    // Si on est en train de filtrer (pas le chargement initial), réinitialiser d'abord les skeletons
+    if (!isVisuallyLoading || !isAlbumsVisuallyLoading) {
+      resetLoadingStates();
+    }
+
     let resultPhotos = [...photos];
     let resultAlbums = [...albums];
-
     if (selectedTags.length > 0) {
       resultPhotos = resultPhotos.filter((photo) =>
-        selectedTags.every((tag) => photo.allTagsSearch.includes(tag))
+        selectedTags.every((tag) =>
+          // Vérifier que allTagsSearch existe avant de l'utiliser
+          (photo.allTagsSearch || []).includes(tag)
+        )
       );
 
       resultAlbums = resultAlbums.filter((album) =>
-        selectedTags.every((tag) => album.tags.includes(tag))
+        selectedTags.every((tag) =>
+          // Vérifier que tags existe avant de l'utiliser
+          (album.tags || []).includes(tag)
+        )
       );
     }
 
     if (searchQuery.trim() !== "") {
-      const query = searchQuery.toLowerCase();
-      resultPhotos = resultPhotos.filter((photo) =>
-        photo.allTagsSearch?.some((tag) => tag.toLowerCase().includes(query))
-      );
+      const query = searchQuery.toLowerCase().trim();
 
-      resultAlbums = resultAlbums.filter((album) =>
-        album.tags?.some((tag) => tag.toLowerCase().includes(query))
-      );
+      // Recherche dans les photos
+      resultPhotos = resultPhotos.filter((photo) => {
+        // Vérifier aussi le titre en plus des tags
+        const titleMatch =
+          photo.titre && photo.titre.toLowerCase().includes(query);
+        const tagsMatch = (photo.allTagsSearch || []).some((tag) =>
+          (tag || "").toLowerCase().includes(query)
+        );
+        return titleMatch || tagsMatch;
+      });
+
+      // Recherche dans les albums
+      resultAlbums = resultAlbums.filter((album) => {
+        const titleMatch =
+          album.titre && album.titre.toLowerCase().includes(query);
+        const tagsMatch = (album.tags || []).some((tag) =>
+          (tag || "").toLowerCase().includes(query)
+        );
+        return titleMatch || tagsMatch;
+      });
     }
 
+    // Après avoir défini filteredPhotos et filteredAlbums, initialiser états de chargement
     setFilteredPhotos(resultPhotos);
     setFilteredAlbums(resultAlbums);
+
+    // Utiliser setTimeout pour s'assurer que cette partie s'exécute APRÈS le rendu
+    setTimeout(() => {
+      // Initialiser les états de chargement pour les nouveaux éléments filtrés
+      if (resultAlbums.length > 0) {
+        const initialLoadingState = {};
+        resultAlbums.forEach((album) => {
+          initialLoadingState[album.id_alb] = {};
+          for (let i = 0; i < 5; i++) {
+            // Marquer comme non chargé seulement si la photo existe
+            initialLoadingState[album.id_alb][i] = album.photos[i]
+              ? false
+              : false;
+          }
+        });
+        setAlbumImageLoadingStates(initialLoadingState);
+      }
+
+      if (resultPhotos.length > 0) {
+        const initialPhotoLoadingState = {};
+        resultPhotos.forEach((photo) => {
+          // Considérer les photos comme déjà chargées (false) après le filtrage
+          initialPhotoLoadingState[photo.id_pho] = false;
+        });
+        setPhotoLoadingState(initialPhotoLoadingState);
+      }
+    }, 0);
   }, [photos, albums, selectedTags, searchQuery]);
+
+  // 3. Modifiez la fonction de gestion du chargement des images d'album
+  const handleAlbumImageLoad = (albumId, photoIndex) => {
+    setAlbumImageLoadingStates((prev) => {
+      // Vérification de sécurité : si l'album n'existe pas dans l'état ou a été filtré
+      if (!prev || !prev[albumId]) {
+        return prev;
+      }
+
+      // Marque cette image spécifique comme chargée (false = chargée)
+      return {
+        ...prev,
+        [albumId]: {
+          ...prev[albumId],
+          [photoIndex]: false,
+        },
+      };
+    });
+  };
+
+  // Ajouter cette fonction pour gérer le chargement des photos
+  const handlePhotoLoad = (photoId) => {
+    setPhotoLoadingState((prev) => ({
+      ...prev,
+      [photoId]: false, // false = chargement terminé
+    }));
+  };
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -260,196 +377,264 @@ export default function Photos() {
 
       <div className="min-h-[calc(100vh-296px)] flex flex-col gap-10">
         {/* Albums */}
-        {isAlbumsLoading ? (
-          <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
-          </div>
-        ) : filteredAlbums.length > 0 ? (
+        {isAlbumsVisuallyLoading ? (
           <motion.div
             className="grid grid-cols-1 gap-6 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              visible: {
-                transition: { staggerChildren: 0.1 },
-              },
-              hidden: {},
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              repeatType: "reverse",
             }}
           >
-            {filteredAlbums.map((album) => (
-              <motion.div
-                key={`album-${album.id_alb}`}
-                variants={{
-                  hidden: { opacity: 0, scale: 0.9, y: 20 },
-                  visible: { opacity: 1, scale: 1, y: 0 },
-                }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+            {/* Génération de 4 cartes squelettes pour les albums */}
+            {[...Array(4)].map((_, index) => (
+              <div
+                key={`album-skeleton-${index}`}
                 className="rounded-lg overflow-hidden"
               >
-                <Link
-                  href={`/creations/album/${album.id_alb}`}
-                  className="cursor-pointer"
-                >
-                  <div className="flex flex-col gap-4 rounded-lg">
-                    <div className="relative h-52 w-full overflow-hidden rounded-lg bg-slate-100">
-                      {album.photos.length > 0 ? (
-                        <div className="absolute inset-0 w-full h-full transition-transform duration-500 hover:scale-105">
-                          <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
-                            {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
-                            {album.photos[0] && (
-                              <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden">
-                                <Image
-                                  src={album.photos[0].lien_low}
-                                  alt={album.photos[0].alt}
-                                  fill
-                                  sizes="(max-width: 768px) 50vw, 25vw"
-                                  className="object-cover rounded-lg"
-                                  priority
-                                />
-                              </div>
-                            )}
-
-                            {/* Photo 2 – colonne droite ligne 1 */}
-                            {album.photos[1] && (
-                              <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                                <Image
-                                  src={album.photos[1].lien_low}
-                                  alt={album.photos[1].alt}
-                                  fill
-                                  sizes="(max-width: 768px) 50vw, 25vw"
-                                  className="object-cover rounded-lg"
-                                />
-                              </div>
-                            )}
-
-                            {/* Photo 3 – colonne droite ligne 2 */}
-                            {album.photos[2] && (
-                              <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                                <Image
-                                  src={album.photos[2].lien_low}
-                                  alt={album.photos[2].alt}
-                                  fill
-                                  sizes="(max-width: 768px) 50vw, 25vw"
-                                  className="object-cover rounded-lg"
-                                />
-                              </div>
-                            )}
-
-                            {/* Photo 4 – affichée uniquement en md+ */}
-                            {album.photos[3] && (
-                              <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                                <Image
-                                  src={album.photos[3].lien_low}
-                                  alt={album.photos[3].alt}
-                                  fill
-                                  sizes="25vw"
-                                  className="object-cover rounded-lg"
-                                />
-                              </div>
-                            )}
-
-                            {/* Photo 5 – affichée uniquement en md+ */}
-                            {album.photos[4] && (
-                              <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                                <Image
-                                  src={album.photos[4].lien_low}
-                                  alt={album.photos[4].alt}
-                                  fill
-                                  sizes="25vw"
-                                  className="object-cover rounded-lg"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <p className="text-slate-400">Aucune photo</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* <div className="p-4">
-                      <div className="flex items-center justify-between text-blue-600">
-                        <p className="font-bold text-lg text-blue-600">
-                          {album.titre}
-                        </p>
-                        <ChevronRight size={20} />
-                      </div>
-
-                      <span className="text-sm text-blue-400">
-                        {album.photos.length} photo
-                        {album.photos.length > 1 ? "s" : ""}
-                      </span>
-
-                      <div className="flex justify-between items-center mt-3">
-                        {album.date && (
-                          <span className="text-xs text-slate-400">
-                            {new Date(album.date).toLocaleDateString("fr-FR", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            })}
-                          </span>
-                        )}
-                      </div>
-                    </div> */}
-
-                    <div className="w-full flex items-center justify-between">
-                      <div className="w-[90%] flex flex-col gap-2">
-                        <div className="flex flex-col">
-                          <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
-                            {album.titre}
-                          </p>
-                          <span className="text-sm text-blue-400">
-                            {album.photos.length} photo
-                            {album.photos.length > 1 ? "s" : ""}
-                          </span>
-                        </div>
-
-                        {album.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-x-2 gap-y-1.5">
-                            <Tag name="Album" background={true} />
-                            {album.tags.map((t, index) => (
-                              <Tag
-                                key={`${t}-${index}`}
-                                name={t}
-                                background={false}
-                              />
-                            ))}
-                          </div>
-                        )}
-
-                        {/* {album.date && (
-                            <span className="text-sm text-slate-400">
-                              {new Date(album.date).toLocaleDateString(
-                                "fr-FR",
-                                {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                }
-                              )}
-                            </span>
-                          )} */}
-                      </div>
-                      <div className="flex justify-center items-center p-2 text-blue-700 min-w-9 w-[10%] hover:text-blue-900 transition-colors">
-                        <SquareArrowOutUpRight size={16} strokeWidth={1.75} />
-                      </div>
+                <div className="flex flex-col gap-4 rounded-lg">
+                  <div className="relative h-52 w-full overflow-hidden rounded-lg bg-blue-100/40"></div>
+                  <div className="w-full flex flex-col gap-3">
+                    <div className="w-3/4 h-6 bg-blue-100/40 rounded-md"></div>
+                    <div className="w-1/4 h-4 bg-blue-100/40 rounded-md"></div>
+                    <div className="flex gap-2 mt-1">
+                      <div className="w-16 h-5 bg-blue-100/40 rounded-full"></div>
+                      <div className="w-20 h-5 bg-blue-100/40 rounded-full"></div>
                     </div>
                   </div>
-                </Link>
-              </motion.div>
+                </div>
+              </div>
             ))}
           </motion.div>
+        ) : filteredAlbums.length > 0 ? (
+          <AnimatePresence>
+            <motion.div
+              className="grid grid-cols-1 gap-6 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={{
+                visible: {
+                  transition: { staggerChildren: 0.1 },
+                },
+                hidden: {},
+              }}
+            >
+              {filteredAlbums.map((album) => (
+                <motion.div
+                  key={`album-${album.id_alb}`}
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.9, y: 20 },
+                    visible: { opacity: 1, scale: 1, y: 0 },
+                  }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="rounded-lg overflow-hidden"
+                >
+                  <Link
+                    href={`/creations/album/${album.id_alb}`}
+                    className="cursor-pointer"
+                  >
+                    <div className="flex flex-col gap-4 rounded-lg">
+                      <div className="relative h-52 w-full overflow-hidden rounded-lg bg-slate-100">
+                        {album.photos.length > 0 ? (
+                          <div className="absolute inset-0 w-full h-full">
+                            <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
+                              {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
+                              {album.photos[0] && (
+                                <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden">
+                                  {/* Skeleton qui disparaît une fois l'image chargée */}
+                                  {albumImageLoadingStates[
+                                    album.id_alb
+                                  ]?.[0] && (
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                  )}
+                                  <Image
+                                    src={album.photos[0].lien_low}
+                                    alt={album.photos[0].alt}
+                                    fill
+                                    sizes="(max-width: 768px) 50vw, 25vw"
+                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                      albumImageLoadingStates[album.id_alb]?.[0]
+                                        ? "opacity-0"
+                                        : "opacity-100 transition-opacity duration-300"
+                                    }`}
+                                    priority
+                                    onLoad={() =>
+                                      handleAlbumImageLoad(album.id_alb, 0)
+                                    }
+                                  />
+                                </div>
+                              )}
+
+                              {/* Photo 2 – colonne droite ligne 1 */}
+                              {album.photos[1] && (
+                                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                  {albumImageLoadingStates[
+                                    album.id_alb
+                                  ]?.[1] && (
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                  )}
+                                  <Image
+                                    src={album.photos[1].lien_low}
+                                    alt={album.photos[1].alt}
+                                    fill
+                                    sizes="(max-width: 768px) 50vw, 25vw"
+                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                      albumImageLoadingStates[album.id_alb]?.[1]
+                                        ? "opacity-0"
+                                        : "opacity-100 transition-opacity duration-300"
+                                    }`}
+                                    onLoad={() =>
+                                      handleAlbumImageLoad(album.id_alb, 1)
+                                    }
+                                  />
+                                </div>
+                              )}
+
+                              {/* Photo 3 – colonne droite ligne 2 */}
+                              {album.photos[2] && (
+                                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                  {albumImageLoadingStates[
+                                    album.id_alb
+                                  ]?.[2] && (
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                  )}
+                                  <Image
+                                    src={album.photos[2].lien_low}
+                                    alt={album.photos[2].alt}
+                                    fill
+                                    sizes="(max-width: 768px) 50vw, 25vw"
+                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                      albumImageLoadingStates[album.id_alb]?.[2]
+                                        ? "opacity-0"
+                                        : "opacity-100 transition-opacity duration-300"
+                                    }`}
+                                    onLoad={() =>
+                                      handleAlbumImageLoad(album.id_alb, 2)
+                                    }
+                                  />
+                                </div>
+                              )}
+
+                              {/* Photo 4 – affichée uniquement en md+ */}
+                              {album.photos[3] && (
+                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                  {albumImageLoadingStates[
+                                    album.id_alb
+                                  ]?.[3] && (
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                  )}
+                                  <Image
+                                    src={album.photos[3].lien_low}
+                                    alt={album.photos[3].alt}
+                                    fill
+                                    sizes="25vw"
+                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                      albumImageLoadingStates[album.id_alb]?.[3]
+                                        ? "opacity-0"
+                                        : "opacity-100 transition-opacity duration-300"
+                                    }`}
+                                    onLoad={() =>
+                                      handleAlbumImageLoad(album.id_alb, 3)
+                                    }
+                                  />
+                                </div>
+                              )}
+
+                              {/* Photo 5 – affichée uniquement en md+ */}
+                              {album.photos[4] && (
+                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                  {albumImageLoadingStates[
+                                    album.id_alb
+                                  ]?.[4] && (
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                  )}
+                                  <Image
+                                    src={album.photos[4].lien_low}
+                                    alt={album.photos[4].alt}
+                                    fill
+                                    sizes="25vw"
+                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                      albumImageLoadingStates[album.id_alb]?.[4]
+                                        ? "opacity-0"
+                                        : "opacity-100 transition-opacity duration-300"
+                                    }`}
+                                    onLoad={() =>
+                                      handleAlbumImageLoad(album.id_alb, 4)
+                                    }
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <p className="text-slate-400">Aucune photo</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Rest of the album UI */}
+                      <div className="w-full flex items-center justify-between">
+                        <div className="w-[90%] flex flex-col gap-2">
+                          <div className="flex flex-col">
+                            <p className="w-full text-xl font-extrabold font-rethink-sans text-blue-900 truncate">
+                              {album.titre}
+                            </p>
+                            <span className="text-sm text-blue-400">
+                              {album.photos.length} photo
+                              {album.photos.length > 1 ? "s" : ""}
+                            </span>
+                          </div>
+
+                          {album.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-x-2 gap-y-1.5">
+                              <Tag name="Album" background={true} />
+                              {album.tags.map((t, index) => (
+                                <Tag
+                                  key={`${t}-${index}`}
+                                  name={t}
+                                  background={false}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex justify-center items-center p-2 text-blue-700 min-w-9 w-[10%] hover:text-blue-900 transition-colors">
+                          <SquareArrowOutUpRight size={16} strokeWidth={1.75} />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
         ) : null}
 
         {/* Photos */}
 
-        {isLoading ? (
-          <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
-          </div>
+        {isVisuallyLoading ? (
+          <motion.div
+            className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 md:gap-6 xl:grid-cols-4 xl:gap-10"
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+          >
+            {/* Génération de 8 cartes squelettes pour les photos */}
+            {[...Array(8)].map((_, index) => (
+              <div
+                key={`photo-skeleton-${index}`}
+                className="aspect-[4/3] rounded-lg overflow-hidden bg-blue-100/40"
+              ></div>
+            ))}
+          </motion.div>
         ) : filteredPhotos.length > 0 ? (
           <AnimatePresence>
             <motion.div
@@ -473,24 +658,37 @@ export default function Photos() {
                     visible: { opacity: 1, scale: 1, y: 0 },
                   }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="group cursor-pointer overflow-hidden rounded-lg"
+                  className="group cursor-pointer overflow-hidden rounded-lg relative"
                   onClick={() => handleImageClick(index)}
                 >
+                  {/* Spinner qui s'affiche pendant le chargement */}
+                  {photoLoadingState[photo.id_pho] && (
+                    <div className="absolute inset-0 bg-blue-50 rounded-lg z-10">
+                      <div className="w-full h-full bg-blue-100/60 animate-pulse rounded-lg"></div>
+                    </div>
+                  )}
+
                   <Image
                     src={photo.lien_low}
                     alt={photo.alt}
                     width={500}
                     height={300}
-                    className="w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
+                    className={`w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
+                      photoLoadingState[photo.id_pho]
+                        ? "opacity-0"
+                        : "opacity-100 transition-opacity duration-300"
+                    }`}
+                    onLoad={() => handlePhotoLoad(photo.id_pho)}
                   />
                 </motion.div>
               ))}
             </motion.div>
           </AnimatePresence>
-        ) : // <AlbumsGallery album={filteredPhotos} />
-        null}
+        ) : null}
         {!isAlbumsLoading &&
           !isLoading &&
+          // Ajout d'une condition pour vérifier que le chargement initial est terminé
+          photos.length > 0 && // Si les données ont été chargées au moins une fois
           filteredAlbums.length === 0 &&
           filteredPhotos.length === 0 && (
             <div className="flex flex-col justify-center items-center py-10">

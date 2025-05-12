@@ -13,6 +13,7 @@ export default function Autre() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isVisuallyLoading, setIsVisuallyLoading] = useState(true);
 
   // Helper function to ensure a value is an array
   const ensureArray = (value) => {
@@ -39,6 +40,7 @@ export default function Autre() {
     const fetchAutres = async () => {
       try {
         setIsLoading(true);
+        setIsVisuallyLoading(true);
 
         const res = await fetch("/api/creations/autre");
         const data = await res.json();
@@ -56,8 +58,8 @@ export default function Autre() {
               typeof item.titre === "string"
                 ? item.titre
                 : item.titre && item.titre.titre
-                ? item.titre.titre
-                : String(item.titre),
+                  ? item.titre.titre
+                  : String(item.titre),
             tags: processedTags,
           };
         });
@@ -67,13 +69,22 @@ export default function Autre() {
 
         const uniqueTags = extractUniqueTags(processedData);
         setAllTags(uniqueTags);
+
+        // Marquer que le chargement réel est terminé
+        setIsLoading(false);
+
+        // Imposer un délai minimum pour l'affichage du skeleton
+        const minLoadingTime = 300; // 600ms minimum
+        setTimeout(() => {
+          setIsVisuallyLoading(false);
+        }, minLoadingTime);
       } catch (error) {
         console.error(
           "❌ Erreur lors de la récupération des autres créations :",
           error
         );
-      } finally {
         setIsLoading(false);
+        setIsVisuallyLoading(false);
       }
     };
 
@@ -223,10 +234,36 @@ export default function Autre() {
       </div>
 
       <div className="min-h-[calc(100vh-296px)]">
-        {isLoading ? (
-          <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
-          </div>
+        {isVisuallyLoading ? (
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10"
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+          >
+            {/* Génération de 6 cartes squelettes pour les autres créations */}
+            {[...Array(6)].map((_, index) => (
+              <div
+                key={`autre-skeleton-${index}`}
+                className="rounded-lg overflow-hidden"
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="relative w-full h-48 bg-blue-100/40 rounded-lg"></div>
+                  <div className="w-full flex flex-col gap-3">
+                    <div className="w-3/4 h-6 bg-blue-100/40 rounded-md"></div>
+                    <div className="flex gap-2 mt-1">
+                      <div className="w-16 h-5 bg-blue-100/40 rounded-full"></div>
+                      <div className="w-20 h-5 bg-blue-100/40 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </motion.div>
         ) : filteredAutres.length > 0 ? (
           <AnimatePresence>
             <motion.div

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import ButtonSecondary from "./../../src/components/ButtonSecondary";
-import { ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import FormattedDate from "./../../src/components/FormattedDate";
 import Image from "next/image";
@@ -48,6 +48,7 @@ export default function JournalPersonnel() {
   const videoRefs = useRef({});
   const imageRefs = useRef({});
   const [loadingVideos, setLoadingVideos] = useState({});
+  const [loadingImages, setLoadingImages] = useState({});
 
   // Récupération des expériences
   useEffect(() => {
@@ -102,6 +103,10 @@ export default function JournalPersonnel() {
 
   const handleIframeLoad = (id) => {
     setLoadingVideos((prev) => ({ ...prev, [id]: false }));
+  };
+
+  const handleImageLoad = (id) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: false }));
   };
 
   const getYouTubeId = (url) => {
@@ -180,28 +185,32 @@ export default function JournalPersonnel() {
                           <div className="w-full lg:w-[50%] lg:min-w-[400px]">
                             {isVideo ? (
                               videosInView[id] ? (
-                                <LiteYouTubeEmbed
-                                  id={youtubeId}
-                                  data-id={id}
-                                  data-type="video"
-                                  ref={(el) => (videoRefs.current[id] = el)}
-                                  className={`w-full h-full rounded-lg aspect-video transition-opacity duration-500 ${
-                                    loadingVideos[id] === false
-                                      ? "opacity-100"
-                                      : "opacity-50"
-                                  }`}
-                                  title={experience.titre}
-                                  poster="hqdefault"
-                                  webp
-                                  onLoad={() => handleIframeLoad(id)}
-                                />
+                                <div className="relative w-full h-full">
+                                  <LiteYouTubeEmbed
+                                    id={youtubeId}
+                                    data-id={id}
+                                    data-type="video"
+                                    ref={(el) => (videoRefs.current[id] = el)}
+                                    className={`w-full h-full rounded-lg aspect-video transition-opacity duration-500 ${
+                                      loadingVideos[id] === false
+                                        ? "opacity-100"
+                                        : "opacity-50"
+                                    }`}
+                                    title={experience.titre}
+                                    poster="hqdefault"
+                                    webp
+                                    onLoad={() => handleIframeLoad(id)}
+                                  />
+                                </div>
                               ) : (
                                 <div
                                   data-id={id}
                                   data-type="video"
                                   ref={(el) => (videoRefs.current[id] = el)}
-                                  className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse"
-                                />
+                                  className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse flex items-center justify-center"
+                                >
+                                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                                </div>
                               )
                             ) : (
                               <div
@@ -211,15 +220,29 @@ export default function JournalPersonnel() {
                                 className="w-full h-auto"
                               >
                                 {imagesInView[id] ? (
-                                  <Image
-                                    src={experience.url_img}
-                                    alt={`Image: ${experience.titre}`}
-                                    width={1280}
-                                    height={720}
-                                    className="w-full object-cover rounded-lg aspect-video transition-opacity duration-500 opacity-100"
-                                  />
+                                  <div className="relative w-full h-full">
+                                    <Image
+                                      src={experience.url_img}
+                                      alt={`Image: ${experience.titre}`}
+                                      width={1280}
+                                      height={720}
+                                      className={`w-full object-cover rounded-lg aspect-video transition-opacity duration-500 ${
+                                        loadingImages[id] === false
+                                          ? "opacity-100"
+                                          : "opacity-50"
+                                      }`}
+                                      onLoad={() => handleImageLoad(id)}
+                                    />
+                                    {loadingImages[id] !== false && (
+                                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                                      </div>
+                                    )}
+                                  </div>
                                 ) : (
-                                  <div className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse" />
+                                  <div className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse flex items-center justify-center">
+                                    <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                                  </div>
                                 )}
                               </div>
                             )}
