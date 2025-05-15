@@ -16,8 +16,6 @@ export default function AlbumsGallery({ album }) {
   // Nouvel état pour suivre le chargement de l'image dans le modal
   const [modalImageLoading, setModalImageLoading] = useState(true);
 
-  console.log("Album dans AlbumsGallery:", album);
-
   const photos = album.photos_albums_link.map((p) => p.photos);
 
   const handleImageClick = (index) => {
@@ -73,16 +71,18 @@ export default function AlbumsGallery({ album }) {
           >
             {photos.map((photoLink, index) => {
               // Initialiser l'état de chargement pour cette image si ce n'est pas déjà fait
-              if (loadingImages[photoLink.id_pho] === undefined) {
+              const photoId = photoLink.id_pho || `index-${index}`;
+
+              if (loadingImages[photoId] === undefined) {
                 setLoadingImages((prev) => ({
                   ...prev,
-                  [photoLink.id_pho]: true,
+                  [photoId]: true,
                 }));
               }
 
               return (
                 <motion.div
-                  key={`photo-${photoLink.id_pho}`}
+                  key={`photo-${photoId}`}
                   variants={{
                     hidden: { opacity: 0, scale: 0.9, y: 20 },
                     visible: { opacity: 1, scale: 1, y: 0 },
@@ -92,7 +92,7 @@ export default function AlbumsGallery({ album }) {
                   onClick={() => handleImageClick(index)}
                 >
                   {/* Spinner pour les images de la grille */}
-                  {loadingImages[photoLink.id_pho] && (
+                  {loadingImages[photoId] && (
                     <div className="absolute inset-0 flex items-center justify-center bg-slate-100 rounded-lg z-10">
                       <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
                     </div>
@@ -103,12 +103,12 @@ export default function AlbumsGallery({ album }) {
                     alt={photoLink.alt}
                     width={500}
                     height={300}
-                    className={`w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
-                      loadingImages[photoLink.id_pho]
+                    className={`w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
+                      loadingImages[photoId]
                         ? "opacity-0"
                         : "opacity-100 transition-opacity duration-300"
                     }`}
-                    onLoad={() => handleImageLoad(photoLink.id_pho)}
+                    onLoad={() => handleImageLoad(photoId)}
                   />
                 </motion.div>
               );
@@ -298,23 +298,7 @@ export default function AlbumsGallery({ album }) {
               </motion.div>
 
               <div className="p-4 bg-white border-t border-slate-200">
-                {/* <div className="flex flex-wrap gap-2 mt-2">
-                  {tags.map((tag, tagIndex) => (
-                    <motion.div
-                      key={`${tag}-${tagIndex}`}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        delay: 0.5 + tagIndex * 0.05,
-                        duration: 0.2,
-                      }}
-                    >
-                      <Tag name={tag} />
-                    </motion.div>
-                  ))}
-                </div> */}
-
-                <div className="justify-between items-center mt-4 text-sm text-slate-500 md:flex hidden">
+                <div className="justify-between items-center text-sm text-slate-500 md:flex hidden">
                   <p className="text-blue-600 font-medium">
                     {currentPhotoIndex + 1} / {photos.length}
                   </p>

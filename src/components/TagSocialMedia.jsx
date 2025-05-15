@@ -38,14 +38,33 @@ export default function TagSocialMedia({ name }) {
 
   if (!social) return null;
 
+  // Animation pour l'icône
+  const animatedIcon = (
+    <div className="relative flex items-center justify-center h-5 w-5 overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center transition-transform duration-400 group-hover:-translate-y-full">
+        {social.icon}
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-400 group-hover:translate-y-0">
+        {social.icon}
+      </div>
+    </div>
+  );
+
   return (
     <Link href={social.href} target="_blank" rel="noopener noreferrer">
       <button
-        className={`flex items-center text-normal font-medium font-rethink-sans px-4 py-1 rounded-lg gap-2
+        className={`group flex items-center text-normal font-medium font-rethink-sans px-4 py-1 rounded-lg gap-2
         ${social.text} ${social.bg} ${social.border} border transition hover:opacity-80 cursor-pointer`}
       >
-        <span>{social.icon}</span>
-        <p>{social.label}</p>
+        <span className="flex items-center justify-center">{animatedIcon}</span>
+        <span className="relative inline-flex overflow-hidden">
+          <div className="translate-y-0 skew-y-0 transition duration-500 group-hover:-translate-y-[125%] group-hover:skew-y-8">
+            {social.label}
+          </div>
+          <div className="absolute top-0 left-0 translate-y-[125%] skew-y-8 transition duration-500 group-hover:translate-y-0 group-hover:skew-y-0">
+            {social.label}
+          </div>
+        </span>
       </button>
     </Link>
   );

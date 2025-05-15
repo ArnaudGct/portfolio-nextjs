@@ -1,34 +1,41 @@
 // app/creations/album/[id_alb]/page.jsx
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../../../lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import AlbumsGallery from "../../../../src/sections/creations/Photos/AlbumsGallery";
 import Breadcrumb from "../../../../src/components/Breadcrumb";
 
-const prisma = new PrismaClient();
-
 async function getAlbumDetails(id_alb) {
   try {
     const album = await prisma.photos_albums.findUnique({
-      where: { id_alb: parseInt(id_alb) },
+      where: { id_alb: parseInt(id_alb), afficher: true },
       select: {
         id_alb: true,
         titre: true,
         description: true,
         date: true,
         photos_albums_link: {
+          where: {
+            photos: {
+              afficher: true,
+            },
+          },
           select: {
             photos: {
               select: {
-                id_pho: true,
                 lien_low: true,
                 lien_high: true,
                 largeur: true,
                 hauteur: true,
                 alt: true,
+                afficher: true,
               },
             },
+          },
+          orderBy: {
+            // Trier par position au lieu de la date des photos
+            position: "asc",
           },
         },
         photos_albums_tags_link: {
@@ -56,11 +63,13 @@ export default async function AlbumDetails({ params }) {
   function formatDate(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat("fr-FR", {
-      day: "numeric",
+    const formatted = new Intl.DateTimeFormat("fr-FR", {
       month: "long",
       year: "numeric",
     }).format(date);
+
+    // Capitaliser la première lettre
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   }
 
   if (!album) {

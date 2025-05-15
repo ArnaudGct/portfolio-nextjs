@@ -118,8 +118,8 @@ export default function SpotifyMediaCard() {
   const labelText = trackData.isCurrentlyPlaying
     ? "Écoute en cours"
     : trackData.isMostPlayed
-    ? "Le plus écouté du mois"
-    : "Dernier son écouté";
+      ? "Le plus écouté du mois"
+      : "Dernier son écouté";
 
   return (
     <div className="h-24">

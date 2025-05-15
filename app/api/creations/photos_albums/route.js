@@ -11,7 +11,14 @@ export async function GET() {
         titre: true,
         description: true,
         date: true,
+        afficher: true,
+        derniere_modification: true,
         photos_albums_link: {
+          where: {
+            photos: {
+              afficher: true,
+            },
+          },
           select: {
             photos: {
               select: {
@@ -19,8 +26,13 @@ export async function GET() {
                 largeur: true,
                 hauteur: true,
                 alt: true,
+                afficher: true,
               },
             },
+          },
+          orderBy: {
+            // Trier par position au lieu de la date des photos
+            position: "asc",
           },
         },
         photos_albums_tags_link: {
@@ -41,6 +53,8 @@ export async function GET() {
       titre: album.titre,
       description: album.description,
       date: album.date,
+      afficher: album.afficher,
+      derniere_modification: album.derniere_modification,
       photos: album.photos_albums_link.map((photoLink) => ({
         lien_low: photoLink.photos.lien_low,
         largeur: photoLink.photos.largeur,

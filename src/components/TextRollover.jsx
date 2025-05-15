@@ -10,9 +10,6 @@ export default function TextRollover({
   itemHeight = 28,
   onClick = null,
 }) {
-  // Calcul de la translation pour 3 éléments
-  const translationValue = -(itemHeight * 2);
-
   return (
     <Link
       href={href}
@@ -20,23 +17,12 @@ export default function TextRollover({
       className={`${isActive ? "text-blue-700" : "text-blue-900"} ${className}`}
     >
       <li
-        className={`overflow-hidden relative`}
+        className="group overflow-hidden relative"
         style={{ height: `${itemHeight}px` }}
       >
-        <div
-          className="flex flex-col transition-transform duration-300 ease-out will-change-transform transform-gpu"
-          style={{
-            transform: "translateY(0)",
-            transition: "transform 0.3s ease-out",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = `translateY(${translationValue}px)`;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-          }}
-        >
-          <span
+        <span className="relative inline-flex overflow-hidden">
+          <div
+            className="translate-y-0 skew-y-0 transition duration-500 group-hover:-translate-y-[125%] group-hover:skew-y-8"
             style={{
               height: `${itemHeight}px`,
               display: "flex",
@@ -44,8 +30,9 @@ export default function TextRollover({
             }}
           >
             {text}
-          </span>
-          <span
+          </div>
+          <div
+            className="absolute top-0 left-0 translate-y-[125%] skew-y-8 transition duration-500 group-hover:translate-y-0 group-hover:skew-y-0"
             style={{
               height: `${itemHeight}px`,
               display: "flex",
@@ -53,17 +40,8 @@ export default function TextRollover({
             }}
           >
             {text}
-          </span>
-          <span
-            style={{
-              height: `${itemHeight}px`,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {text}
-          </span>
-        </div>
+          </div>
+        </span>
       </li>
     </Link>
   );

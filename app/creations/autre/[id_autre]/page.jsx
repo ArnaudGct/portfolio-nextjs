@@ -1,12 +1,10 @@
 // app/creations/album/[id_alb]/page.jsx
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../../../lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import Breadcrumb from "../../../../src/components/Breadcrumb";
 import AutreGallery from "../../../../src/sections/creations/Autre/AutreGallery";
-
-const prisma = new PrismaClient();
 
 async function getAutreDetails(id_autre) {
   try {
