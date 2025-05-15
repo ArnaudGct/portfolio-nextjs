@@ -44,10 +44,10 @@
   --color-blue-50: #1a194d;
   --color-blue-100: #222264;
   --color-blue-200: #2b2b84;
-  --color-blue-300: #2f2ca7;
-  --color-blue-400: #3933cf;
-  --color-blue-500: #4e4aec;
-  --color-blue-600: #5e66f6;
+  --color-blue-300: hsl(233, 30%, 50%);
+  --color-blue-400: hsl(242, 70%, 60%);
+  --color-blue-500: hsl(231, 65%, 71%);
+  --color-blue-600: hsl(231, 85%, 65%);
   --color-blue-700: #7d8cfc;
   --color-blue-800: #9faaff;
   --color-blue-900: #c5d3ff;
@@ -65,7 +65,7 @@
   --color-slate-900: #f1f5f9;
   --color-slate-950: #f8fafc;
 
-  --color-white: #111827;
+  --color-white: #0b1122;
   --header-bg-scrolled: rgba(17, 24, 39, 0.9);
   --header-bg-transparent: rgba(17, 24, 39, 0);
   --header-shadow-color: rgba(0, 0, 0, 0.3);

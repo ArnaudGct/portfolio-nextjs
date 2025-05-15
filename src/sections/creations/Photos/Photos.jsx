@@ -269,10 +269,22 @@ export default function Photos() {
 
   const getLastAdded = () => {
     const photoDates = photos
-      .map((p) => p.date && { type: "photo", date: new Date(p.date) })
+      .map(
+        (p) =>
+          p.derniere_modification && {
+            type: "photo",
+            date: new Date(p.derniere_modification),
+          }
+      )
       .filter(Boolean);
     const albumDates = albums
-      .map((a) => a.date && { type: "album", date: new Date(a.date) })
+      .map(
+        (a) =>
+          a.derniere_modification && {
+            type: "album",
+            date: new Date(a.derniere_modification),
+          }
+      )
       .filter(Boolean);
 
     const allEntries = [...photoDates, ...albumDates];
@@ -299,7 +311,7 @@ export default function Photos() {
 
     const article = latest.type === "album" ? "un" : "une";
 
-    return `${timeText} depuis l'ajout d'${article} ${latest.type}`;
+    return `${timeText} depuis la modification d'${article} ${latest.type}`;
   };
 
   return (
@@ -307,14 +319,33 @@ export default function Photos() {
       <div className="flex flex-col gap-8 md:gap-4">
         <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
           <div className="flex flex-col">
-            <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-              <NumberFlow value={filteredAlbums.length} /> album
-              {filteredAlbums.length > 1 ? "s" : ""} et{" "}
-              <NumberFlow value={filteredPhotos.length} /> photo
-              {filteredPhotos.length > 1 ? "s" : ""} disponible
-              {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
-            </p>
-            <p className="text-lg text-blue-900">{getLastAdded()}</p>
+            {isVisuallyLoading || isAlbumsVisuallyLoading ? (
+              <>
+                <div className="h-8 w-48 bg-blue-100/40 rounded-md mb-2"></div>
+                <div className="h-6 w-72 bg-blue-100/40 rounded-md"></div>
+              </>
+            ) : (
+              <>
+                <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
+                  {filteredAlbums.length > 0 && (
+                    <>
+                      <NumberFlow value={filteredAlbums.length} /> album
+                      {filteredAlbums.length > 1 ? "s" : ""}
+                      {filteredPhotos.length > 0 && " et "}
+                    </>
+                  )}
+                  {filteredPhotos.length > 0 && (
+                    <>
+                      <NumberFlow value={filteredPhotos.length} /> photo
+                      {filteredPhotos.length > 1 ? "s" : ""}
+                    </>
+                  )}{" "}
+                  disponible
+                  {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
+                </p>
+                <p className="text-lg text-blue-900">{getLastAdded()}</p>
+              </>
+            )}
           </div>
           <div className="w-full md:w-auto relative">
             <div className="flex">
@@ -430,16 +461,16 @@ export default function Photos() {
                     visible: { opacity: 1, scale: 1, y: 0 },
                   }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="rounded-lg overflow-hidden"
+                  className="rounded-lg overflow-hidden group"
                 >
                   <Link
                     href={`/creations/album/${album.id_alb}`}
                     className="cursor-pointer"
                   >
-                    <div className="flex flex-col gap-4 rounded-lg">
+                    <div className="flex flex-col gap-4">
                       <div className="relative h-52 w-full overflow-hidden rounded-lg bg-slate-100">
                         {album.photos.length > 0 ? (
-                          <div className="absolute inset-0 w-full h-full">
+                          <div className="absolute inset-0 w-full h-full transition-transform duration-500 group-hover:scale-105">
                             <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
                               {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
                               {album.photos[0] && (
@@ -448,14 +479,14 @@ export default function Photos() {
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[0] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
                                   )}
                                   <Image
                                     src={album.photos[0].lien_low}
                                     alt={album.photos[0].alt}
                                     fill
                                     sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                    className={`object-cover rounded-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[0]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -474,14 +505,14 @@ export default function Photos() {
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[1] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
                                   )}
                                   <Image
                                     src={album.photos[1].lien_low}
                                     alt={album.photos[1].alt}
                                     fill
                                     sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                    className={`object-cover rounded-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[1]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -499,14 +530,14 @@ export default function Photos() {
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[2] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
                                   )}
                                   <Image
                                     src={album.photos[2].lien_low}
                                     alt={album.photos[2].alt}
                                     fill
                                     sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                    className={`object-cover rounded-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[2]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -524,14 +555,14 @@ export default function Photos() {
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[3] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
                                   )}
                                   <Image
                                     src={album.photos[3].lien_low}
                                     alt={album.photos[3].alt}
                                     fill
                                     sizes="25vw"
-                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                    className={`object-cover rounded-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[3]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -549,14 +580,14 @@ export default function Photos() {
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[4] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse rounded-lg"></div>
+                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
                                   )}
                                   <Image
                                     src={album.photos[4].lien_low}
                                     alt={album.photos[4].alt}
                                     fill
                                     sizes="25vw"
-                                    className={`object-cover rounded-lg transition-transform duration-500 ${
+                                    className={`object-cover rounded-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[4]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"

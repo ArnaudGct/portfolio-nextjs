@@ -28,7 +28,7 @@ export default function Breadcrumb({ pages = [] }) {
                 <span className="mx-2 text-blue-300">/</span>
               </>
             ) : (
-              <p className="text-blue-600 font-medium truncate whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
+              <p className="text-blue-600 font-medium truncate whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-max xl:max-w-max">
                 {page.name}
               </p>
             )}

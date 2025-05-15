@@ -112,12 +112,21 @@ export default function Videos() {
       <div className="flex flex-col gap-8 md:gap-4">
         <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
           <div className="flex flex-col">
-            <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-              <NumberFlow value={filteredVideos.length} /> vidéo
-              {filteredVideos.length > 1 ? "s" : ""} disponible
-              {filteredVideos.length > 1 ? "s" : ""}
-            </p>
-            <p className="text-lg text-blue-900">{getLastAddedDays()}</p>
+            {isVisuallyLoading ? (
+              <>
+                <div className="h-8 w-48 bg-blue-100/40 rounded-md mb-2"></div>
+                <div className="h-6 w-72 bg-blue-100/40 rounded-md"></div>
+              </>
+            ) : (
+              <>
+                <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
+                  <NumberFlow value={filteredVideos.length} /> vidéo
+                  {filteredVideos.length > 1 ? "s" : ""} disponible
+                  {filteredVideos.length > 1 ? "s" : ""}
+                </p>
+                <p className="text-lg text-blue-900">{getLastAddedDays()}</p>
+              </>
+            )}
           </div>
           <div className="w-full md:w-auto relative">
             <div className="flex">
@@ -131,7 +140,6 @@ export default function Videos() {
             </div>
           </div>
         </div>
-
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             {allTags.map((type) => (

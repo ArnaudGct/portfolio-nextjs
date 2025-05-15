@@ -44,10 +44,13 @@ export default function AutreItem({ id, title, tags, miniature }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <Link href={`/creations/autre/${id}`} className="cursor-pointer">
+    <div className="">
+      <Link
+        href={`/creations/autre/${id}`}
+        className="cursor-pointer flex flex-col gap-4 group"
+      >
         <div
-          className="relative aspect-video overflow-hidden group rounded-lg"
+          className="relative aspect-video overflow-hidden rounded-lg"
           ref={videoRef}
         >
           {/* Skeleton loader */}

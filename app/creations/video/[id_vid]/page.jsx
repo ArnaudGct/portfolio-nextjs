@@ -1,13 +1,11 @@
 // app/creations/album/[id_alb]/page.jsx
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../../../lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import AlbumsGallery from "../../../../src/sections/creations/Photos/AlbumsGallery";
 import Breadcrumb from "../../../../src/components/Breadcrumb";
 import VideosGallery from "../../../../src/sections/creations/Videos/VideosGallery";
-
-const prisma = new PrismaClient();
 
 async function getVideoDetails(id_vid) {
   try {

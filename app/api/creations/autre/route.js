@@ -16,6 +16,8 @@ export async function GET() {
         lien_site: true,
         categorie: true,
         date: true,
+        afficher: true,
+        derniere_modification: true,
         autre_tags_link: {
           select: {
             autre_tags: {
@@ -40,6 +42,8 @@ export async function GET() {
       lien_site: autre.lien_site,
       categorie: autre.categorie,
       date: autre.date,
+      afficher: autre.afficher,
+      derniere_modification: autre.derniere_modification,
       tags: autre.autre_tags_link.map((tagLink) => ({
         titre: tagLink.autre_tags.titre,
         important: tagLink.autre_tags.important,

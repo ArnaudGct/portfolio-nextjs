@@ -143,18 +143,30 @@ export default function Autre() {
     if (!autres || autres.length === 0) return "Aucune autre création";
 
     const dates = autres
-      .map((v) => (v.date ? new Date(v.date) : null))
+      .map((v) =>
+        v.derniere_modification ? new Date(v.derniere_modification) : null
+      )
       .filter(Boolean);
 
     if (dates.length === 0) return "Date inconnue";
 
     const latestDate = new Date(Math.max(...dates));
-    const diffTime = Math.abs(new Date() - latestDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const now = new Date();
+    const diffMs = now.getTime() - latestDate.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-    return `${diffDays} jour${
-      diffDays > 1 ? "s" : ""
-    } depuis l'ajout d'une autre création`;
+    let timeText = "";
+    if (diffMinutes < 60) {
+      timeText = `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""}`;
+    } else if (diffHours < 24) {
+      timeText = `${diffHours} heure${diffHours > 1 ? "s" : ""}`;
+    } else {
+      timeText = `${diffDays} jour${diffDays > 1 ? "s" : ""}`;
+    }
+
+    return `${timeText} depuis la modification d'une autre création`;
   };
 
   return (
@@ -162,13 +174,22 @@ export default function Autre() {
       <div className="flex flex-col gap-8 md:gap-4">
         <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
           <div className="flex flex-col">
-            <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-              <NumberFlow value={filteredAutres.length} /> autre{" "}
-              {filteredAutres.length > 1 ? "s" : ""} création
-              {filteredAutres.length > 1 ? "s" : ""} disponible
-              {filteredAutres.length > 1 ? "s" : ""}
-            </p>
-            <p className="text-lg text-blue-900">{getLastAddedDays()}</p>
+            {isVisuallyLoading ? (
+              <>
+                <div className="h-8 w-48 bg-blue-100/40 rounded-md mb-2"></div>
+                <div className="h-6 w-72 bg-blue-100/40 rounded-md"></div>
+              </>
+            ) : (
+              <>
+                <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
+                  <NumberFlow value={filteredAutres.length} /> autre
+                  {filteredAutres.length > 1 ? "s" : ""} création
+                  {filteredAutres.length > 1 ? "s" : ""} disponible
+                  {filteredAutres.length > 1 ? "s" : ""}
+                </p>
+                <p className="text-lg text-blue-900">{getLastAddedDays()}</p>
+              </>
+            )}
           </div>
           <div className="w-full md:w-auto relative">
             <div className="flex">
