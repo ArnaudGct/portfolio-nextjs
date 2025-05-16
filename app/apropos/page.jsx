@@ -47,12 +47,12 @@ export default function APropos() {
             {/* Colonne de gauche - carte d'identité - apparaît en deuxième sur mobile */}
             <div className="flex flex-col gap-4 mx-auto lg:mx-0 w-full lg:max-w-72 order-2 md:order-1 lg:order-1 lg:col-start-1 lg:row-span-3 lg:sticky lg:top-24 lg:self-start">
               <div className="flex flex-col rounded-lg">
-                <div className="relative flex items-stretch h-[500px] lg:h-[350px] w-full">
+                <div className="relative flex items-stretch h-[450px] md:h-[300px] lg:h-[350px] w-full">
                   <Image
                     src="/arnaud_graciet-apropos.webp"
                     alt="Arnaud Graciet l'air surpris qui tient sa caméra et son objectif"
                     fill
-                    className="object-cover object-[50%_15%] rounded-t-lg border-x border-t border-blue-300"
+                    className="object-cover object-[50%_30%]  lg:object-[50%_15%] rounded-t-lg border-x border-t border-blue-300"
                     priority
                   />
                 </div>

@@ -120,7 +120,7 @@ export default function JournalPersonnel() {
 
   return (
     <main className="bg-white">
-      <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-20 pb-20">
+      <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-10 pb-20">
         <Breadcrumb
           pages={[
             { name: "À propos", path: "/apropos" },
