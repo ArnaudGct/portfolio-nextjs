@@ -474,7 +474,7 @@ export default function Photos() {
                             <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
                               {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
                               {album.photos[0] && (
-                                <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden">
+                                <div className="col-span-1 row-span-2 relative rounded-tl-lg rounded-bl-lg overflow-hidden">
                                   {/* Skeleton qui disparaît une fois l'image chargée */}
                                   {albumImageLoadingStates[
                                     album.id_alb
@@ -486,7 +486,7 @@ export default function Photos() {
                                     alt={album.photos[0].alt}
                                     fill
                                     sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-lg ${
+                                    className={`object-cover rounded-tl-lg rounded-bl-lg${
                                       albumImageLoadingStates[album.id_alb]?.[0]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -501,7 +501,7 @@ export default function Photos() {
 
                               {/* Photo 2 – colonne droite ligne 1 */}
                               {album.photos[1] && (
-                                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <div className="col-span-1 row-span-1 relative overflow-hidden rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none">
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[1] && (
@@ -512,7 +512,7 @@ export default function Photos() {
                                     alt={album.photos[1].alt}
                                     fill
                                     sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-lg ${
+                                    className={`object-cover rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none ${
                                       albumImageLoadingStates[album.id_alb]?.[1]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -526,7 +526,7 @@ export default function Photos() {
 
                               {/* Photo 3 – colonne droite ligne 2 */}
                               {album.photos[2] && (
-                                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <div className="col-span-1 row-span-1 relative rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg overflow-hidden">
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[2] && (
@@ -537,7 +537,7 @@ export default function Photos() {
                                     alt={album.photos[2].alt}
                                     fill
                                     sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-lg ${
+                                    className={`object-cover rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[2]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -551,7 +551,7 @@ export default function Photos() {
 
                               {/* Photo 4 – affichée uniquement en md+ */}
                               {album.photos[3] && (
-                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-tr-none xs:rounded-tr-br md:rounded-tr-none overflow-hidden">
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[3] && (
@@ -562,7 +562,7 @@ export default function Photos() {
                                     alt={album.photos[3].alt}
                                     fill
                                     sizes="25vw"
-                                    className={`object-cover rounded-lg ${
+                                    className={`object-cover rounded-tr-none xs:rounded-tr-br md:rounded-tr-none ${
                                       albumImageLoadingStates[album.id_alb]?.[3]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
@@ -576,7 +576,7 @@ export default function Photos() {
 
                               {/* Photo 5 – affichée uniquement en md+ */}
                               {album.photos[4] && (
-                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-br-lg xs:rounded-br-none md:rounded-br-lg overflow-hidden">
                                   {albumImageLoadingStates[
                                     album.id_alb
                                   ]?.[4] && (
@@ -587,7 +587,7 @@ export default function Photos() {
                                     alt={album.photos[4].alt}
                                     fill
                                     sizes="25vw"
-                                    className={`object-cover rounded-lg ${
+                                    className={`object-cover rounded-br-lg xs:rounded-br-none md:rounded-br-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[4]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"

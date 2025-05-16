@@ -90,7 +90,7 @@ export default async function AlbumDetails({ params }) {
 
   return (
     <main className="min-h-[calc(100vh-450px)]">
-      <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 mt-20 pb-20">
+      <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-10 pb-20">
         <Breadcrumb
           pages={[
             { name: "Mes créations", path: "/creations" },
