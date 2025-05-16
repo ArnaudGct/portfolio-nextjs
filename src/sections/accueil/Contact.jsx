@@ -1,4 +1,4 @@
-"use client"; // à ajouter si vous utilisez App Router
+"use client";
 
 import { useState, useEffect } from "react";
 import TagAvailable from "./../../components/TagAvailable";
@@ -30,8 +30,7 @@ export default function Contact() {
           isSuccess: false,
           message: "",
         }));
-      }, 5000); // 5 sec
-
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [formState.isSuccess]);
@@ -52,26 +51,24 @@ export default function Contact() {
     });
 
     try {
-      const response = await fetch("/api/send-email", {
+      const response = await fetch("https://api.arnaudgct.fr/send-email.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if (response.ok && result.success) {
         setFormState({
           isSubmitting: false,
           isSuccess: true,
           isError: false,
           message: "Message envoyé avec succès !",
         });
-        // Réinitialiser le formulaire
         setFormData({ firstName: "", lastName: "", email: "", message: "" });
       } else {
-        const data = await response.json();
-        throw new Error(data.error || "Une erreur est survenue");
+        throw new Error(result.error?.message || "Erreur lors de l'envoi");
       }
     } catch (error) {
       console.error("Erreur lors de l'envoi du formulaire:", error);
@@ -79,9 +76,7 @@ export default function Contact() {
         isSubmitting: false,
         isSuccess: false,
         isError: true,
-        message:
-          error.message ||
-          "Une erreur est survenue lors de l'envoi du message.",
+        message: error.message || "Une erreur est survenue.",
       });
     }
   };
