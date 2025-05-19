@@ -1,5 +1,6 @@
 import DailymotionPlayer from "./../../components/DaylimotionPlayer";
 import VimeoPlayer from "./../../components/VimeoPlayer";
+import CloudflarePlayer from "./../../components/CloudflarePlayer";
 import Tag from "../../components/Tag";
 import TagAvailable from "../../components/TagAvailable";
 
@@ -16,7 +17,7 @@ export default function Hero() {
       />
       {/* Vidéo */}
       <div className="absolute left-0 top-[64px] w-full h-[calc(100vh-64px)] z-10">
-        <DailymotionPlayer />
+        <CloudflarePlayer />
       </div>
       {/* <div className="absolute left-0 top-[64px] w-full h-[calc(100vh-64px)] z-10">
         <VimeoPlayer />

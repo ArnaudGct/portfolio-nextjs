@@ -123,7 +123,7 @@ export default function Header() {
         }}
       >
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-[9px]">
+          <Link href="/">
             <Image
               src="/arnaud_graciet_pp.webp"
               alt="Photo de Arnaud Graciet"
@@ -246,14 +246,16 @@ export default function Header() {
       <div className="lg:hidden relative w-full">
         <div className="flex justify-between items-center px-8 py-4 z-50">
           <div className="flex items-center gap-4 z-50">
-            <Image
-              src="/arnaud_graciet_pp.webp"
-              alt="Photo de Arnaud Graciet"
-              width={32}
-              height={32}
-              priority
-              className="rounded-lg"
-            />
+            <Link href="/">
+              <Image
+                src="/arnaud_graciet_pp.webp"
+                alt="Photo de Arnaud Graciet"
+                width={32}
+                height={32}
+                priority
+                className="rounded-lg"
+              />
+            </Link>
             <ButtonMain
               icon={<Phone size={16} strokeWidth={1.75} />}
               children="Réserver un appel"

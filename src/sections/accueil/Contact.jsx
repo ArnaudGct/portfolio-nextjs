@@ -82,8 +82,8 @@ export default function Contact() {
   };
 
   return (
-    <section className="flex flex-col gap-12 lg:flex-row items-start lg:items-center justify-center lg:justify-between w-[90%] mx-auto max-w-[1440px]">
-      <div className="w-full flex flex-col gap-8 items-start justify-start">
+    <section className="flex flex-col gap-12 lg:flex-row items-start lg:items-center justify-center lg:justify-between max-w-[1440px] w-full sm:w-[90%] sm:mx-auto">
+      <div className="w-[90%] mx-auto sm:w-full flex flex-col gap-8 items-start justify-start">
         <div className="flex gap-4 items-center justify-start">
           <Image
             src="/arnaud_graciet_pp.webp"
@@ -133,90 +133,93 @@ export default function Contact() {
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-6 w-full p-9 bg-slate-50 rounded-lg"
+        className="bg-slate-50 w-full pt-9 pb-9 sm:p-9 rounded-none sm:rounded-lg"
       >
-        <div>
-          <p className="text-blue-600 text-2xl font-extrabold font-rethink-sans">
-            Contact
-          </p>
-          <p className="text-blue-900">
-            Pour toute question ou collaboration, n'hésitez pas à me contacter.
-          </p>
-        </div>
+        <div className="flex flex-col gap-6 w-[90%] sm:w-full mx-auto">
+          <div>
+            <p className="text-blue-600 text-2xl font-extrabold font-rethink-sans">
+              Contact
+            </p>
+            <p className="text-blue-900">
+              Pour toute question ou collaboration, n'hésitez pas à me
+              contacter.
+            </p>
+          </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="w-full flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col gap-4">
+            <div className="w-full flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                name="firstName"
+                placeholder="Prénom"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+                disabled={formState.isSubmitting || formState.isSuccess}
+              />
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Nom"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+                disabled={formState.isSubmitting || formState.isSuccess}
+              />
+            </div>
             <input
-              type="text"
-              name="firstName"
-              placeholder="Prénom"
-              value={formData.firstName}
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
               onChange={handleChange}
               className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
               disabled={formState.isSubmitting || formState.isSuccess}
             />
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Nom"
-              value={formData.lastName}
+            <textarea
+              name="message"
+              placeholder="Message"
+              value={formData.message}
               onChange={handleChange}
-              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg h-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
               disabled={formState.isSubmitting || formState.isSuccess}
             />
           </div>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-            disabled={formState.isSubmitting || formState.isSuccess}
-          />
-          <textarea
-            name="message"
-            placeholder="Message"
-            value={formData.message}
-            onChange={handleChange}
-            className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg h-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-            disabled={formState.isSubmitting || formState.isSuccess}
-          />
-        </div>
 
-        <div className="flex flex-col gap-2 items-start justify-start">
-          <ButtonMain
-            icon={
-              formState.isSuccess ? (
-                <CheckCircle size={16} strokeWidth={1.75} />
-              ) : (
-                <Send size={16} strokeWidth={1.75} />
-              )
-            }
-            size="base"
-            className={`w-full xs:w-auto ${
-              formState.isSuccess ? "bg-green-600" : ""
-            }`}
-            type="submit"
-            disabled={formState.isSubmitting || formState.isSuccess}
-          >
-            {formState.isSubmitting
-              ? "Envoi en cours..."
-              : formState.isSuccess
-                ? "Message envoyé !"
-                : "Envoyer le message"}
-          </ButtonMain>
+          <div className="flex flex-col gap-2 items-start justify-start">
+            <ButtonMain
+              icon={
+                formState.isSuccess ? (
+                  <CheckCircle size={16} strokeWidth={1.75} />
+                ) : (
+                  <Send size={16} strokeWidth={1.75} />
+                )
+              }
+              size="base"
+              className={`w-full xs:w-auto ${
+                formState.isSuccess ? "bg-green-600" : ""
+              }`}
+              type="submit"
+              disabled={formState.isSubmitting || formState.isSuccess}
+            >
+              {formState.isSubmitting
+                ? "Envoi en cours..."
+                : formState.isSuccess
+                  ? "Message envoyé !"
+                  : "Envoyer le message"}
+            </ButtonMain>
 
-          {formState.isError && (
-            <div className="flex items-center gap-2 mt-2 text-red-600">
-              <AlertCircle size={16} strokeWidth={1.75} />
-              <p className="text-sm">{formState.message}</p>
-            </div>
-          )}
+            {formState.isError && (
+              <div className="flex items-center gap-2 mt-2 text-red-600">
+                <AlertCircle size={16} strokeWidth={1.75} />
+                <p className="text-sm">{formState.message}</p>
+              </div>
+            )}
+          </div>
         </div>
       </form>
     </section>

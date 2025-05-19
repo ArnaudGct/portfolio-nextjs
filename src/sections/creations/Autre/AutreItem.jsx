@@ -66,6 +66,7 @@ export default function AutreItem({ id, title, tags, miniature }) {
               alt={title}
               src={miniature}
               fill
+              priority
               className="object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 33vw"
               onLoad={handleImageLoad} // Cette fonction est appelée lorsque l'image est chargée
