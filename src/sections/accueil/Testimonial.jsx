@@ -1,21 +1,22 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import ButtonSecondary from "../../../components/ButtonSecondary";
+import { ChevronLeft, ChevronRight, Quote, GripHorizontal } from "lucide-react";
+import ButtonSecondary from "../../components/ButtonSecondary";
 
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-import "./styles.css";
-
 // import required modules
 import { Autoplay, Navigation } from "swiper/modules";
 
 export default function Testimonial() {
   const [temoignages, setTemoignages] = useState([]);
+  const prevButtonRef = useRef(null);
+  const nextButtonRef = useRef(null);
+  const [swiperInstance, setSwiperInstance] = useState(null);
 
   useEffect(() => {
     const fetchTemoignages = async () => {
@@ -32,10 +33,31 @@ export default function Testimonial() {
     fetchTemoignages();
   }, []);
 
+  // Connecter les boutons de navigation après l'initialisation de Swiper
+  useEffect(() => {
+    if (swiperInstance && prevButtonRef.current && nextButtonRef.current) {
+      swiperInstance.navigation.init();
+      swiperInstance.navigation.update();
+    }
+  }, [swiperInstance]);
+
+  // Gérer le clic manuel sur les boutons de navigation
+  const handlePrevClick = () => {
+    if (swiperInstance) {
+      swiperInstance.slidePrev();
+    }
+  };
+
+  const handleNextClick = () => {
+    if (swiperInstance) {
+      swiperInstance.slideNext();
+    }
+  };
+
   // Composant Témoignage
   const TestimonialCard = ({ temoignage }) => (
     <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 transition-all duration-500 ease-in-out">
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 select-none">
         <div className="flex gap-5 items-start">
           <Quote
             strokeWidth={1.75}
@@ -57,12 +79,16 @@ export default function Testimonial() {
     <section className="max-w-[1440px] mx-auto relative w-[90%]">
       <div className="flex gap-2 absolute bottom-0 right-0 z-10 transform translate-y-3/2">
         <ButtonSecondary
+          ref={prevButtonRef}
           className="prev-button"
           icon={<ChevronLeft className="w-6 h-6" />}
+          onClick={handlePrevClick}
         />
         <ButtonSecondary
+          ref={nextButtonRef}
           className="next-button"
           icon={<ChevronRight className="w-6 h-6" />}
+          onClick={handleNextClick}
         />
       </div>
 
@@ -70,6 +96,7 @@ export default function Testimonial() {
         slidesPerView={1}
         spaceBetween={10}
         loop={true}
+        loopAdditionalSlides={2}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
@@ -89,18 +116,40 @@ export default function Testimonial() {
           },
         }}
         navigation={{
-          nextEl: ".next-button",
-          prevEl: ".prev-button",
+          prevEl: prevButtonRef.current,
+          nextEl: nextButtonRef.current,
         }}
+        onSwiper={setSwiperInstance}
         modules={[Navigation, Autoplay]}
         className="mySwiper"
+        allowTouchMove={true}
       >
-        {temoignages.map((temoignage) => (
-          <SwiperSlide key={temoignage.id_tem}>
-            <TestimonialCard temoignage={temoignage} />
+        {temoignages.length > 0 ? (
+          temoignages.map((temoignage) => (
+            <SwiperSlide key={temoignage.id_tem}>
+              <TestimonialCard temoignage={temoignage} />
+            </SwiperSlide>
+          ))
+        ) : (
+          <SwiperSlide>
+            <div className="h-32 flex items-center justify-center">
+              <p>Chargement des témoignages...</p>
+            </div>
           </SwiperSlide>
-        ))}
+        )}
       </Swiper>
+
+      <style jsx global>{`
+        .mySwiper {
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+        .swiper-slide {
+          width: 80%;
+        }
+      `}</style>
     </section>
   );
 }

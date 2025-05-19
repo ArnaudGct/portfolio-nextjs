@@ -37,8 +37,8 @@ export default function VideosGallery({ autre }) {
           <Image
             src={autre.miniature}
             alt={autre.titre}
-            width={1920}
-            height={1080}
+            width={1280}
+            height={720}
             className={`w-full h-auto rounded-lg object-cover ${imageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-300"}`}
             priority
             onLoad={() => setImageLoading(false)}

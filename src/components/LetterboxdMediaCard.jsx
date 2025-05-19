@@ -120,9 +120,9 @@ export default function LetterboxdMediaCard() {
         imageSrc={filmData.posterUrl}
         imageAlt={`Affiche du film ${filmData.title}`}
         imageType="poster"
-        labelText="Dernier film vu"
+        labelText="Le dernier film que j'ai vu"
         titleText={filmData.title}
-        subtitleText={filmData.year}
+        subtitleText={filmData.director}
         bgColor={bgColor}
         borderColor={borderColor}
         labelColor={labelColor}

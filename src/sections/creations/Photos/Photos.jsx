@@ -485,13 +485,13 @@ export default function Photos() {
                                     src={album.photos[0].lien_low}
                                     alt={album.photos[0].alt}
                                     fill
+                                    priority
                                     sizes="(max-width: 768px) 50vw, 25vw"
                                     className={`object-cover rounded-tl-lg rounded-bl-lg${
                                       albumImageLoadingStates[album.id_alb]?.[0]
                                         ? "opacity-0"
                                         : "opacity-100 transition-opacity duration-300"
                                     }`}
-                                    priority
                                     onLoad={() =>
                                       handleAlbumImageLoad(album.id_alb, 0)
                                     }
@@ -511,6 +511,7 @@ export default function Photos() {
                                     src={album.photos[1].lien_low}
                                     alt={album.photos[1].alt}
                                     fill
+                                    priority
                                     sizes="(max-width: 768px) 50vw, 25vw"
                                     className={`object-cover rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none ${
                                       albumImageLoadingStates[album.id_alb]?.[1]
@@ -536,6 +537,7 @@ export default function Photos() {
                                     src={album.photos[2].lien_low}
                                     alt={album.photos[2].alt}
                                     fill
+                                    priority
                                     sizes="(max-width: 768px) 50vw, 25vw"
                                     className={`object-cover rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[2]
@@ -561,6 +563,7 @@ export default function Photos() {
                                     src={album.photos[3].lien_low}
                                     alt={album.photos[3].alt}
                                     fill
+                                    priority
                                     sizes="25vw"
                                     className={`object-cover rounded-tr-none xs:rounded-tr-br md:rounded-tr-none ${
                                       albumImageLoadingStates[album.id_alb]?.[3]
@@ -586,6 +589,7 @@ export default function Photos() {
                                     src={album.photos[4].lien_low}
                                     alt={album.photos[4].alt}
                                     fill
+                                    priority
                                     sizes="25vw"
                                     className={`object-cover rounded-br-lg xs:rounded-br-none md:rounded-br-lg ${
                                       albumImageLoadingStates[album.id_alb]?.[4]
@@ -698,12 +702,12 @@ export default function Photos() {
                       <div className="w-full h-full bg-blue-100/60 animate-pulse rounded-lg"></div>
                     </div>
                   )}
-
                   <Image
                     src={photo.lien_low}
                     alt={photo.alt}
                     width={500}
                     height={300}
+                    priority
                     className={`w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
                       photoLoadingState[photo.id_pho]
                         ? "opacity-0"

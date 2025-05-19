@@ -99,16 +99,18 @@ export default async function AlbumDetails({ params }) {
         />
 
         <div className="flex flex-col gap-8">
-          <div>
-            <p className="text-3xl font-extrabold font-rethink-sans text-blue-600">
-              {album.titre}
-            </p>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <p className="text-3xl font-extrabold font-rethink-sans text-blue-600">
+                {album.titre}
+              </p>
 
-            {album.description && (
-              <p className="text-lg text-blue-900">{album.description}</p>
-            )}
+              {album.description && (
+                <p className="text-lg text-blue-900">{album.description}</p>
+              )}
+            </div>
 
-            <div className="flex items-center gap-1 mt-2 text-sm text-blue-400">
+            <div className="flex items-center gap-1 text-sm text-blue-400">
               {album.date && (
                 <p className="flex items-center gap-2">
                   {formatDate(album.date)}
