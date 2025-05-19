@@ -87,7 +87,7 @@ export default function MediaCard({
 
         {/* Bloc de droite: logo, centré verticalement */}
         {logoSrc && (
-          <div className="flex items-center self-stretch pl-2">
+          <div className="hidden xs:flex items-center self-stretch pl-2">
             <Image
               src={logoSrc}
               alt={logoAlt || "Logo"}
