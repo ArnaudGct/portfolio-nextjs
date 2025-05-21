@@ -3,7 +3,7 @@
 import { Play, Pause } from "lucide-react";
 import Toggl from "./Toggl";
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion"; // Importer motion et AnimatePresence
+import { motion, AnimatePresence } from "motion/react"; // Importer motion et AnimatePresence
 
 export default function CloudflarePlayer() {
   // URL sans cache-busting pour éviter les rechargements complets
