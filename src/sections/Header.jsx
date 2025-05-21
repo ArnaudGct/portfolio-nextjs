@@ -21,9 +21,11 @@ export default function Header() {
   const [shouldShowIcons, setShouldShowIcons] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const scrollDebounceRef = useRef(null);
+  const menuRef = useRef(null);
+  const menuButtonRef = useRef(null);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen((prev) => !prev);
   };
 
   const { scrollY } = useScroll();
@@ -81,10 +83,14 @@ export default function Header() {
       }
 
       setIsScrolled(currentScrollY > 20);
+
+      // Fermer le menu mobile lors du scroll seulement si déjà ouvert
+      if (isMenuOpen && currentScrollY > 5) {
+        setIsMenuOpen(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -92,7 +98,32 @@ export default function Header() {
         clearTimeout(scrollDebounceRef.current);
       }
     };
-  }, []);
+  }, [isMenuOpen]);
+
+  // Gestion du clic à l'extérieur pour fermer le menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Vérifier que le menu est ouvert et que le clic est en dehors du menu et du bouton
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Ajouter l'écouteur d'événement seulement si le menu est ouvert
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   return (
     <header className="flex justify-center w-full fixed top-0 left-0 z-30">
@@ -265,6 +296,7 @@ export default function Header() {
             />
           </div>
           <motion.button
+            ref={menuButtonRef} // Ajout de la référence au bouton
             whileTap={{ scale: 0.85 }}
             onClick={toggleMenu}
             className="z-50"
@@ -280,7 +312,10 @@ export default function Header() {
         {/* Menu mobile (overlay) */}
         <AnimatePresence>
           {isMenuOpen ? (
-            <div className="fixed flex items-end justify-between z-50 w-full px-8 py-1">
+            <div
+              ref={menuRef} // Ajout de la référence au menu
+              className="fixed flex items-end justify-between z-50 w-full px-8 py-1"
+            >
               <motion.nav
                 className="flex flex-col items-start justify-center gap-4"
                 exit={{ opacity: 0, y: -10 }}
@@ -310,33 +345,57 @@ export default function Header() {
                   Mes créations
                 </Link>
               </motion.nav>
-              <div className="flex gap-4">
+              <div className="flex flex-col items-end gap-2">
                 <motion.div
                   exit={{ opacity: 0 }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ ease: "easeOut", duration: 0.3 }}
+                  className="flex items-stretch"
                 >
-                  <Link
-                    href="https://www.instagram.com/libellule/"
-                    onClick={toggleMenu}
-                  >
-                    <Instagram className="text-blue-700" />
-                  </Link>
+                  <ThemeToggle mobile={true} />
                 </motion.div>
-                <motion.div
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ ease: "easeOut", duration: 0.3 }}
-                >
-                  <Link
-                    href="https://www.linkedin.com/company/libelluleapp/"
-                    onClick={toggleMenu}
+                <div className="flex gap-1">
+                  <motion.div
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ ease: "easeOut", duration: 0.3 }}
                   >
-                    <Linkedin className="text-blue-700" />
-                  </Link>
-                </motion.div>
+                    <ButtonSecondary
+                      icon={<Mail size={16} strokeWidth={1.75} />}
+                      size="sm"
+                      link="mailto:contact@arnaudgct.fr"
+                      newTab={true}
+                    />
+                  </motion.div>
+                  <motion.div
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ ease: "easeOut", duration: 0.3 }}
+                  >
+                    <ButtonSecondary
+                      icon={<Instagram size={16} strokeWidth={1.75} />}
+                      size="sm"
+                      link="https://www.instagram.com/arnaud_gct/"
+                      newTab={true}
+                    />
+                  </motion.div>
+                  <motion.div
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ ease: "easeOut", duration: 0.3 }}
+                  >
+                    <ButtonSecondary
+                      icon={<Linkedin size={16} strokeWidth={1.75} />}
+                      size="sm"
+                      link="https://www.linkedin.com/in/arnaud-graciet/"
+                      newTab={true}
+                    />
+                  </motion.div>
+                </div>
               </div>
             </div>
           ) : null}

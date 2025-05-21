@@ -122,7 +122,6 @@ export default function LetterboxdMediaCard() {
         imageType="poster"
         labelText="Le dernier film que j'ai vu"
         titleText={filmData.title}
-        subtitleText={filmData.director}
         bgColor={bgColor}
         borderColor={borderColor}
         labelColor={labelColor}

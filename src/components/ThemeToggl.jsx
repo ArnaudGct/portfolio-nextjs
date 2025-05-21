@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ mobile = false }) {
   // État initial à undefined pour éviter un rendu incorrect
   const [isDark, setIsDark] = useState(undefined);
 
@@ -60,10 +60,10 @@ export default function ThemeToggle() {
   if (isDark === undefined) return null;
 
   return (
-    <div className="relative w-17 h-full flex items-center justify-between px-[2px] bg-blue-50 rounded-lg transition-colors duration-300">
+    <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px]">
       {/* Switch indicator */}
       <span
-        className={`absolute left-1 top-1 bottom-1 w-7 rounded-lg bg-blue-200 transition-transform duration-300 ${
+        className={`absolute left-1 top-1 bottom-1 rounded-lg bg-blue-200 transition-transform duration-300 w-8 ${
           isDark ? "translate-x-8" : "translate-x-0"
         }`}
       />
