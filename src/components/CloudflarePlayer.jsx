@@ -3,7 +3,7 @@
 import { Play, Pause } from "lucide-react";
 import Toggl from "./Toggl";
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react"; // Importer motion et AnimatePresence
+import { motion, AnimatePresence } from "framer-motion"; // Correction de l'import si c'était "motion/react"
 
 export default function CloudflarePlayer() {
   // URL sans cache-busting pour éviter les rechargements complets
@@ -14,9 +14,20 @@ export default function CloudflarePlayer() {
   const playerContainerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true); // true car autoPlay
   const [isMuted, setIsMuted] = useState(true); // La vidéo commence en muet
-  const [isHoveringVideo, setIsHoveringVideo] = useState(true);
-  const [isHoveringControls, setIsHoveringControls] = useState(false); // Nouvel état pour le survol des contrôles
+  const [isHoveringVideo, setIsHoveringVideo] = useState(true); // Initialisé à false pour la logique de handleInitialGlobalMouseMove
+  const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false); // Nouvel état pour la détection mobile
+
+  // Effet pour détecter la taille de l'écran (mobile/desktop)
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Vous pouvez ajuster ce seuil (md: 768px par défaut dans Tailwind)
+    };
+    checkIsMobile(); // Vérifier au montage
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
+  }, []);
 
   const togglePlayPause = () => {
     if (videoRef.current) {
@@ -76,8 +87,10 @@ export default function CloudflarePlayer() {
 
     window.addEventListener("scroll", handleScroll);
 
+    // Gère le cas où la souris est déjà sur la vidéo au chargement
     const handleInitialGlobalMouseMove = (event) => {
-      if (playerContainerRef.current) {
+      if (playerContainerRef.current && !isMobile) {
+        // Ne pas exécuter sur mobile
         const rect = playerContainerRef.current.getBoundingClientRect();
         const isOver =
           event.clientX >= rect.left &&
@@ -88,24 +101,31 @@ export default function CloudflarePlayer() {
         if (isOver) {
           setIsHoveringVideo(true);
         }
+        // Se désinscrit après la première détection ou si la souris n'est pas dessus initialement
+        window.removeEventListener("mousemove", handleInitialGlobalMouseMove);
+      } else if (isMobile) {
+        // Si mobile, on se désinscrit directement
         window.removeEventListener("mousemove", handleInitialGlobalMouseMove);
       }
     };
-
-    window.addEventListener("mousemove", handleInitialGlobalMouseMove);
+    // N'ajoute l'écouteur que si ce n'est pas mobile au départ
+    if (!isMobile) {
+      window.addEventListener("mousemove", handleInitialGlobalMouseMove);
+    }
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleInitialGlobalMouseMove);
+      window.removeEventListener("mousemove", handleInitialGlobalMouseMove); // S'assurer qu'il est bien retiré
       if (videoElement) {
         videoElement.removeEventListener("play", handlePlay);
         videoElement.removeEventListener("pause", handlePause);
       }
     };
-  }, []);
+  }, [isMobile]); // Ajouter isMobile aux dépendances pour réévaluer si l'écouteur doit être actif
 
   const handleMouseMove = (event) => {
-    if (event.currentTarget) {
+    if (event.currentTarget && !isMobile) {
+      // Ne pas suivre la souris sur mobile
       const rect = event.currentTarget.getBoundingClientRect();
       setMousePosition({
         x: event.clientX - rect.left,
@@ -118,10 +138,16 @@ export default function CloudflarePlayer() {
     <div
       ref={playerContainerRef}
       className={`relative w-full h-full overflow-hidden ${
-        isHoveringVideo && isMuted && !isHoveringControls ? "cursor-none" : "" // Modifié ici
+        !isMobile && isHoveringVideo && isMuted && !isHoveringControls
+          ? "cursor-none"
+          : "" // Modifié ici
       }`}
-      onMouseEnter={() => setIsHoveringVideo(true)}
-      onMouseLeave={() => setIsHoveringVideo(false)}
+      onMouseEnter={() => {
+        if (!isMobile) setIsHoveringVideo(true);
+      }}
+      onMouseLeave={() => {
+        if (!isMobile) setIsHoveringVideo(false);
+      }}
       onMouseMove={handleMouseMove}
     >
       {/* Vidéo HTML */}
@@ -142,9 +168,10 @@ export default function CloudflarePlayer() {
 
       {/* Curseur personnalisé qui suit la souris avec animation */}
       <AnimatePresence>
-        {isHoveringVideo &&
+        {!isMobile && // Ne pas afficher sur mobile
+          isHoveringVideo &&
           isMuted &&
-          !isHoveringControls && ( // Modifié ici
+          !isHoveringControls && (
             <motion.div
               className="absolute pointer-events-none z-[15] transform -translate-x-1/2 -translate-y-1/2"
               style={{
@@ -167,8 +194,12 @@ export default function CloudflarePlayer() {
       {/* Boutons de contrôle */}
       <div
         className="absolute bottom-4 left-4 flex space-x-4 z-10"
-        onMouseEnter={() => setIsHoveringControls(true)} // Ajouté ici
-        onMouseLeave={() => setIsHoveringControls(false)} // Ajouté ici
+        onMouseEnter={() => {
+          if (!isMobile) setIsHoveringControls(true);
+        }}
+        onMouseLeave={() => {
+          if (!isMobile) setIsHoveringControls(false);
+        }}
       >
         {/* Bouton Play/Pause */}
         <div className="flex items-center gap-2">
