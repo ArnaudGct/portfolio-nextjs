@@ -1,258 +1,200 @@
+// ...existing code...
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { Play, Pause } from "lucide-react";
 import Toggl from "./Toggl";
-import { Play, Pause, Loader2, RefreshCw } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion"; // Importer motion et AnimatePresence
 
 export default function CloudflarePlayer() {
-  const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [muted, setMuted] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-  const [playerReady, setPlayerReady] = useState(false);
-  const [showPoster, setShowPoster] = useState(true);
-
   // URL sans cache-busting pour éviter les rechargements complets
   const videoUrl =
     "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/showreel-site.mp4";
   const thumbnailUrl = "/uploads/showreel-thumbnail.webp";
+  const videoRef = useRef(null);
+  const playerContainerRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true); // true car autoPlay
+  const [isMuted, setIsMuted] = useState(true); // La vidéo commence en muet
+  const [isHoveringVideo, setIsHoveringVideo] = useState(true);
+  const [isHoveringControls, setIsHoveringControls] = useState(false); // Nouvel état pour le survol des contrôles
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    let isMounted = true;
-    const video = videoRef.current;
-    if (!video) return;
-
-    console.log("Initialisation de la vidéo...");
-
-    // Gestionnaires d'événements vidéo
-    const handlePlaying = () => {
-      console.log("Vidéo en lecture");
-      if (isMounted) {
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
         setIsPlaying(true);
-        setIsLoading(false);
-        setShowPoster(false); // Masquer le poster lors de la lecture
-      }
-    };
-
-    const handlePause = () => {
-      console.log("Vidéo en pause");
-      if (isMounted) {
+      } else {
+        videoRef.current.pause();
         setIsPlaying(false);
       }
-    };
-
-    const handleWaiting = () => {
-      console.log("Vidéo en attente/chargement");
-      if (isMounted) {
-        setIsLoading(true);
-      }
-    };
-
-    const handleCanPlayThrough = () => {
-      console.log("Vidéo peut être lue entièrement");
-      if (isMounted) {
-        setPlayerReady(true);
-        setIsLoading(false);
-      }
-    };
-
-    const handleLoadedData = () => {
-      console.log("Vidéo chargée et prête");
-      if (isMounted) {
-        setPlayerReady(true);
-        setIsLoading(false);
-
-        // Lecture automatique si autorisée par le navigateur
-        video
-          .play()
-          .then(() => {
-            console.log("Lecture initiale réussie");
-            if (isMounted) {
-              setShowPoster(false);
-            }
-          })
-          .catch((err) => console.log("Erreur de lecture initiale:", err));
-      }
-    };
-
-    const handleError = (e) => {
-      console.error("Erreur vidéo:", e, video.error);
-      if (isMounted) {
-        setLoadError(true);
-        setIsLoading(false);
-      }
-    };
-
-    // Ajout des écouteurs d'événements
-    video.addEventListener("playing", handlePlaying);
-    video.addEventListener("pause", handlePause);
-    video.addEventListener("waiting", handleWaiting);
-    video.addEventListener("canplaythrough", handleCanPlayThrough);
-    video.addEventListener("loadeddata", handleLoadedData);
-    video.addEventListener("error", handleError);
-
-    // Force le chargement
-    video.load();
-
-    // Essai de lecture différé pour contourner les restrictions des navigateurs
-    const playTimeout = setTimeout(() => {
-      if (isMounted && !isPlaying && playerReady) {
-        console.log("Tentative de lecture forcée");
-        video.play().catch(() => {});
-      }
-    }, 1000);
-
-    // Nettoyage
-    return () => {
-      isMounted = false;
-      clearTimeout(playTimeout);
-
-      video.removeEventListener("playing", handlePlaying);
-      video.removeEventListener("pause", handlePause);
-      video.removeEventListener("waiting", handleWaiting);
-      video.removeEventListener("canplaythrough", handleCanPlayThrough);
-      video.removeEventListener("loadeddata", handleLoadedData);
-      video.removeEventListener("error", handleError);
-    };
-  }, [isPlaying, playerReady]);
-
-  const togglePlay = () => {
-    if (!videoRef.current || !playerReady) return;
-
-    if (isPlaying) {
-      videoRef.current.pause();
-    } else {
-      // Si l'utilisateur clique sur lecture, cacher le poster et jouer
-      setShowPoster(false);
-      videoRef.current.play().catch((err) => {
-        console.error("Erreur lors de la lecture:", err);
-        setLoadError(true);
-      });
     }
   };
 
   const toggleMute = () => {
-    if (!videoRef.current || !playerReady) return;
-
-    videoRef.current.muted = !muted;
-    setMuted(!muted);
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
   };
 
-  const retryLoading = () => {
-    setLoadError(false);
-    setIsLoading(true);
+  const handleVideoClick = () => {
+    if (isMuted) {
+      toggleMute();
+    } else {
+      togglePlayPause();
+    }
+  };
 
-    if (videoRef.current) {
-      // Forcer le rechargement avec un nouveau timestamp
-      videoRef.current.src = videoUrl + "?retry=" + Date.now();
-      videoRef.current.load();
+  useEffect(() => {
+    const videoElement = videoRef.current;
 
-      videoRef.current.addEventListener(
-        "loadedmetadata",
-        () => {
-          videoRef.current
-            .play()
-            .then(() => {
-              setShowPoster(false);
-            })
-            .catch((err) => console.error("Erreur de reprise:", err));
-        },
-        { once: true }
-      );
+    const handleScroll = () => {
+      if (videoElement) {
+        const rect = videoElement.getBoundingClientRect();
+        if (window.scrollY > window.innerHeight * 0.8) {
+          if (!videoElement.paused) {
+            videoElement.pause();
+            setIsPlaying(false);
+          }
+        } else {
+          if (videoElement.paused) {
+            videoElement.play();
+            setIsPlaying(true);
+          }
+        }
+      }
+    };
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    if (videoElement) {
+      videoElement.addEventListener("play", handlePlay);
+      videoElement.addEventListener("pause", handlePause);
+      setIsMuted(videoElement.muted);
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    const handleInitialGlobalMouseMove = (event) => {
+      if (playerContainerRef.current) {
+        const rect = playerContainerRef.current.getBoundingClientRect();
+        const isOver =
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom;
+
+        if (isOver) {
+          setIsHoveringVideo(true);
+        }
+        window.removeEventListener("mousemove", handleInitialGlobalMouseMove);
+      }
+    };
+
+    window.addEventListener("mousemove", handleInitialGlobalMouseMove);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleInitialGlobalMouseMove);
+      if (videoElement) {
+        videoElement.removeEventListener("play", handlePlay);
+        videoElement.removeEventListener("pause", handlePause);
+      }
+    };
+  }, []);
+
+  const handleMouseMove = (event) => {
+    if (event.currentTarget) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setMousePosition({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      });
     }
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
-      {/* Background flouté pendant le chargement ou quand on montre le poster */}
-      <div
-        className="absolute inset-0 z-1"
-        style={{
-          backgroundImage: `url(${thumbnailUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "blur(3px)",
-          opacity: playerReady && !showPoster ? 0 : 1,
-          transition: "opacity 0.5s ease-in-out",
-        }}
-      />
-
-      {/* Affichage du spinner de chargement */}
-      {isLoading && !playerReady && (
-        <div className="absolute inset-0 flex items-center justify-center bg-blue-900/50 z-20">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 size={40} className="text-white animate-spin" />
-            <p className="text-white font-medium">Chargement de la vidéo...</p>
-            {loadError && (
-              <button
-                onClick={retryLoading}
-                className="mt-2 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <RefreshCw size={16} />
-                <span>Réessayer</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Contrôles custom */}
-      <div className="absolute bottom-4 left-4 z-10 flex flex-row items-center gap-4">
-        <div className="flex items-center gap-2 cursor-pointer">
-          <button
-            onClick={togglePlay}
-            className="text-slate-300"
-            disabled={isLoading || loadError || !playerReady}
-          >
-            {isPlaying ? (
-              <Play strokeWidth={1.75} />
-            ) : (
-              <Pause strokeWidth={1.75} />
-            )}
-          </button>
-          <p
-            className="text-slate-300 text-sm font-normal font-rethink-sans"
-            onClick={togglePlay}
-          >
-            {isPlaying ? "Lecture" : "Pause"}
-          </p>
-        </div>
-        <div className="flex items-center gap-1 cursor-pointer">
-          <Toggl
-            isChecked={muted}
-            setIsChecked={toggleMute}
-            disabled={isLoading || loadError || !playerReady}
-          />
-          <p
-            className="text-slate-300 text-sm font-normal font-rethink-sans"
-            onClick={toggleMute}
-          >
-            {muted ? "Activer le son" : "Couper le son"}
-          </p>
-        </div>
-      </div>
-
-      {/* Gradient de surcouche */}
-      <div className="absolute z-9 left-0 bottom-0 w-full h-full bg-gradient-to-tr from-blue-700 from-0% via-blue-300/0 via-15% to-transparent to-100% opacity-50 pointer-events-none" />
-
+    <div
+      ref={playerContainerRef}
+      className={`relative w-full h-full ${
+        isHoveringVideo && isMuted && !isHoveringControls ? "cursor-none" : "" // Modifié ici
+      }`}
+      onMouseEnter={() => setIsHoveringVideo(true)}
+      onMouseLeave={() => setIsHoveringVideo(false)}
+      onMouseMove={handleMouseMove}
+    >
       {/* Vidéo HTML */}
       <video
         ref={videoRef}
         className="w-full h-full object-cover"
-        poster={thumbnailUrl}
         autoPlay
         muted
         playsInline
         loop
         preload="auto"
-        style={{
-          opacity: playerReady && !showPoster ? 1 : 0,
-          transition: "opacity 0.5s ease-in-out",
-        }}
+        poster={thumbnailUrl}
+        onClick={handleVideoClick}
       >
         <source src={videoUrl} type="video/mp4" />
         Votre navigateur ne prend pas en charge la lecture vidéo.
       </video>
+
+      {/* Curseur personnalisé qui suit la souris avec animation */}
+      <AnimatePresence>
+        {isHoveringVideo &&
+          isMuted &&
+          !isHoveringControls && ( // Modifié ici
+            <motion.div
+              className="absolute pointer-events-none z-[15] transform -translate-x-1/2 -translate-y-1/2"
+              style={{
+                left: `${mousePosition.x}px`,
+                top: `${mousePosition.y}px`,
+              }}
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <div className="bg-black/60 text-white rounded-full p-3 w-36 h-36 flex items-center justify-center text-center text-sm shadow-lg">
+                Activer le son
+              </div>
+            </motion.div>
+          )}
+      </AnimatePresence>
+
+      <div className="absolute z-[9] left-0 bottom-0 w-full h-full bg-gradient-to-tr from-blue-700 from-0% via-blue-300/0 via-15% to-transparent to-100% opacity-50 pointer-events-none" />
+      {/* Boutons de contrôle */}
+      <div
+        className="absolute bottom-4 left-4 flex space-x-4 z-10"
+        onMouseEnter={() => setIsHoveringControls(true)} // Ajouté ici
+        onMouseLeave={() => setIsHoveringControls(false)} // Ajouté ici
+      >
+        {/* Bouton Play/Pause */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={togglePlayPause}
+            className="text-slate-300 p-2 bg-black/30 rounded-full hover:bg-black/50 transition-colors duration-300 cursor-pointer"
+            aria-label={isPlaying ? "Mettre en pause" : "Lancer la lecture"}
+          >
+            {isPlaying ? (
+              <Pause size={20} strokeWidth={1.75} />
+            ) : (
+              <Play size={20} strokeWidth={1.75} />
+            )}
+          </button>
+        </div>
+        {/* Bouton Mute/Unmute */}
+        <div className="flex items-center gap-1">
+          <Toggl isChecked={isMuted} setIsChecked={toggleMute} />
+          <span
+            className="text-slate-300 text-sm font-normal font-rethink-sans cursor-pointer"
+            onClick={toggleMute}
+          >
+            {isMuted ? "Activer le son" : "Couper le son"}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
