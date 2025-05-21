@@ -117,7 +117,7 @@ export default function CloudflarePlayer() {
   return (
     <div
       ref={playerContainerRef}
-      className={`relative w-full h-full ${
+      className={`relative w-full h-full overflow-hidden ${
         isHoveringVideo && isMuted && !isHoveringControls ? "cursor-none" : "" // Modifié ici
       }`}
       onMouseEnter={() => setIsHoveringVideo(true)}
