@@ -5968,6 +5968,8 @@ export namespace Prisma {
     description: string | null
     url_img: string | null
     position_img: string | null
+    credit_nom: string | null
+    credit_url: string | null
     afficher: boolean | null
   }
 
@@ -5978,6 +5980,8 @@ export namespace Prisma {
     description: string | null
     url_img: string | null
     position_img: string | null
+    credit_nom: string | null
+    credit_url: string | null
     afficher: boolean | null
   }
 
@@ -5988,6 +5992,8 @@ export namespace Prisma {
     description: number
     url_img: number
     position_img: number
+    credit_nom: number
+    credit_url: number
     afficher: number
     _all: number
   }
@@ -6008,6 +6014,8 @@ export namespace Prisma {
     description?: true
     url_img?: true
     position_img?: true
+    credit_nom?: true
+    credit_url?: true
     afficher?: true
   }
 
@@ -6018,6 +6026,8 @@ export namespace Prisma {
     description?: true
     url_img?: true
     position_img?: true
+    credit_nom?: true
+    credit_url?: true
     afficher?: true
   }
 
@@ -6028,6 +6038,8 @@ export namespace Prisma {
     description?: true
     url_img?: true
     position_img?: true
+    credit_nom?: true
+    credit_url?: true
     afficher?: true
     _all?: true
   }
@@ -6125,6 +6137,8 @@ export namespace Prisma {
     description: string
     url_img: string
     position_img: string
+    credit_nom: string
+    credit_url: string
     afficher: boolean
     _count: ExperiencesCountAggregateOutputType | null
     _avg: ExperiencesAvgAggregateOutputType | null
@@ -6154,6 +6168,8 @@ export namespace Prisma {
     description?: boolean
     url_img?: boolean
     position_img?: boolean
+    credit_nom?: boolean
+    credit_url?: boolean
     afficher?: boolean
   }, ExtArgs["result"]["experiences"]>
 
@@ -6166,10 +6182,12 @@ export namespace Prisma {
     description?: boolean
     url_img?: boolean
     position_img?: boolean
+    credit_nom?: boolean
+    credit_url?: boolean
     afficher?: boolean
   }
 
-  export type experiencesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_exp" | "date" | "titre" | "description" | "url_img" | "position_img" | "afficher", ExtArgs["result"]["experiences"]>
+  export type experiencesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_exp" | "date" | "titre" | "description" | "url_img" | "position_img" | "credit_nom" | "credit_url" | "afficher", ExtArgs["result"]["experiences"]>
 
   export type $experiencesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "experiences"
@@ -6181,6 +6199,8 @@ export namespace Prisma {
       description: string
       url_img: string
       position_img: string
+      credit_nom: string
+      credit_url: string
       afficher: boolean
     }, ExtArgs["result"]["experiences"]>
     composites: {}
@@ -6557,6 +6577,8 @@ export namespace Prisma {
     readonly description: FieldRef<"experiences", 'String'>
     readonly url_img: FieldRef<"experiences", 'String'>
     readonly position_img: FieldRef<"experiences", 'String'>
+    readonly credit_nom: FieldRef<"experiences", 'String'>
+    readonly credit_url: FieldRef<"experiences", 'String'>
     readonly afficher: FieldRef<"experiences", 'Boolean'>
   }
     
@@ -10073,7 +10095,7 @@ export namespace Prisma {
   export type Photos_albums_linkGroupByOutputType = {
     id_pho: number
     id_alb: number
-    position: number
+    position: number | null
     _count: Photos_albums_linkCountAggregateOutputType | null
     _avg: Photos_albums_linkAvgAggregateOutputType | null
     _sum: Photos_albums_linkSumAggregateOutputType | null
@@ -10126,7 +10148,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id_pho: number
       id_alb: number
-      position: number
+      position: number | null
     }, ExtArgs["result"]["photos_albums_link"]>
     composites: {}
   }
@@ -25106,6 +25128,8 @@ export namespace Prisma {
     description: 'description',
     url_img: 'url_img',
     position_img: 'position_img',
+    credit_nom: 'credit_nom',
+    credit_url: 'credit_url',
     afficher: 'afficher'
   };
 
@@ -25360,7 +25384,9 @@ export namespace Prisma {
     titre: 'titre',
     description: 'description',
     url_img: 'url_img',
-    position_img: 'position_img'
+    position_img: 'position_img',
+    credit_nom: 'credit_nom',
+    credit_url: 'credit_url'
   };
 
   export type experiencesOrderByRelevanceFieldEnum = (typeof experiencesOrderByRelevanceFieldEnum)[keyof typeof experiencesOrderByRelevanceFieldEnum]
@@ -25391,6 +25417,14 @@ export namespace Prisma {
   export type photos_albumsOrderByRelevanceFieldEnum = (typeof photos_albumsOrderByRelevanceFieldEnum)[keyof typeof photos_albumsOrderByRelevanceFieldEnum]
 
 
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
   export const photos_experiencesOrderByRelevanceFieldEnum: {
     titre: 'titre',
     url: 'url',
@@ -25405,14 +25439,6 @@ export namespace Prisma {
   };
 
   export type photos_tagsOrderByRelevanceFieldEnum = (typeof photos_tagsOrderByRelevanceFieldEnum)[keyof typeof photos_tagsOrderByRelevanceFieldEnum]
-
-
-  export const NullsOrder: {
-    first: 'first',
-    last: 'last'
-  };
-
-  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   export const temoignagesOrderByRelevanceFieldEnum: {
@@ -25749,6 +25775,8 @@ export namespace Prisma {
     description?: StringFilter<"experiences"> | string
     url_img?: StringFilter<"experiences"> | string
     position_img?: StringFilter<"experiences"> | string
+    credit_nom?: StringFilter<"experiences"> | string
+    credit_url?: StringFilter<"experiences"> | string
     afficher?: BoolFilter<"experiences"> | boolean
   }
 
@@ -25759,6 +25787,8 @@ export namespace Prisma {
     description?: SortOrder
     url_img?: SortOrder
     position_img?: SortOrder
+    credit_nom?: SortOrder
+    credit_url?: SortOrder
     afficher?: SortOrder
     _relevance?: experiencesOrderByRelevanceInput
   }
@@ -25773,6 +25803,8 @@ export namespace Prisma {
     description?: StringFilter<"experiences"> | string
     url_img?: StringFilter<"experiences"> | string
     position_img?: StringFilter<"experiences"> | string
+    credit_nom?: StringFilter<"experiences"> | string
+    credit_url?: StringFilter<"experiences"> | string
     afficher?: BoolFilter<"experiences"> | boolean
   }, "id_exp">
 
@@ -25783,6 +25815,8 @@ export namespace Prisma {
     description?: SortOrder
     url_img?: SortOrder
     position_img?: SortOrder
+    credit_nom?: SortOrder
+    credit_url?: SortOrder
     afficher?: SortOrder
     _count?: experiencesCountOrderByAggregateInput
     _avg?: experiencesAvgOrderByAggregateInput
@@ -25801,6 +25835,8 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"experiences"> | string
     url_img?: StringWithAggregatesFilter<"experiences"> | string
     position_img?: StringWithAggregatesFilter<"experiences"> | string
+    credit_nom?: StringWithAggregatesFilter<"experiences"> | string
+    credit_url?: StringWithAggregatesFilter<"experiences"> | string
     afficher?: BoolWithAggregatesFilter<"experiences"> | boolean
   }
 
@@ -26010,7 +26046,7 @@ export namespace Prisma {
     NOT?: photos_albums_linkWhereInput | photos_albums_linkWhereInput[]
     id_pho?: IntFilter<"photos_albums_link"> | number
     id_alb?: IntFilter<"photos_albums_link"> | number
-    position?: IntFilter<"photos_albums_link"> | number
+    position?: IntNullableFilter<"photos_albums_link"> | number | null
     photos?: XOR<PhotosScalarRelationFilter, photosWhereInput>
     photos_albums?: XOR<Photos_albumsScalarRelationFilter, photos_albumsWhereInput>
   }
@@ -26018,7 +26054,7 @@ export namespace Prisma {
   export type photos_albums_linkOrderByWithRelationInput = {
     id_pho?: SortOrder
     id_alb?: SortOrder
-    position?: SortOrder
+    position?: SortOrderInput | SortOrder
     photos?: photosOrderByWithRelationInput
     photos_albums?: photos_albumsOrderByWithRelationInput
   }
@@ -26030,7 +26066,7 @@ export namespace Prisma {
     NOT?: photos_albums_linkWhereInput | photos_albums_linkWhereInput[]
     id_pho?: IntFilter<"photos_albums_link"> | number
     id_alb?: IntFilter<"photos_albums_link"> | number
-    position?: IntFilter<"photos_albums_link"> | number
+    position?: IntNullableFilter<"photos_albums_link"> | number | null
     photos?: XOR<PhotosScalarRelationFilter, photosWhereInput>
     photos_albums?: XOR<Photos_albumsScalarRelationFilter, photos_albumsWhereInput>
   }, "id_pho_id_alb">
@@ -26038,7 +26074,7 @@ export namespace Prisma {
   export type photos_albums_linkOrderByWithAggregationInput = {
     id_pho?: SortOrder
     id_alb?: SortOrder
-    position?: SortOrder
+    position?: SortOrderInput | SortOrder
     _count?: photos_albums_linkCountOrderByAggregateInput
     _avg?: photos_albums_linkAvgOrderByAggregateInput
     _max?: photos_albums_linkMaxOrderByAggregateInput
@@ -26052,7 +26088,7 @@ export namespace Prisma {
     NOT?: photos_albums_linkScalarWhereWithAggregatesInput | photos_albums_linkScalarWhereWithAggregatesInput[]
     id_pho?: IntWithAggregatesFilter<"photos_albums_link"> | number
     id_alb?: IntWithAggregatesFilter<"photos_albums_link"> | number
-    position?: IntWithAggregatesFilter<"photos_albums_link"> | number
+    position?: IntNullableWithAggregatesFilter<"photos_albums_link"> | number | null
   }
 
   export type photos_experiencesWhereInput = {
@@ -27120,6 +27156,8 @@ export namespace Prisma {
     description: string
     url_img: string
     position_img: string
+    credit_nom: string
+    credit_url: string
     afficher: boolean
   }
 
@@ -27130,6 +27168,8 @@ export namespace Prisma {
     description: string
     url_img: string
     position_img: string
+    credit_nom: string
+    credit_url: string
     afficher: boolean
   }
 
@@ -27139,6 +27179,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     url_img?: StringFieldUpdateOperationsInput | string
     position_img?: StringFieldUpdateOperationsInput | string
+    credit_nom?: StringFieldUpdateOperationsInput | string
+    credit_url?: StringFieldUpdateOperationsInput | string
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -27149,6 +27191,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     url_img?: StringFieldUpdateOperationsInput | string
     position_img?: StringFieldUpdateOperationsInput | string
+    credit_nom?: StringFieldUpdateOperationsInput | string
+    credit_url?: StringFieldUpdateOperationsInput | string
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -27159,6 +27203,8 @@ export namespace Prisma {
     description: string
     url_img: string
     position_img: string
+    credit_nom: string
+    credit_url: string
     afficher: boolean
   }
 
@@ -27168,6 +27214,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     url_img?: StringFieldUpdateOperationsInput | string
     position_img?: StringFieldUpdateOperationsInput | string
+    credit_nom?: StringFieldUpdateOperationsInput | string
+    credit_url?: StringFieldUpdateOperationsInput | string
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -27178,6 +27226,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     url_img?: StringFieldUpdateOperationsInput | string
     position_img?: StringFieldUpdateOperationsInput | string
+    credit_nom?: StringFieldUpdateOperationsInput | string
+    credit_url?: StringFieldUpdateOperationsInput | string
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -27389,7 +27439,7 @@ export namespace Prisma {
   }
 
   export type photos_albums_linkCreateInput = {
-    position?: number
+    position?: number | null
     photos: photosCreateNestedOneWithoutPhotos_albums_linkInput
     photos_albums: photos_albumsCreateNestedOneWithoutPhotos_albums_linkInput
   }
@@ -27397,11 +27447,11 @@ export namespace Prisma {
   export type photos_albums_linkUncheckedCreateInput = {
     id_pho: number
     id_alb: number
-    position?: number
+    position?: number | null
   }
 
   export type photos_albums_linkUpdateInput = {
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
     photos?: photosUpdateOneRequiredWithoutPhotos_albums_linkNestedInput
     photos_albums?: photos_albumsUpdateOneRequiredWithoutPhotos_albums_linkNestedInput
   }
@@ -27409,23 +27459,23 @@ export namespace Prisma {
   export type photos_albums_linkUncheckedUpdateInput = {
     id_pho?: IntFieldUpdateOperationsInput | number
     id_alb?: IntFieldUpdateOperationsInput | number
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type photos_albums_linkCreateManyInput = {
     id_pho: number
     id_alb: number
-    position?: number
+    position?: number | null
   }
 
   export type photos_albums_linkUpdateManyMutationInput = {
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type photos_albums_linkUncheckedUpdateManyInput = {
     id_pho?: IntFieldUpdateOperationsInput | number
     id_alb?: IntFieldUpdateOperationsInput | number
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type photos_experiencesCreateInput = {
@@ -28543,6 +28593,8 @@ export namespace Prisma {
     description?: SortOrder
     url_img?: SortOrder
     position_img?: SortOrder
+    credit_nom?: SortOrder
+    credit_url?: SortOrder
     afficher?: SortOrder
   }
 
@@ -28557,6 +28609,8 @@ export namespace Prisma {
     description?: SortOrder
     url_img?: SortOrder
     position_img?: SortOrder
+    credit_nom?: SortOrder
+    credit_url?: SortOrder
     afficher?: SortOrder
   }
 
@@ -28567,6 +28621,8 @@ export namespace Prisma {
     description?: SortOrder
     url_img?: SortOrder
     position_img?: SortOrder
+    credit_nom?: SortOrder
+    credit_url?: SortOrder
     afficher?: SortOrder
   }
 
@@ -28744,6 +28800,17 @@ export namespace Prisma {
     id_alb?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type PhotosScalarRelationFilter = {
     is?: photosWhereInput
     isNot?: photosWhereInput
@@ -28752,6 +28819,11 @@ export namespace Prisma {
   export type Photos_albumsScalarRelationFilter = {
     is?: photos_albumsWhereInput
     isNot?: photos_albumsWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type photos_albums_linkId_phoId_albCompoundUniqueInput = {
@@ -28787,6 +28859,22 @@ export namespace Prisma {
     id_pho?: SortOrder
     id_alb?: SortOrder
     position?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type photos_experiencesOrderByRelevanceInput = {
@@ -28904,11 +28992,6 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     search?: string
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type temoignagesOrderByRelevanceInput = {
@@ -29790,6 +29873,14 @@ export namespace Prisma {
     connect?: photos_albumsWhereUniqueInput
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type photosUpdateOneRequiredWithoutPhotos_albums_linkNestedInput = {
     create?: XOR<photosCreateWithoutPhotos_albums_linkInput, photosUncheckedCreateWithoutPhotos_albums_linkInput>
     connectOrCreate?: photosCreateOrConnectWithoutPhotos_albums_linkInput
@@ -30245,6 +30336,44 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -30276,17 +30405,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -30503,13 +30621,13 @@ export namespace Prisma {
   }
 
   export type photos_albums_linkCreateWithoutPhotosInput = {
-    position?: number
+    position?: number | null
     photos_albums: photos_albumsCreateNestedOneWithoutPhotos_albums_linkInput
   }
 
   export type photos_albums_linkUncheckedCreateWithoutPhotosInput = {
     id_alb: number
-    position?: number
+    position?: number | null
   }
 
   export type photos_albums_linkCreateOrConnectWithoutPhotosInput = {
@@ -30580,7 +30698,7 @@ export namespace Prisma {
     NOT?: photos_albums_linkScalarWhereInput | photos_albums_linkScalarWhereInput[]
     id_pho?: IntFilter<"photos_albums_link"> | number
     id_alb?: IntFilter<"photos_albums_link"> | number
-    position?: IntFilter<"photos_albums_link"> | number
+    position?: IntNullableFilter<"photos_albums_link"> | number | null
   }
 
   export type photos_tags_linkUpsertWithWhereUniqueWithoutPhotosInput = {
@@ -30632,13 +30750,13 @@ export namespace Prisma {
   }
 
   export type photos_albums_linkCreateWithoutPhotos_albumsInput = {
-    position?: number
+    position?: number | null
     photos: photosCreateNestedOneWithoutPhotos_albums_linkInput
   }
 
   export type photos_albums_linkUncheckedCreateWithoutPhotos_albumsInput = {
     id_pho: number
-    position?: number
+    position?: number | null
   }
 
   export type photos_albums_linkCreateOrConnectWithoutPhotos_albumsInput = {
@@ -31473,7 +31591,7 @@ export namespace Prisma {
 
   export type photos_albums_linkCreateManyPhotosInput = {
     id_alb: number
-    position?: number
+    position?: number | null
   }
 
   export type photos_tags_linkCreateManyPhotosInput = {
@@ -31485,18 +31603,18 @@ export namespace Prisma {
   }
 
   export type photos_albums_linkUpdateWithoutPhotosInput = {
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
     photos_albums?: photos_albumsUpdateOneRequiredWithoutPhotos_albums_linkNestedInput
   }
 
   export type photos_albums_linkUncheckedUpdateWithoutPhotosInput = {
     id_alb?: IntFieldUpdateOperationsInput | number
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type photos_albums_linkUncheckedUpdateManyWithoutPhotosInput = {
     id_alb?: IntFieldUpdateOperationsInput | number
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type photos_tags_linkUpdateWithoutPhotosInput = {
@@ -31525,7 +31643,7 @@ export namespace Prisma {
 
   export type photos_albums_linkCreateManyPhotos_albumsInput = {
     id_pho: number
-    position?: number
+    position?: number | null
   }
 
   export type photos_albums_tags_linkCreateManyPhotos_albumsInput = {
@@ -31533,18 +31651,18 @@ export namespace Prisma {
   }
 
   export type photos_albums_linkUpdateWithoutPhotos_albumsInput = {
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
     photos?: photosUpdateOneRequiredWithoutPhotos_albums_linkNestedInput
   }
 
   export type photos_albums_linkUncheckedUpdateWithoutPhotos_albumsInput = {
     id_pho?: IntFieldUpdateOperationsInput | number
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type photos_albums_linkUncheckedUpdateManyWithoutPhotos_albumsInput = {
     id_pho?: IntFieldUpdateOperationsInput | number
-    position?: IntFieldUpdateOperationsInput | number
+    position?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type photos_albums_tags_linkUpdateWithoutPhotos_albumsInput = {

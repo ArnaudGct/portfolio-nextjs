@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ChevronLeft, ChevronRight, Quote, GripHorizontal } from "lucide-react";
 import ButtonSecondary from "../../components/ButtonSecondary";
+import ReactMarkdown from "react-markdown";
 
 // Import Swiper styles
 import "swiper/css";
@@ -63,10 +64,9 @@ export default function Testimonial() {
             strokeWidth={1.75}
             className="w-12 h-12 text-blue-600 shrink-0"
           />
-          <p
-            className="text-blue-900 text-normal font-normal"
-            dangerouslySetInnerHTML={{ __html: temoignage.contenu }}
-          ></p>
+          <div className="text-blue-900 text-normal font-normal">
+            <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
+          </div>
         </div>
         <p className="text-blue-600 font-rethink-sans text-lg font-extrabold text-right">
           {temoignage.client}
@@ -96,6 +96,7 @@ export default function Testimonial() {
         slidesPerView={1}
         spaceBetween={10}
         loop={true}
+        grabCursor={true}
         loopAdditionalSlides={2}
         autoplay={{
           delay: 3000,

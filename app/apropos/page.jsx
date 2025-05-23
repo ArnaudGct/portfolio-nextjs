@@ -52,9 +52,21 @@ export default function APropos() {
                     src="/arnaud_graciet-apropos.webp"
                     alt="Arnaud Graciet l'air surpris qui tient sa caméra et son objectif"
                     fill
+                    sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 288px"
                     className="object-cover object-[50%_30%]  lg:object-[50%_15%] rounded-t-lg border-x border-t border-blue-300"
                     priority
                   />
+
+                  {/* Crédit photo */}
+                  <Link
+                    href="https://www.instagram.com/amyr.mp5/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="absolute bottom-2 left-2 bg-blue-900/50 px-2 py-1 rounded text-xs text-white backdrop-blur-xs">
+                      <p>📸 Amir Metmati</p>
+                    </div>
+                  </Link>
                 </div>
                 <div className="flex flex-col gap-4 p-5 bg-blue-50 rounded-b-lg border-x border-b border-blue-300">
                   <div className="flex flex-col items-start justify-start">

@@ -48,6 +48,8 @@ model experiences {
   description  String   @db.VarChar(10000)
   url_img      String   @db.VarChar(250)
   position_img String   @db.VarChar(50)
+  credit_nom   String   @db.VarChar(50)
+  credit_url   String   @db.VarChar(250)
   afficher     Boolean
 }
 
@@ -87,7 +89,7 @@ model photos_albums {
 model photos_albums_link {
   id_pho        Int
   id_alb        Int
-  position      Int          @default(0)
+  position      Int?          @default(0)
   photos        photos        @relation(fields: [id_pho], references: [id_pho], onDelete: Cascade, map: "fk_photos2")
   photos_albums photos_albums @relation(fields: [id_alb], references: [id_alb], onDelete: Cascade, map: "fk_photos_albums")
 

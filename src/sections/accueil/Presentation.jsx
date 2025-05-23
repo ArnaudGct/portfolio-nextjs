@@ -3,6 +3,7 @@ import Tag from "./../../components/Tag";
 import TagAvailable from "./../../components/TagAvailable";
 import { Cake, MapPin } from "lucide-react"; // Assurez-vous d'avoir installé lucide-react
 import ButtonMain from "./../../components/ButtonMain";
+import Link from "next/link";
 
 export default function Presentation() {
   return (
@@ -14,8 +15,20 @@ export default function Presentation() {
           alt="Arnaud Graciet l'air surpris qui tient sa caméra et son objectif"
           fill
           className="object-cover object-[50%_15%] rounded-lg"
-          priority // optionnel : pour le chargement immédiat
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 350px"
+          priority
         />
+
+        {/* Crédit photo */}
+        <Link
+          href="https://www.instagram.com/amyr.mp5/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div className="absolute bottom-2 left-2 bg-blue-900/50 px-2 py-1 rounded text-xs text-white backdrop-blur-xs">
+            <p>📸 Amir Metmati</p>
+          </div>
+        </Link>
       </div>
       <div className="flex flex-col gap-7 items-start w-full z-2">
         <div className="flex flex-col gap-2">

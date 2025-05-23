@@ -103,6 +103,7 @@ export default function AlbumsGallery({ album }) {
                     alt={photoLink.alt}
                     width={500}
                     height={300}
+                    priority
                     className={`w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
                       loadingImages[photoId]
                         ? "opacity-0"
@@ -197,8 +198,8 @@ export default function AlbumsGallery({ album }) {
                   <Image
                     src={photos[currentPhotoIndex].lien_high}
                     alt={photos[currentPhotoIndex].alt}
-                    width={1200}
-                    height={800}
+                    width={photos[currentPhotoIndex].largeur}
+                    height={photos[currentPhotoIndex].hauteur}
                     className={`max-w-full max-h-[calc(90vh-10rem)] object-contain ${
                       modalImageLoading
                         ? "opacity-0"

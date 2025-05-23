@@ -811,8 +811,8 @@ export default function Photos() {
                   <Image
                     src={filteredPhotos[currentPhotoIndex].lien_high}
                     alt={filteredPhotos[currentPhotoIndex].alt}
-                    width={1200}
-                    height={800}
+                    width={filteredPhotos[currentPhotoIndex].largeur}
+                    height={filteredPhotos[currentPhotoIndex].hauteur}
                     className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
                     priority
                   />
