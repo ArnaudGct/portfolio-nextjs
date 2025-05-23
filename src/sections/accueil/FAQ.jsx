@@ -2,10 +2,13 @@
 import { useEffect, useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import { useRef } from "react";
 
 export default function FAQ() {
   const [questions, setQuestions] = useState([]);
   const [openIndex, setOpenIndex] = useState(null); // Ajout de l'état openIndex pour savoir quel élément est ouvert
+  const parentRef = useRef(null);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -25,10 +28,32 @@ export default function FAQ() {
     fetchQuestions();
   }, []);
 
+  useEffect(() => {
+    if (parentRef.current) {
+      const links = parentRef.current.querySelectorAll("a[href^='http']");
+      links.forEach((link) => {
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+      });
+    }
+  }, []);
+
   // Fonction pour gérer l'ouverture/fermeture des éléments
   const onOpenChange = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  const CustomLink = ({ href, children, ...props }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-400 underline hover:text-blue-500 transition-colors"
+      {...props}
+    >
+      {children}
+    </a>
+  );
 
   return (
     <section className="flex flex-col lg:flex-row gap-8 w-[90%] max-w-[1440px] mx-auto">
@@ -92,9 +117,18 @@ export default function FAQ() {
                   className="overflow-hidden"
                 >
                   <div
-                    className="px-4 pb-6 text-blue-900 text-normal font-normal"
-                    dangerouslySetInnerHTML={{ __html: question.contenu }}
-                  ></div>
+                    className="px-4 pb-6 text-blue-900 text-normal font-normal [&_a]:text-blue-400 [&_a]:underline [&_a:hover]:text-blue-500 [&_a]:transition-colors"
+                    ref={parentRef}
+                    data-externallinks="true"
+                  >
+                    <ReactMarkdown
+                      components={{
+                        a: CustomLink,
+                      }}
+                    >
+                      {question.contenu}
+                    </ReactMarkdown>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

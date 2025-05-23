@@ -14,7 +14,7 @@
   "dependencies": {
     "@icons-pack/react-simple-icons": "^12.7.0",
     "@number-flow/react": "^0.5.9",
-    "@prisma/client": "^6.8.1",
+    "@prisma/client": "^6.8.2",
     "colord": "^2.9.3",
     "formidable": "^3.5.4",
     "framer-motion": "^12.6.5",
@@ -44,7 +44,7 @@
     "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
-    "prisma": "^6.8.1",
+    "prisma": "^6.8.2",
     "tailwindcss": "^4"
   }
 }

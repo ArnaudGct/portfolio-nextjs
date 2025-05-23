@@ -118,6 +118,18 @@ export default function JournalPersonnel() {
     }
   };
 
+  const CustomLink = ({ href, children, ...props }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-500 underline hover:text-blue-600 transition-colors"
+      {...props}
+    >
+      {children}
+    </a>
+  );
+
   return (
     <main className="bg-white">
       <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-10 pb-20">
@@ -135,125 +147,145 @@ export default function JournalPersonnel() {
             </p>
             <p className="text-lg text-blue-900">
               De YouTube au freelance, en passant par la création d'applications
-              et des concours de court-métrage, je tente toujours à repousser
-              mes limites.
+              et des concours de court-métrage, je tente d'être curieux en
+              testant de nouvelles choses.
             </p>
           </div>
 
           <div className="relative">
             <div className="border-l-1 border-blue-300 absolute left-2 top-0 bottom-0"></div>
+            <div className="flex flex-col gap-20">
+              {loading ? (
+                // Afficher 3 skeletons pendant le chargement
+                <>
+                  <SkeletonExperience />
+                  <SkeletonExperience />
+                  <SkeletonExperience />
+                </>
+              ) : experiences.length === 0 ? (
+                <p className="ml-10 text-blue-900">
+                  Aucune expérience à afficher pour le moment.
+                </p>
+              ) : (
+                experiences.map((experience) => {
+                  const youtubeId = getYouTubeId(experience.url_img);
+                  const isVideo = !!youtubeId;
+                  const id = experience.id_exp;
 
-            {loading ? (
-              // Afficher 3 skeletons pendant le chargement
-              <>
-                <SkeletonExperience />
-                <SkeletonExperience />
-                <SkeletonExperience />
-              </>
-            ) : experiences.length === 0 ? (
-              <p className="ml-10 text-blue-900">
-                Aucune expérience à afficher pour le moment.
-              </p>
-            ) : (
-              experiences.map((experience) => {
-                const youtubeId = getYouTubeId(experience.url_img);
-                const isVideo = !!youtubeId;
-                const id = experience.id_exp;
+                  return (
+                    <div key={id} className="relative flex items-center">
+                      <div className="absolute left-0 top-6 w-4 h-4 bg-blue-600 rounded-full"></div>
 
-                return (
-                  <div key={id} className="relative flex items-center mb-8">
-                    <div className="absolute left-0 top-6 w-4 h-4 bg-blue-600 rounded-full"></div>
-
-                    <div className="ml-10 flex flex-col gap-4">
-                      <div className="flex flex-col">
-                        <p className="text-blue-600 font-rethink-sans font-extrabold text-xl">
-                          <FormattedDate date={experience.date} />
-                        </p>
-                        <p className="text-blue-500 text-lg">
-                          {experience.titre}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-col items-start justify-center lg:flex-row lg:justify-between gap-6">
-                        <div className="text-blue-900 flex flex-col gap-4 w-full">
-                          <ReactMarkdown>
-                            {experience.description}
-                          </ReactMarkdown>
-                        </div>
-
-                        {experience.url_img && (
-                          <div className="w-full lg:w-[50%] lg:min-w-[400px]">
-                            {isVideo ? (
-                              videosInView[id] ? (
-                                <div className="relative w-full h-full">
-                                  <LiteYouTubeEmbed
-                                    id={youtubeId}
-                                    data-id={id}
-                                    data-type="video"
-                                    ref={(el) => (videoRefs.current[id] = el)}
-                                    className={`w-full h-full rounded-lg aspect-video transition-opacity duration-500 ${
-                                      loadingVideos[id] === false
-                                        ? "opacity-100"
-                                        : "opacity-50"
-                                    }`}
-                                    title={experience.titre}
-                                    poster="hqdefault"
-                                    webp
-                                    onLoad={() => handleIframeLoad(id)}
-                                  />
-                                </div>
-                              ) : (
-                                <div
-                                  data-id={id}
-                                  data-type="video"
-                                  ref={(el) => (videoRefs.current[id] = el)}
-                                  className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse flex items-center justify-center"
-                                >
-                                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                                </div>
-                              )
-                            ) : (
-                              <div
-                                data-id={id}
-                                data-type="image"
-                                ref={(el) => (imageRefs.current[id] = el)}
-                                className="w-full h-auto"
+                      <div className="ml-10 flex flex-col gap-4">
+                        <div className="flex flex-col items-center justify-center lg:flex-row lg:justify-between gap-6">
+                          <div className="w-full flex flex-col gap-3">
+                            <div className="flex flex-col">
+                              <p className="text-blue-600 font-rethink-sans font-extrabold text-xl">
+                                <FormattedDate date={experience.date} />
+                              </p>
+                              <p className="text-blue-500 text-lg">
+                                {experience.titre}
+                              </p>
+                            </div>
+                            <div className="text-blue-900 flex flex-col gap-4 w-full">
+                              <ReactMarkdown
+                                components={{
+                                  a: CustomLink,
+                                }}
                               >
-                                {imagesInView[id] ? (
+                                {experience.description}
+                              </ReactMarkdown>
+                            </div>
+                          </div>
+
+                          {experience.url_img && (
+                            <div className="w-full lg:w-[50%] lg:min-w-[400px]">
+                              {isVideo ? (
+                                videosInView[id] ? (
                                   <div className="relative w-full h-full">
-                                    <Image
-                                      src={experience.url_img}
-                                      alt={`Image: ${experience.titre}`}
-                                      width={1280}
-                                      height={720}
-                                      className={`w-full object-cover rounded-lg aspect-video transition-opacity duration-500 ${
-                                        loadingImages[id] === false
+                                    <LiteYouTubeEmbed
+                                      id={youtubeId}
+                                      data-id={id}
+                                      data-type="video"
+                                      ref={(el) => (videoRefs.current[id] = el)}
+                                      className={`w-full h-full rounded-lg aspect-video transition-opacity duration-500 ${
+                                        loadingVideos[id] === false
                                           ? "opacity-100"
                                           : "opacity-50"
                                       }`}
-                                      onLoad={() => handleImageLoad(id)}
+                                      title={experience.titre}
+                                      poster="hqdefault"
+                                      webp
+                                      onLoad={() => handleIframeLoad(id)}
                                     />
-                                    {loadingImages[id] !== false && (
-                                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                                      </div>
-                                    )}
                                   </div>
                                 ) : (
-                                  <div className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse flex items-center justify-center">
+                                  <div
+                                    data-id={id}
+                                    data-type="video"
+                                    ref={(el) => (videoRefs.current[id] = el)}
+                                    className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse flex items-center justify-center"
+                                  >
                                     <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
                                   </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
+                                )
+                              ) : (
+                                <div
+                                  data-id={id}
+                                  data-type="image"
+                                  ref={(el) => (imageRefs.current[id] = el)}
+                                  className="w-full h-auto"
+                                >
+                                  {imagesInView[id] ? (
+                                    <div className="relative w-full h-full">
+                                      <Image
+                                        src={experience.url_img}
+                                        alt={`Image: ${experience.titre}`}
+                                        width={1280}
+                                        height={720}
+                                        className={`w-full object-cover rounded-lg aspect-video transition-opacity duration-500 ${
+                                          loadingImages[id] === false
+                                            ? "opacity-100"
+                                            : "opacity-50"
+                                        }`}
+                                        onLoad={() => handleImageLoad(id)}
+                                      />
+
+                                      {experience.credit_url &&
+                                        experience.credit_nom && (
+                                          <Link
+                                            href={experience.credit_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                          >
+                                            <div className="absolute bottom-2 left-2 bg-blue-900/50 px-2 py-1 rounded text-xs text-white backdrop-blur-xs">
+                                              <p>📸 {experience.credit_nom}</p>
+                                            </div>
+                                          </Link>
+                                        )}
+
+                                      {loadingImages[id] !== false && (
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <div className="w-full h-[300px] bg-blue-100 rounded-lg animate-pulse flex items-center justify-center">
+                                      <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </div>

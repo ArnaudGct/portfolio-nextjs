@@ -153,6 +153,8 @@ exports.Prisma.ExperiencesScalarFieldEnum = {
   description: 'description',
   url_img: 'url_img',
   position_img: 'position_img',
+  credit_nom: 'credit_nom',
+  credit_url: 'credit_url',
   afficher: 'afficher'
 };
 
@@ -338,7 +340,9 @@ exports.Prisma.experiencesOrderByRelevanceFieldEnum = {
   titre: 'titre',
   description: 'description',
   url_img: 'url_img',
-  position_img: 'position_img'
+  position_img: 'position_img',
+  credit_nom: 'credit_nom',
+  credit_url: 'credit_url'
 };
 
 exports.Prisma.faqOrderByRelevanceFieldEnum = {
@@ -357,6 +361,11 @@ exports.Prisma.photos_albumsOrderByRelevanceFieldEnum = {
   description: 'description'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.photos_experiencesOrderByRelevanceFieldEnum = {
   titre: 'titre',
   url: 'url',
@@ -365,11 +374,6 @@ exports.Prisma.photos_experiencesOrderByRelevanceFieldEnum = {
 
 exports.Prisma.photos_tagsOrderByRelevanceFieldEnum = {
   titre: 'titre'
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 
 exports.Prisma.temoignagesOrderByRelevanceFieldEnum = {

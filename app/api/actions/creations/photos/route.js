@@ -26,15 +26,22 @@ export async function POST(request) {
     // Récupérer le formData
     const formData = await request.formData();
     const image = formData.get("image");
-    const type = formData.get("type") || "high";
+    const type = formData.get("type") || "high"; // "high" ou "low"
     const baseDestination = formData.get("destination") || "uploads/photos";
 
     // Options de traitement
-    const shouldOptimize = formData.get("optimize") === "true";
-    const shouldResize = formData.get("resize") === "true";
-    const convertToWebp = formData.get("convertToWebp") === "true";
-    const maxWidth = parseInt(formData.get("maxWidth") || "800", 10);
-    const quality = parseInt(formData.get("quality") || "70", 10);
+    const shouldOptimize = formData.get("optimize") === "true"; // Généralement true
+    const shouldResize = formData.get("resize") === "true"; // Généralement true
+    const convertToWebp = formData.get("convertToWebp") === "true"; // Crucial pour la demande
+    // const forceWebp = formData.get("forceWebp") === "true"; // Moins pertinent avec la nouvelle logique, convertToWebp suffit
+    const maxWidth = parseInt(
+      formData.get("maxWidth") || (type === "high" ? "2000" : "400"),
+      10
+    );
+    const quality = parseInt(
+      formData.get("quality") || (type === "high" ? "80" : "75"),
+      10
+    );
 
     console.log({
       type,
@@ -44,6 +51,7 @@ export async function POST(request) {
       maxWidth,
       quality,
       imageType: image.type,
+      imageName: image.name,
     });
 
     if (!image) {
@@ -53,7 +61,6 @@ export async function POST(request) {
       );
     }
 
-    // Vérifier que c'est bien une image
     if (!image.type.startsWith("image/")) {
       return NextResponse.json(
         { error: "Le fichier doit être une image", receivedType: image.type },
@@ -61,141 +68,214 @@ export async function POST(request) {
       );
     }
 
-    // Construire le chemin de destination
-    const savePath =
-      type === "low" ? `${baseDestination}/low` : baseDestination;
-
-    // Créer le répertoire s'il n'existe pas
-    const uploadDir = path.join(process.cwd(), "public", savePath);
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    // Lire le fichier image
     const arrayBuffer = await image.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Récupérer les métadonnées de l'image
     let metadata;
     try {
       metadata = await sharp(buffer).metadata();
     } catch (sharpError) {
-      console.error("Erreur lors de la lecture des métadonnées:", sharpError);
-      metadata = { width: 0, height: 0, format: "unknown" };
+      console.error(
+        "Erreur lors de la lecture des métadonnées Sharp:",
+        sharpError
+      );
+      return NextResponse.json(
+        { error: "Impossible de lire les métadonnées de l'image" },
+        { status: 400 }
+      );
     }
 
-    // Générer un nom de fichier unique
-    let originalExt = path.extname(image.name).toLowerCase() || ".jpg";
-    const fileNameWithoutExt = path.basename(image.name, originalExt);
-    const uniqueId = `${Date.now()}-${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
+    const originalFileExtFromFileName =
+      path.extname(image.name).toLowerCase() || `.${metadata.format || "jpg"}`;
+    const fileNameWithoutExt = path.basename(
+      image.name,
+      originalFileExtFromFileName
+    );
+    const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
 
-    // Si on doit convertir en WebP pour la version low-res
-    if (type === "low" && convertToWebp) {
-      originalExt = ".webp";
+    // Déterminer l'extension et le nom du fichier traité (celui qui sera utilisé par la DB)
+    let processedFileExt = originalFileExtFromFileName;
+    if (convertToWebp) {
+      processedFileExt = ".webp";
+    } else if (
+      type === "high" &&
+      (image.type.includes("webp") || metadata.format === "webp")
+    ) {
+      // Si c'est déjà WebP et qu'on ne force pas une autre conversion, on garde WebP
+      processedFileExt = ".webp";
     }
 
-    const fileName = `${fileNameWithoutExt}-${uniqueId}${originalExt}`;
-    const filePath = path.join(uploadDir, fileName);
+    const processedFileName = `${fileNameWithoutExt}-${uniqueId}${processedFileExt}`;
+    const processedImageSubDir =
+      type === "low" ? `${baseDestination}/low` : baseDestination;
+    const processedImageDir = path.join(
+      process.cwd(),
+      "public",
+      processedImageSubDir
+    );
+    await fs.mkdir(processedImageDir, { recursive: true });
+    const processedImageFilePath = path.join(
+      processedImageDir,
+      processedFileName
+    );
 
-    // Traitement différent selon le type et les options
-    if (type === "high" || (!shouldResize && !shouldOptimize)) {
-      // Pour les images haute résolution ou quand aucun traitement n'est demandé,
-      // sauvegarder telles quelles
-      await fs.writeFile(filePath, buffer);
-      console.log(`Image sauvegardée sans modification: ${filePath}`);
-    } else {
-      // Pour les images à traiter (basse résolution ou optimisation demandée)
+    // Sauvegarde de l'image originale pour type === "high" (sécurité)
+    if (type === "high") {
+      const originalBackupDir = path.join(
+        process.cwd(),
+        "public",
+        baseDestination,
+        "originals"
+      );
+      await fs.mkdir(originalBackupDir, { recursive: true });
+      const backupFileName = `${fileNameWithoutExt}-${uniqueId}${originalFileExtFromFileName}`;
+      const originalBackupFilePath = path.join(
+        originalBackupDir,
+        backupFileName
+      );
       try {
-        // Initialiser Sharp
-        let sharpInstance = sharp(buffer);
-
-        // Redimensionner si nécessaire
-        if (shouldResize && metadata.width > maxWidth) {
-          const aspectRatio = metadata.width / metadata.height;
-          const newHeight = Math.round(maxWidth / aspectRatio);
-
-          sharpInstance = sharpInstance.resize({
-            width: maxWidth,
-            height: newHeight,
-            fit: "inside",
-            withoutEnlargement: true,
-          });
-          console.log(`Redimensionnement à ${maxWidth}x${newHeight}`);
-        }
-
-        // Appliquer le format de sortie et la compression
-        if (convertToWebp) {
-          sharpInstance = sharpInstance.webp({ quality });
-          console.log(`Conversion en WebP avec qualité ${quality}`);
-        } else if (image.type.includes("webp")) {
-          sharpInstance = sharpInstance.webp({ quality });
-          console.log(`Optimisation du WebP avec qualité ${quality}`);
-        } else if (image.type.includes("jpeg") || image.type.includes("jpg")) {
-          sharpInstance = sharpInstance.jpeg({ quality });
-        } else if (image.type.includes("png")) {
-          sharpInstance = sharpInstance.png({ compressionLevel: 9 });
-        }
-
-        // Sauvegarder l'image traitée
-        await sharpInstance.toFile(filePath);
-
-        // Vérifier la taille du fichier résultant
-        const stats = await fs.stat(filePath);
-        const fileSizeKB = stats.size / 1024;
+        await fs.writeFile(originalBackupFilePath, buffer);
         console.log(
-          `Image traitée: ${filePath}, taille: ${fileSizeKB.toFixed(2)}KB`
+          `Image originale sauvegardée (sécurité): ${originalBackupFilePath}`
         );
-
-        // Si la taille est encore trop grande pour la version low (>300KB)
-        if (type === "low" && fileSizeKB > 300) {
-          console.log(
-            `Image trop volumineuse (${fileSizeKB.toFixed(
-              2
-            )}KB), compression supplémentaire`
-          );
-
-          // Compression plus agressive
-          let extraCompressedSharp = sharp(buffer).resize({
-            width: Math.min(maxWidth, 600),
-            height: Math.min(metadata.height, 600),
-            fit: "inside",
-          });
-
-          if (convertToWebp || image.type.includes("webp")) {
-            extraCompressedSharp = extraCompressedSharp.webp({
-              quality: Math.max(quality - 10, 60),
-            });
-          } else {
-            extraCompressedSharp = extraCompressedSharp.jpeg({
-              quality: Math.max(quality - 10, 60),
-            });
-          }
-
-          await extraCompressedSharp.toFile(filePath);
-          console.log(`Compression supplémentaire effectuée`);
-        }
-      } catch (sharpError) {
-        console.error("Erreur lors du traitement de l'image:", sharpError);
-        // Fallback en cas d'erreur
-        await fs.writeFile(filePath, buffer);
+      } catch (backupError) {
+        console.error(
+          "Erreur lors de la sauvegarde de l'image originale:",
+          backupError
+        );
+        // Continuer même si la sauvegarde de l'original échoue
       }
     }
 
-    // Construire l'URL relative de l'image
-    const imageUrl = `/${savePath}/${fileName}`;
+    // Traitement de l'image avec Sharp
+    let sharpInstance = sharp(buffer);
+    let finalMimeType = image.type;
 
-    // Obtenir les informations sur le fichier final
-    const stats = await fs.stat(filePath);
+    // Redimensionnement commun (si activé et nécessaire)
+    if (shouldResize && metadata.width && metadata.width > maxWidth) {
+      sharpInstance = sharpInstance.resize({
+        width: maxWidth,
+        fit: "inside",
+        withoutEnlargement: true,
+      });
+      console.log(`Redimensionnement appliqué à ${maxWidth}px de largeur max.`);
+    }
+
+    if (type === "high") {
+      if (convertToWebp) {
+        sharpInstance = sharpInstance.webp({ quality: quality });
+        finalMimeType = "image/webp";
+        console.log(`Image HIGH convertie en WebP avec qualité ${quality}`);
+      } else {
+        // Fallback: optimiser le format original si pas de conversion WebP demandée
+        if (metadata.format === "jpeg") {
+          sharpInstance = sharpInstance.jpeg({ quality: quality });
+          finalMimeType = "image/jpeg";
+        } else if (metadata.format === "png") {
+          sharpInstance = sharpInstance.png({
+            quality: Math.floor(quality / 10),
+          }); // Sharp PNG quality 0-9
+          finalMimeType = "image/png";
+        } else if (metadata.format === "webp") {
+          // Si déjà webp, ré-encoder avec la qualité
+          sharpInstance = sharpInstance.webp({ quality: quality });
+          finalMimeType = "image/webp";
+        }
+        console.log(
+          `Image HIGH traitée dans son format original (${metadata.format}) avec qualité ${quality}`
+        );
+      }
+    } else {
+      // type === "low"
+      // Pour low-res, on convertit en WebP si demandé (ce qui est le cas par défaut depuis photos-actions.tsx)
+      if (convertToWebp) {
+        sharpInstance = sharpInstance.webp({ quality: quality });
+        finalMimeType = "image/webp";
+        console.log(`Image LOW convertie en WebP avec qualité ${quality}`);
+      } else {
+        // Fallback pour low-res si pas de conversion WebP
+        if (metadata.format === "jpeg") {
+          sharpInstance = sharpInstance.jpeg({ quality: quality });
+          finalMimeType = "image/jpeg";
+        } else if (metadata.format === "png") {
+          sharpInstance = sharpInstance.png({
+            quality: Math.floor(quality / 10),
+          });
+          finalMimeType = "image/png";
+        } else if (metadata.format === "webp") {
+          sharpInstance = sharpInstance.webp({ quality: quality });
+          finalMimeType = "image/webp";
+        }
+      }
+    }
+
+    try {
+      await sharpInstance.toFile(processedImageFilePath);
+      console.log(`Image traitée sauvegardée: ${processedImageFilePath}`);
+    } catch (processingError) {
+      console.error(
+        "Erreur lors du traitement final de l'image avec Sharp:",
+        processingError
+      );
+      // En cas d'erreur de traitement, on pourrait essayer de sauvegarder l'original non traité
+      // ou retourner une erreur plus spécifique. Pour l'instant, on laisse l'erreur se propager.
+      throw processingError;
+    }
+
+    let finalStats = await fs.stat(processedImageFilePath);
+    // Logique de re-compression pour les images 'low' si elles sont trop grosses
+    if (
+      type === "low" &&
+      finalStats.size / 1024 > 300 &&
+      finalMimeType === "image/webp"
+    ) {
+      console.log(
+        `Image LOW WebP trop volumineuse (${(finalStats.size / 1024).toFixed(2)}KB), tentative de compression supplémentaire`
+      );
+      try {
+        let recompressSharp = sharp(processedImageFilePath); // Relire le fichier déjà traité
+        recompressSharp = recompressSharp.webp({
+          quality: Math.max(quality - 20, 50),
+        }); // Qualité encore plus basse
+
+        const tempRecompressedPath = processedImageFilePath + ".tmp.webp";
+        await recompressSharp.toFile(tempRecompressedPath);
+
+        const tempStats = await fs.stat(tempRecompressedPath);
+        if (tempStats.size < finalStats.size) {
+          await fs.rename(tempRecompressedPath, processedImageFilePath);
+          finalStats = tempStats;
+          console.log(
+            `Compression supplémentaire WebP pour LOW effectuée, nouvelle taille: ${(finalStats.size / 1024).toFixed(2)}KB`
+          );
+        } else {
+          await fs.unlink(tempRecompressedPath);
+          console.log(
+            `Compression supplémentaire WebP pour LOW n'a pas réduit la taille.`
+          );
+        }
+      } catch (recompressError) {
+        console.error(
+          "Erreur lors de la recompression de l'image LOW:",
+          recompressError
+        );
+      }
+    }
+
+    const finalImageUrl = `/${processedImageSubDir}/${processedFileName}`;
+
+    // Récupérer les métadonnées de l'image finale (après traitement et éventuel redimensionnement)
+    const finalImageMetadata = await sharp(processedImageFilePath).metadata();
 
     return NextResponse.json({
       success: true,
-      imageUrl,
+      imageUrl: finalImageUrl, // URL de l'image traitée (WebP pour 'high')
       details: {
-        originalType: image.type,
-        finalType: convertToWebp ? "image/webp" : image.type,
-        width: metadata.width || 0,
-        height: metadata.height || 0,
-        size: (stats.size / 1024).toFixed(2) + "KB",
+        originalType: image.type, // Type MIME du fichier uploadé
+        finalType: finalMimeType, // Type MIME du fichier sauvegardé et référencé
+        width: finalImageMetadata.width || metadata.width || 0,
+        height: finalImageMetadata.height || metadata.height || 0,
+        size: (finalStats.size / 1024).toFixed(2) + "KB",
       },
     });
   } catch (error) {
