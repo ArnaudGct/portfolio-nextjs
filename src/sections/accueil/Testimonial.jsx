@@ -1,9 +1,16 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { ChevronLeft, ChevronRight, Quote, GripHorizontal } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Quote,
+  GripHorizontal,
+  Loader2,
+} from "lucide-react";
 import ButtonSecondary from "../../components/ButtonSecondary";
 import ReactMarkdown from "react-markdown";
+import { motion } from "motion/react";
 
 // Import Swiper styles
 import "swiper/css";
@@ -132,11 +139,39 @@ export default function Testimonial() {
             </SwiperSlide>
           ))
         ) : (
-          <SwiperSlide>
-            <div className="h-32 flex items-center justify-center">
-              <p>Chargement des témoignages...</p>
-            </div>
-          </SwiperSlide>
+          <>
+            {[1, 2, 3].map((index) => (
+              <SwiperSlide key={`skeleton-${index}`}>
+                <motion.div
+                  className="bg-blue-50 border border-blue-300 rounded-lg p-5 h-48"
+                  initial={{ opacity: 0.6 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    duration: 0.5,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                  }}
+                >
+                  <div className="flex flex-col gap-5 h-full">
+                    <div className="flex gap-5 items-start">
+                      <Quote
+                        strokeWidth={1.75}
+                        className="w-12 h-12 text-blue-300 shrink-0"
+                      />
+                      <div className="flex flex-col flex-grow gap-2">
+                        <div className="h-4 bg-blue-200 rounded w-full"></div>
+                        <div className="h-4 bg-blue-200 rounded w-3/4"></div>
+                        <div className="h-4 bg-blue-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                    <div className="mt-auto self-end">
+                      <div className="h-5 bg-blue-200 rounded w-32"></div>
+                    </div>
+                  </div>
+                </motion.div>
+              </SwiperSlide>
+            ))}
+          </>
         )}
       </Swiper>
 

@@ -2,13 +2,16 @@
 import { useEffect, useState } from "react";
 import Video from "../creations/Videos/VideoItem";
 import ButtonMain from "../../components/ButtonMain";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Play } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Videos() {
   const [videos, setVideos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchVideos = async () => {
+      setIsLoading(true);
       try {
         const res = await fetch("/api/accueil/videos");
         const data = await res.json();
@@ -16,6 +19,8 @@ export default function Videos() {
         setVideos(data);
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des vidéos :", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -35,16 +40,57 @@ export default function Videos() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {videos.map((video) => (
-              <Video
-                key={video.id_vid}
-                id={video.id_vid}
-                title={video.titre}
-                url={video.lien}
-                tags={video.tags}
-                pageCurrent="home"
-              />
-            ))}
+            {isLoading ? (
+              // Skeleton loader pendant le chargement
+              <>
+                {[...Array(4)].map((_, index) => (
+                  <motion.div
+                    key={`video-skeleton-${index}`}
+                    className="rounded-lg overflow-hidden"
+                    initial={{ opacity: 0.6 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                      duration: 0.5,
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                    }}
+                  >
+                    <div className="flex flex-col gap-4">
+                      {/* Placeholder pour la miniature vidéo (ratio 16:9) */}
+                      <div className="relative w-full aspect-video bg-blue-200/70 rounded-lg">
+                        {/* Icône de lecture au centre */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-full bg-blue-400/60 flex items-center justify-center">
+                            <Play className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-full flex flex-col gap-3">
+                        {/* Placeholder pour le titre */}
+                        <div className="w-3/4 h-6 bg-blue-300/80 rounded-md"></div>
+                        {/* Placeholders pour les tags */}
+                        <div className="flex gap-2 mt-1">
+                          <div className="w-16 h-5 bg-blue-300/80 rounded-full"></div>
+                          <div className="w-20 h-5 bg-blue-300/80 rounded-full"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </>
+            ) : (
+              // Affichage des vidéos une fois chargées
+              videos.map((video) => (
+                <Video
+                  key={video.id_vid}
+                  id={video.id_vid}
+                  title={video.titre}
+                  url={video.lien}
+                  tags={video.tags}
+                  pageCurrent="home"
+                />
+              ))
+            )}
           </div>
         </div>
         <ButtonMain

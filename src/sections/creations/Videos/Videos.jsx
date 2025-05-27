@@ -99,12 +99,22 @@ export default function Videos() {
     if (dates.length === 0) return "Date inconnue";
 
     const latestDate = new Date(Math.max(...dates));
-    const diffTime = Math.abs(new Date() - latestDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const now = new Date();
+    const diffMs = now.getTime() - latestDate.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-    return `${diffDays} jour${
-      diffDays > 1 ? "s" : ""
-    } depuis l'ajout d'une vidéo`;
+    let timeText = "";
+    if (diffMinutes < 60) {
+      timeText = `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""}`;
+    } else if (diffHours < 24) {
+      timeText = `${diffHours} heure${diffHours > 1 ? "s" : ""}`;
+    } else {
+      timeText = `${diffDays} jour${diffDays > 1 ? "s" : ""}`;
+    }
+
+    return `${timeText} depuis l'ajout d'une vidéo`;
   };
 
   return (

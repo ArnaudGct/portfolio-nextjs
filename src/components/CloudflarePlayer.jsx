@@ -8,7 +8,9 @@ import { motion, AnimatePresence } from "framer-motion"; // Correction de l'impo
 export default function CloudflarePlayer() {
   // URL sans cache-busting pour éviter les rechargements complets
   const videoUrl =
-    "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/showreel-site.mp4";
+    "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/swhoreel-169.mp4";
+  const videoUrlMobile =
+    "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/showreel-916.mp4";
   const thumbnailUrl = "/uploads/showreel-thumbnail.webp";
   const videoRef = useRef(null);
   const playerContainerRef = useRef(null);
@@ -18,12 +20,40 @@ export default function CloudflarePlayer() {
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false); // Nouvel état pour la détection mobile
+  const [currentVideoUrl, setCurrentVideoUrl] = useState(""); // Nouvel état pour l'URL vidéo actuelle
 
   // Effet pour détecter la taille de l'écran (mobile/desktop)
   useEffect(() => {
     const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768); // Vous pouvez ajuster ce seuil (md: 768px par défaut dans Tailwind)
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+
+      // Mettre à jour l'URL de la vidéo selon le type d'appareil
+      const newVideoUrl = mobile ? videoUrlMobile : videoUrl;
+      setCurrentVideoUrl(newVideoUrl);
+
+      // Si la vidéo est déjà chargée et que l'URL change, recharger la vidéo
+      if (videoRef.current && videoRef.current.src !== newVideoUrl) {
+        const wasPlaying = !videoRef.current.paused;
+        const currentTime = videoRef.current.currentTime;
+
+        videoRef.current.src = newVideoUrl;
+        videoRef.current.load(); // Forcer le rechargement
+
+        // Restaurer l'état de lecture après le chargement
+        videoRef.current.addEventListener(
+          "loadeddata",
+          () => {
+            videoRef.current.currentTime = currentTime;
+            if (wasPlaying) {
+              videoRef.current.play();
+            }
+          },
+          { once: true }
+        );
+      }
     };
+
     checkIsMobile(); // Vérifier au montage
     window.addEventListener("resize", checkIsMobile);
     return () => window.removeEventListener("resize", checkIsMobile);
@@ -162,7 +192,7 @@ export default function CloudflarePlayer() {
         poster={thumbnailUrl}
         onClick={handleVideoClick}
       >
-        <source src={videoUrl} type="video/mp4" />
+        <source src={currentVideoUrl} type="video/mp4" />
         Votre navigateur ne prend pas en charge la lecture vidéo.
       </video>
 

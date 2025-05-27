@@ -58,9 +58,8 @@ export default function Hero() {
         }}
       />
 
-      {/* Div d'information textuelle */}
       <div
-        ref={infoBoxRef} // Attacher la référence ici
+        ref={infoBoxRef}
         className="w-full sm:w-auto rounded-b-lg sm:rounded-br-lg sm:rounded-bl-none absolute top-[64px] left-0 bg-white z-11 px-6 sm:px-10 pb-4 pt-2 "
         style={{
           backgroundImage: "url('/grille.svg')",
@@ -83,12 +82,10 @@ export default function Hero() {
                   Arnaud Graciet
                 </span>
               </div>
-              {/* Desktop layout avec le nom inline */}
               <span className="hidden sm:inline font-covered-by-your-grace font-normal text-blue-600">
                 Arnaud Graciet
               </span>
             </h1>
-            {/* ... reste du contenu de h1 et h2 ... */}
             <h2 className="text-lg font-normal text-blue-900">
               Imaginons ensemble votre{" "}
               <span className="font-semibold text-blue-600">
@@ -100,15 +97,9 @@ export default function Hero() {
       </div>
 
       {/* Vidéo */}
-      <div
-        className="absolute left-0 w-full z-10" // Les classes top et height sont gérées par le style dynamique
-        style={videoContainerStyle}
-      >
+      <div className="absolute left-0 w-full z-10" style={videoContainerStyle}>
         <CloudflarePlayer />
       </div>
-      {/* <div className="absolute left-0 top-[64px] w-full h-[calc(100vh-64px)] z-10">
-        <VimeoPlayer />
-      </div> */}
       <div
         className="w-full sm:w-auto rounded-b-lg sm:rounded-br-lg sm:rounded-bl-none absolute top-[64px] left-0 bg-white z-11 px-6 sm:px-10 pb-4 pt-2 "
         style={{

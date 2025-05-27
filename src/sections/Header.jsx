@@ -73,6 +73,24 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    // Initialiser les états selon la position de scroll au montage du composant
+    const initializeScrollStates = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY < 10) {
+        setShouldShowIcons(true);
+      } else {
+        setShouldShowIcons(false);
+      }
+
+      setIsScrolled(currentScrollY > 20);
+    };
+
+    // Exécuter immédiatement
+    initializeScrollStates();
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
