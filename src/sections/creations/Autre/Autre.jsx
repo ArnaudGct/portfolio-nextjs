@@ -206,14 +206,24 @@ export default function Autre() {
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
-            {allTags.map((tag) => (
-              <TagCheckbox
-                key={tag}
-                type={tag}
-                selected={selectedTags.includes(tag)}
-                onToggle={toggleTag}
-              />
-            ))}
+            {allTags.map((tag) => {
+              // Compter les autres créations ayant ce tag
+              const count = autres.filter(
+                (autre) =>
+                  Array.isArray(autre.tags) &&
+                  autre.tags.some((autreTag) => autreTag.titre === tag)
+              ).length;
+
+              return (
+                <TagCheckbox
+                  key={tag}
+                  type={tag}
+                  count={count}
+                  selected={selectedTags.includes(tag)}
+                  onToggle={toggleTag}
+                />
+              );
+            })}
           </div>
 
           {(selectedTags.length > 0 || searchQuery) && (

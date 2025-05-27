@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Check } from "lucide-react"; // facultatif, pour une icône check
 
-export default function TagCheckbox({ type, selected, onToggle }) {
+export default function TagCheckbox({ type, count, selected, onToggle }) {
   return (
     <button
       onClick={() => onToggle(type)}
@@ -30,7 +30,18 @@ export default function TagCheckbox({ type, selected, onToggle }) {
       </span>
 
       {/* Label */}
-      {type}
+      <span>{type}</span>
+
+      {/* Badge de comptage amélioré */}
+      <span
+        className={`text-xs font-semibold min-w-[20px] h-5 px-1.5 rounded-full flex items-center justify-center border transition-all duration-200 ${
+          selected
+            ? "bg-blue-600 text-blue-50 border-blue-600"
+            : "bg-blue-100 text-blue-600 border-blue-200"
+        }`}
+      >
+        {count}
+      </span>
     </button>
   );
 }

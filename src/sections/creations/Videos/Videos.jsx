@@ -152,14 +152,20 @@ export default function Videos() {
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
-            {allTags.map((type) => (
-              <TagCheckbox
-                key={type}
-                type={type}
-                selected={selectedTags.includes(type)}
-                onToggle={toggleTag}
-              />
-            ))}
+            {allTags.map((type) => {
+              const count = videos.filter((video) =>
+                video.tags.includes(type)
+              ).length;
+              return (
+                <TagCheckbox
+                  key={type}
+                  type={type}
+                  count={count}
+                  selected={selectedTags.includes(type)}
+                  onToggle={toggleTag}
+                />
+              );
+            })}
           </div>
 
           {(selectedTags.length > 0 || searchQuery) && (

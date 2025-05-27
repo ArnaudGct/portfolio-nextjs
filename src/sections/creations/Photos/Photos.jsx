@@ -361,14 +361,30 @@ export default function Photos() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {allTags.map((tag) => (
-            <TagCheckbox
-              key={tag}
-              type={tag}
-              selected={selectedTags.includes(tag)}
-              onToggle={toggleTag}
-            />
-          ))}
+          {allTags.map((tag) => {
+            // Compter les photos ayant ce tag
+            const photoCount = photos.filter((photo) =>
+              (photo.allTags || []).includes(tag)
+            ).length;
+
+            // Compter les albums ayant ce tag
+            const albumCount = albums.filter((album) =>
+              (album.tags || []).includes(tag)
+            ).length;
+
+            // Total des éléments ayant ce tag
+            const totalCount = photoCount + albumCount;
+
+            return (
+              <TagCheckbox
+                key={tag}
+                type={tag}
+                count={totalCount}
+                selected={selectedTags.includes(tag)}
+                onToggle={toggleTag}
+              />
+            );
+          })}
         </div>
 
         {/* ACTIVE FILTERS */}
