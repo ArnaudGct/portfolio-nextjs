@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { parse } from "node-html-parser";
 import { Vibrant } from "node-vibrant/node";
-import { colord, extend } from "colord";
-import a11yPlugin from "colord/plugins/a11y";
-
-extend([a11yPlugin]);
+import { colord } from "colord";
 
 // Durée de mise en cache (4 heures)
 const CACHE_MAX_AGE = 60 * 60 * 4;
@@ -25,7 +22,7 @@ async function generateColorScheme(imageUrl) {
     // Extraire les couleurs avec Vibrant
     const palette = await Vibrant.from(imageUrl).getPalette();
 
-    // Utiliser Vibrant ou DarkVibrant comme couleur principale, comme dans l'API Spotify
+    // Utiliser Vibrant ou DarkVibrant comme couleur principale
     const primarySwatch =
       palette.Vibrant ||
       palette.DarkVibrant ||
@@ -39,8 +36,7 @@ async function generateColorScheme(imageUrl) {
     // Convertir en objet colord pour plus de manipulations
     const primaryColor = colord(primarySwatch.hex);
 
-    // Créer un schéma de couleurs harmonieux - utiliser la couleur directement comme dans Spotify
-    // au lieu de la rendre plus foncée
+    // Créer un schéma de couleurs harmonieux
     const bgColor = primaryColor.toHex();
 
     // Générer une couleur de bordure plus claire pour un bon contraste
@@ -51,11 +47,11 @@ async function generateColorScheme(imageUrl) {
 
     if (primaryColor.isDark()) {
       // Fond sombre: utiliser des textes clairs
-      labelColor = colord(primarySwatch.titleTextColor || "#FFFFFF").toHex();
+      labelColor = "#FFFFFF";
       titleColor = "#FFFFFF";
     } else {
       // Fond clair: utiliser des textes foncés
-      labelColor = colord(primarySwatch.bodyTextColor || "#333333").toHex();
+      labelColor = "#333333";
       titleColor = "#000000";
     }
 
@@ -77,9 +73,8 @@ async function generateColorScheme(imageUrl) {
   } catch (error) {
     console.error("Erreur lors de l'extraction des couleurs:", error);
     // Retourner des couleurs par défaut en cas d'erreur
-    // Couleurs plus vives et attrayantes
     return {
-      bgColor: "#1e3a8a", // Bleu foncé mais pas noir
+      bgColor: "#1e3a8a", // Bleu foncé
       borderColor: "#3b82f6", // Bleu plus clair pour la bordure
       labelColor: "#93c5fd", // Bleu clair pour les étiquettes
       titleColor: "#ffffff", // Blanc pour le texte principal

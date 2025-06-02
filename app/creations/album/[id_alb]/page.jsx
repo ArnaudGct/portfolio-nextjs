@@ -106,7 +106,7 @@ export default async function AlbumDetails({ params }) {
               </p>
 
               {album.description && (
-                <p className="text-lg text-blue-900">{album.description}</p>
+                <p className="text-lg/8 text-blue-900">{album.description}</p>
               )}
             </div>
 

@@ -61,11 +61,11 @@ export default function FAQ() {
 
   return (
     <section className="flex flex-col lg:flex-row gap-8 w-[90%] max-w-[1440px] mx-auto">
-      <div>
+      <div className="flex flex-col gap-2">
         <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
           Questions fréquentes
         </p>
-        <p className="text-blue-900 font-normal">
+        <p className="text-blue-900 font-normal text-lg/8">
           Voici les questions les plus fréquemment posées. Si vous avez d'autres
           questions, n'hésitez pas à me contacter.
         </p>

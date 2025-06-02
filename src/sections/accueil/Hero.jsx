@@ -117,8 +117,8 @@ export default function Hero() {
           <div className="flex flex-col w-full">
             <h1 className="flex flex-col sm:flex-row sm:items-center sm:gap-x-3 max-w-[380px] sm:max-w-none text-4xl font-black text-blue-900 font-rethink-sans">
               Hey, je suis
-              <div className="sm:hidden flex items-end gap-2 w-full">
-                <span className="flex-grow h-px bg-blue-600"></span>
+              <div className="sm:hidden flex items-end gap-4 w-full">
+                <span className="flex-grow h-px bg-blue-600 mb-2"></span>
                 <span className="whitespace-nowrap font-covered-by-your-grace font-normal text-blue-600">
                   Arnaud Graciet
                 </span>

@@ -316,9 +316,9 @@ export default function Photos() {
 
   return (
     <div className="flex flex-col gap-8 md:gap-12 w-full">
-      <div className="flex flex-col gap-8 md:gap-4">
-        <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
-          <div className="flex flex-col">
+      <div className="flex flex-col gap-6 md:gap-4">
+        <div className="flex flex-col gap-6 md:gap-4 md:flex-row justify-between items-start md:items-center">
+          <div className="flex flex-col gap-1 md:gap-0">
             {isVisuallyLoading || isAlbumsVisuallyLoading ? (
               <>
                 <div className="h-8 w-48 bg-blue-100/40 rounded-md mb-2"></div>
@@ -351,7 +351,7 @@ export default function Photos() {
             <div className="flex">
               <input
                 type="text"
-                placeholder="Rechercher une photo..."
+                placeholder="Rechercher une photo ou album..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 dark:placeholder:text-blue-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 md:w-64 lg:w-96"

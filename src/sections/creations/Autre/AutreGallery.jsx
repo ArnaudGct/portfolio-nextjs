@@ -1,15 +1,15 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react"; // Ajout de useState
+import { useState } from "react";
 import ButtonSecondary from "../../../components/ButtonSecondary";
 import Tag from "../../../components/Tag";
-import { ArrowUpRight, Loader2 } from "lucide-react"; // Ajout de Loader2
+import { ArrowUpRight, Loader2 } from "lucide-react";
 import { SiFigma, SiGithub } from "@icons-pack/react-simple-icons";
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 
 export default function VideosGallery({ autre }) {
   console.log("Autre:", autre);
-  // État pour suivre le chargement de l'image
   const [imageLoading, setImageLoading] = useState(true);
 
   function formatDate(dateString) {
@@ -22,12 +22,23 @@ export default function VideosGallery({ autre }) {
     return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
   }
 
+  // Composant personnalisé pour les liens
+  const CustomLink = ({ href, children, ...props }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-500 underline hover:text-blue-600 transition-colors"
+      {...props}
+    >
+      {children}
+    </a>
+  );
+
   return (
     <section>
       <div className="flex flex-col gap-8">
-        {/* Container pour l'image et le spinner */}
         <div className="relative w-full">
-          {/* Spinner qui s'affiche uniquement pendant le chargement */}
           {imageLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-blue-50 rounded-lg">
               <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
@@ -98,9 +109,46 @@ export default function VideosGallery({ autre }) {
               </ButtonSecondary>
             </div>
           </div>
-          <div className="text-lg text-blue-900">
+          <div className="text-normal/8 md:text-lg/8 text-blue-900">
             {autre.description && (
-              <ReactMarkdown>{autre.description}</ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  a: CustomLink,
+                  p: ({ children }) => (
+                    <p className="leading-8 mb-4">{children}</p>
+                  ),
+                  ul: ({ children }) => (
+                    <ul className="leading-8 mb-4 list-disc list-inside">
+                      {children}
+                    </ul>
+                  ),
+                  ol: ({ children }) => (
+                    <ol className="leading-8 mb-4 list-decimal list-inside">
+                      {children}
+                    </ol>
+                  ),
+                  li: ({ children }) => (
+                    <li className="leading-8">{children}</li>
+                  ),
+                  h1: ({ children }) => (
+                    <h1 className="leading-8 text-2xl font-bold mb-4">
+                      {children}
+                    </h1>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 className="leading-8 text-xl font-bold mb-3">
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="leading-8 text-lg font-bold mb-2">
+                      {children}
+                    </h3>
+                  ),
+                }}
+              >
+                {autre.description}
+              </ReactMarkdown>
             )}
           </div>
         </div>

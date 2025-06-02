@@ -21,27 +21,29 @@ export default function APropos() {
               <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
                 Qui suis-je ?
               </p>
-              <p className="text-blue-900">
-                Passionné par le multimédia et la création de contenu, j'explore
-                sans cesse de nouvelles façons d'allier technologie et
-                créativité. Mon parcours a commencé sur YouTube avec des vidéos
-                sur l'espace, où j'ai découvert ma passion pour le montage
-                vidéo.
-                <br />
-                <br />
-                Aujourd'hui, je propose mes services en tant que{" "}
-                <span className="text-blue-600">monteur vidéo freelance</span>,
-                collaborant sur des projets variés à distance. Également{" "}
-                <span className="text-blue-600">cadreur à La Rochelle</span>, je
-                peux réaliser des prises de vue sur place avant d'assurer le
-                montage pour offrir des vidéos complètes et de qualité.
-                <br />
-                <br />
-                Curieux et polyvalent,{" "}
-                <span className="text-blue-600">j'aime toucher à tout</span> :
-                audiovisuel, graphisme, communication digitale… Toujours prêt à
-                relever de nouveaux défis !
-              </p>
+              <div className="flex flex-col gap-4">
+                <p className="text-blue-900 text-base/8 font-normal">
+                  Passionné par le multimédia et la création de contenu,
+                  j'explore sans cesse de nouvelles façons d'allier technologie
+                  et créativité. Mon parcours a commencé sur YouTube avec des
+                  vidéos sur l'espace, où j'ai découvert ma passion pour le
+                  montage vidéo.
+                </p>
+                <p className="text-blue-900 text-base/8 font-normal">
+                  Aujourd'hui, je propose mes services en tant que{" "}
+                  <span className="text-blue-600">monteur vidéo freelance</span>
+                  , collaborant sur des projets variés à distance. Également{" "}
+                  <span className="text-blue-600">cadreur à La Rochelle</span>,
+                  je peux réaliser des prises de vue sur place avant d'assurer
+                  le montage pour offrir des vidéos complètes et de qualité.
+                </p>
+                <p className="text-blue-900 text-base/8 font-normal">
+                  Curieux et polyvalent,{" "}
+                  <span className="text-blue-600">j'aime toucher à tout</span> :
+                  audiovisuel, graphisme, communication digitale… Toujours prêt
+                  à relever de nouveaux défis !
+                </p>
+              </div>
             </div>
 
             {/* Colonne de gauche - carte d'identité - apparaît en deuxième sur mobile */}
@@ -119,7 +121,7 @@ export default function APropos() {
                     />
                   </div>
                   <div className="absolute bottom-2 left-4 flex flex-col items-start z-10">
-                    <p className="text-sm text-blue-300 font-rethink-sans">
+                    <p className="text-sm text-blue-300 dark:text-blue-200 font-rethink-sans">
                       J'habite à
                     </p>
                     <p className="text-blue-50 font-bold text-lg font-rethink-sans">
@@ -138,11 +140,11 @@ export default function APropos() {
 
             {/* Section "Avec quoi je travaille" - apparaît en quatrième sur mobile */}
             <div className="flex flex-col gap-6 border border-slate-300 rounded-lg p-6 bg-slate-50 order-4 lg:order-4 lg:col-start-2">
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-1">
                 <p className="text-slate-900 text-2xl font-extrabold font-rethink-sans">
                   Avec quoi je travaille ?
                 </p>
-                <p className="text-slate-400 text-base font-normal">
+                <p className="text-slate-400 text-lg/8 font-normal">
                   Les outils de post-production et d'organisation me permettant
                   de travailler de façon créative et efficace.
                 </p>

@@ -141,11 +141,11 @@ export default function JournalPersonnel() {
         />
 
         <div className="flex flex-col gap-8">
-          <div>
+          <div className="flex flex-col gap-2">
             <p className="text-3xl font-extrabold font-rethink-sans text-blue-600">
               Mon journal personnel
             </p>
-            <p className="text-lg text-blue-900">
+            <p className="text-lg/8 text-blue-900">
               De YouTube au freelance, en passant par la création d'applications
               et des concours de court-métrage, je tente d'être curieux en
               testant de nouvelles choses.
@@ -241,8 +241,8 @@ export default function JournalPersonnel() {
                                       <Image
                                         src={experience.url_img}
                                         alt={`Image: ${experience.titre}`}
-                                        width={1280}
-                                        height={720}
+                                        width={640}
+                                        height={360}
                                         className={`w-full object-cover rounded-lg aspect-video transition-opacity duration-500 ${
                                           loadingImages[id] === false
                                             ? "opacity-100"

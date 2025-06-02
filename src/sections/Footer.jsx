@@ -72,8 +72,8 @@ export default function Footer() {
               itemHeight={23}
             />
           </ul>
-          <div className="flex flex-col items-start lg:items-end justify-start">
-            <p className="text-blue-700 text-sm font-normal font-rethink-sans mt-4">
+          <div className="flex flex-col gap-2 items-start lg:items-end justify-start">
+            <p className="text-blue-700 text-sm font-normal font-rethink-sans">
               Site web designé sur{" "}
               <Link
                 href="https://www.figma.com/design/dOuGAgIR48yjWsPXHWQKEy/Portfolio---Version-public?node-id=0-1&t=wD0zYEQkVPHqQpbU-1"

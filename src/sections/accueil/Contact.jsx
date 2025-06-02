@@ -133,7 +133,7 @@ export default function Contact() {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-slate-50 w-full pt-9 pb-9 sm:p-9 rounded-none sm:rounded-lg"
+        className="bg-slate-50 dark:bg-blue-50 w-full pt-9 pb-9 sm:p-9 rounded-none sm:rounded-lg"
       >
         <div className="flex flex-col gap-6 w-[90%] sm:w-full mx-auto">
           <div>
@@ -154,7 +154,7 @@ export default function Contact() {
                 placeholder="Prénom"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-100 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
                 disabled={formState.isSubmitting || formState.isSuccess}
               />
@@ -164,7 +164,7 @@ export default function Contact() {
                 placeholder="Nom"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-100 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
                 disabled={formState.isSubmitting || formState.isSuccess}
               />
@@ -175,7 +175,7 @@ export default function Contact() {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-100 dark:text-blue-950 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
               disabled={formState.isSubmitting || formState.isSuccess}
             />
@@ -184,7 +184,7 @@ export default function Contact() {
               placeholder="Message"
               value={formData.message}
               onChange={handleChange}
-              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-50 dark:text-blue-950 rounded-lg h-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full py-2 px-4 bg-slate-200 dark:bg-blue-100 dark:text-blue-950 rounded-lg h-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
               disabled={formState.isSubmitting || formState.isSuccess}
             />

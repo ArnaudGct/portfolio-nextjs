@@ -31,12 +31,12 @@ export default function Videos() {
     <section className="w-full bg-blue-50 py-16">
       <div className="flex flex-col gap-10 max-w-[1440px] mx-auto w-[90%]">
         <div className="flex flex-col gap-6 w-full">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
               Mes dernières créations
             </p>
-            <p className="text-blue-900 text-normal font-normal font-outfit">
-              Une sélection variée de mes récentes créations en montage vidéo.
+            <p className="text-blue-900 font-normal text-lg/8">
+              Une sélection variée de mes plus récentes réalisations vidéo.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

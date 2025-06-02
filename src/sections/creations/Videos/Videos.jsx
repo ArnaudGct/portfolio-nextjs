@@ -119,9 +119,9 @@ export default function Videos() {
 
   return (
     <div className="flex flex-col gap-8 md:gap-12 w-full">
-      <div className="flex flex-col gap-8 md:gap-4">
-        <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
-          <div className="flex flex-col">
+      <div className="flex flex-col gap-6 md:gap-4">
+        <div className="flex flex-col gap-6 md:gap-4 md:flex-row justify-between items-start md:items-center">
+          <div className="flex flex-col gap-1 md:gap-0">
             {isVisuallyLoading ? (
               <>
                 <div className="h-8 w-48 bg-blue-100/40 rounded-md mb-2"></div>

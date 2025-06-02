@@ -21,6 +21,19 @@ export default function VideosGallery({ video }) {
     return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
   }
 
+  // Composant personnalisé pour les liens
+  const CustomLink = ({ href, children, ...props }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-500 underline hover:text-blue-600 transition-colors"
+      {...props}
+    >
+      {children}
+    </a>
+  );
+
   let youtubeId = "";
   try {
     const parsedUrl = new URL(video.lien);
@@ -72,9 +85,46 @@ export default function VideosGallery({ video }) {
               </ButtonSecondary>
             </div>
           </div>
-          <div className="text-lg text-blue-900">
+          <div className="text-normal/8 md:text-lg/8 text-blue-900">
             {video.description && (
-              <ReactMarkdown>{video.description}</ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  a: CustomLink,
+                  p: ({ children }) => (
+                    <p className="leading-8 mb-4">{children}</p>
+                  ),
+                  ul: ({ children }) => (
+                    <ul className="leading-8 mb-4 list-disc list-inside">
+                      {children}
+                    </ul>
+                  ),
+                  ol: ({ children }) => (
+                    <ol className="leading-8 mb-4 list-decimal list-inside">
+                      {children}
+                    </ol>
+                  ),
+                  li: ({ children }) => (
+                    <li className="leading-8">{children}</li>
+                  ),
+                  h1: ({ children }) => (
+                    <h1 className="leading-8 text-2xl font-bold mb-4">
+                      {children}
+                    </h1>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 className="leading-8 text-xl font-bold mb-3">
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="leading-8 text-lg font-bold mb-2">
+                      {children}
+                    </h3>
+                  ),
+                }}
+              >
+                {video.description}
+              </ReactMarkdown>
             )}
           </div>
         </div>

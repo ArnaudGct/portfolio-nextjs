@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function MentionsLegales() {
   return (
     <main className=" bg-white">
-      <div className="pt-24 pb-20 max-w-4xl mx-auto">
+      <div className="pt-24 pb-20 w-[90%] max-w-4xl mx-auto">
         <section className="text-slate-800 mb-6">
           <h1 className="text-3xl font-bold font-rethink-sans">
             Informations légales
@@ -41,7 +41,7 @@ export default function MentionsLegales() {
               <span className="font-medium">
                 Adresse de localisation du titulaire :
               </span>{" "}
-              16000 - Angoulême
+              17000 - La Rochelle
             </p>
             <p>
               <span className="font-medium">
@@ -60,10 +60,10 @@ export default function MentionsLegales() {
                 Pour contacter le décideur de la publication :
               </span>{" "}
               <Link
-                href="mailto:arnaud.graciet@gmail.com"
+                href="mailto:arnaud@arnaudgct.fr"
                 className="text-blue-600 hover:underline"
               >
-                arnaud.graciet@gmail.com
+                arnaud@arnaudgct.fr
               </Link>
             </p>
             <p>
@@ -77,10 +77,10 @@ export default function MentionsLegales() {
                 Pour contacter le développeur :
               </span>{" "}
               <Link
-                href="mailto:arnaud.graciet@gmail.com"
+                href="mailto:arnaud@arnaudgct.fr"
                 className="text-blue-600 hover:underline"
               >
-                arnaud.graciet@gmail.com
+                arnaud@arnaudgct.fr
               </Link>
             </p>
           </div>
@@ -102,16 +102,41 @@ export default function MentionsLegales() {
             est considéré comme usagé du site web.
           </p>
           <p className="text-justify mt-2">
-            Le site <span className="font-medium">arnaudgct.fr</span> regroupe
-            plusieurs services, en l'état, mis à disposition des usagés. Il est
-            précisé que ceux-ci doivent rester honnête et faire preuve de bonne
-            foi tant envers les différents usagés qu'envers le Développeur du
-            site arnaudgct.fr. Le site arnaudgct.fr est actualisé de façon
-            régulière par Arnaud Graciet.
+            Le site{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>{" "}
+            regroupe plusieurs services, en l'état, mis à disposition des
+            usagés. Il est précisé que ceux-ci doivent rester honnête et faire
+            preuve de bonne foi tant envers les différents usagés qu'envers le
+            Développeur du site{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>
+            . Le site{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>{" "}
+            est actualisé de façon régulière par Arnaud Graciet.
           </p>
           <p className="text-justify mt-2">
-            Arnaud Graciet s'efforce d'offrir sur le site arnaudgct.fr des
-            informations les plus précises possibles (sous réserve de
+            Arnaud Graciet s'efforce d'offrir sur le site{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>{" "}
+            des informations les plus précises possibles (sous réserve de
             modifications apportées depuis leur mise en ligne), mais ne peuvent
             affirmer l'exactitude, la complétude et les informations diffusées
             sur son site, qu'elles soient ou non de son fait. En dépendance,
@@ -127,15 +152,35 @@ export default function MentionsLegales() {
           </h2>
 
           <p className="text-justify">
-            Le site internet arnaudgct.fr est habituellement accessible aux
-            usagés H24 7/7, excepté en cas d'interruption, programmée ou non,
-            pour les besoins de la maintenance ou en cas de force majeure. En
-            cas de service indisponible, arnaudgct.fr s'engage à faire de son
-            mieux pour rétablir l'accès au site et tentera alors d'informer
-            préalablement aux utilisateurs Dates & heures de l'intervention.
-            N'étant subordonné qu'à une obligation de moyen, arnaudgct.fr ne
-            saurait être designé comme responsable des dommages, peu importe sa
-            nature, résultant d'une indisponibilité du service.
+            Le site internet{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>{" "}
+            est habituellement accessible aux usagés H24 7/7, excepté en cas
+            d'interruption, programmée ou non, pour les besoins de la
+            maintenance ou en cas de force majeure. En cas de service
+            indisponible,{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>{" "}
+            s'engage à faire de son mieux pour rétablir l'accès au site et
+            tentera alors d'informer préalablement aux utilisateurs Dates &
+            heures de l'intervention. N'étant subordonné qu'à une obligation de
+            moyen,{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>{" "}
+            ne saurait être designé comme responsable des dommages, peu importe
+            sa nature, résultant d'une indisponibilité du service.
           </p>
         </section>
 
@@ -152,16 +197,22 @@ export default function MentionsLegales() {
             logiciels, etc…
           </p>
           <p className="text-justify mt-2">
-            Toute reproduction même partielle du site suivant arnaudgct.fr,
-            affichage, édition, mis à jour totale ou partielle de l'un
+            Toute reproduction même partielle du site suivant{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>
+            , affichage, édition, mis à jour totale ou partielle de l'un
             quelconque de ces éléments, sans tenir compte du moyen ou la
             technique utilisée, est strictement interdite, excepté autorisation
             préalable de Arnaud Graciet, propriétaire du site web à l'email :{" "}
             <Link
-              href="mailto:arnaud.graciet@gmail.com"
+              href="mailto:arnaud@arnaudgct.fr"
               className="text-blue-600 hover:underline"
             >
-              arnaud.graciet@gmail.com
+              arnaud@arnaudgct.fr
             </Link>
             , à défaut elle sera considérée de la même manière qu'une
             contrefaçon et passible de poursuite conformément aux dispositions
@@ -176,12 +227,19 @@ export default function MentionsLegales() {
           </h2>
 
           <p className="text-justify">
-            Le site web arnaudgct.fr contient de multiple URL cliquable vers
-            d'autres sites web (partenaires, informations...) mis en place avec
-            l'autorisation de Arnaud Graciet. Cependant, Arnaud Graciet n'a pas
-            la possibilité de contrôler l'intégralité des élements des sites
-            visités et décline donc toute responsabilité de ce fait concernant
-            les risques de contenus illicites.
+            Le site web{" "}
+            <Link
+              href="https://arnaudgct.fr"
+              className="text-blue-600 hover:underline"
+            >
+              arnaudgct.fr
+            </Link>{" "}
+            contient de multiple URL cliquable vers d'autres sites web
+            (partenaires, informations...) mis en place avec l'autorisation de
+            Arnaud Graciet. Cependant, Arnaud Graciet n'a pas la possibilité de
+            contrôler l'intégralité des élements des sites visités et décline
+            donc toute responsabilité de ce fait concernant les risques de
+            contenus illicites.
           </p>
         </section>
       </div>
