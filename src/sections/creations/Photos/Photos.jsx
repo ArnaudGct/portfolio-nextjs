@@ -29,6 +29,7 @@ export default function Photos() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isAlbumsLoading, setIsAlbumsLoading] = useState(true);
+  const [albumImageLoadingStates, setAlbumImageLoadingStates] = useState({});
   const [isVisuallyLoading, setIsVisuallyLoading] = useState(true);
   const [isAlbumsVisuallyLoading, setIsAlbumsVisuallyLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
