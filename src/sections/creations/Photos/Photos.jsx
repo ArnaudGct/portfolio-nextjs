@@ -33,11 +33,6 @@ export default function Photos() {
   const [isAlbumsVisuallyLoading, setIsAlbumsVisuallyLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(null);
-  const [modalImageLoading, setModalImageLoading] = useState(true);
-  const [highResLoaded, setHighResLoaded] = useState(false);
-
-  const [albumImageLoadingStates, setAlbumImageLoadingStates] = useState({});
-  const [photoLoadingState, setPhotoLoadingState] = useState({});
 
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? "hidden" : "auto";
@@ -333,36 +328,17 @@ export default function Photos() {
 
   return (
     <div className="flex flex-col gap-8 md:gap-12 w-full">
-      <div className="flex flex-col gap-6 md:gap-4">
-        <div className="flex flex-col gap-6 md:gap-4 md:flex-row justify-between items-start md:items-center">
-          <div className="flex flex-col gap-1 md:gap-0">
-            {isVisuallyLoading || isAlbumsVisuallyLoading ? (
-              <>
-                <div className="h-8 w-48 bg-blue-100/40 rounded-md mb-2"></div>
-                <div className="h-6 w-72 bg-blue-100/40 rounded-md"></div>
-              </>
-            ) : (
-              <>
-                <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-                  {filteredAlbums.length > 0 && (
-                    <>
-                      <NumberFlow value={filteredAlbums.length} /> album
-                      {filteredAlbums.length > 1 ? "s" : ""}
-                      {filteredPhotos.length > 0 && " et "}
-                    </>
-                  )}
-                  {filteredPhotos.length > 0 && (
-                    <>
-                      <NumberFlow value={filteredPhotos.length} /> photo
-                      {filteredPhotos.length > 1 ? "s" : ""}
-                    </>
-                  )}{" "}
-                  disponible
-                  {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
-                </p>
-                <p className="text-lg text-blue-900">{getLastAdded()}</p>
-              </>
-            )}
+      <div className="flex flex-col gap-8 md:gap-4">
+        <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
+          <div className="flex flex-col">
+            <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
+              <NumberFlow value={filteredAlbums.length} /> album
+              {filteredAlbums.length > 1 ? "s" : ""} et{" "}
+              <NumberFlow value={filteredPhotos.length} /> photo
+              {filteredPhotos.length > 1 ? "s" : ""} disponible
+              {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
+            </p>
+            <p className="text-lg text-blue-900">{getLastAdded()}</p>
           </div>
           <div className="w-full md:w-auto relative">
             <div className="flex">
@@ -860,19 +836,9 @@ export default function Photos() {
                   <Image
                     src={filteredPhotos[currentPhotoIndex].lien_low}
                     alt={filteredPhotos[currentPhotoIndex].alt}
-                    width={Math.floor(
-                      filteredPhotos[currentPhotoIndex].largeur / 4
-                    )}
-                    height={Math.floor(
-                      filteredPhotos[currentPhotoIndex].hauteur / 4
-                    )}
-                    className={`max-w-[90%] max-h-[calc(90vh-10rem)] object-contain absolute ${
-                      modalImageLoading
-                        ? "opacity-0"
-                        : highResLoaded
-                          ? "opacity-0 transition-opacity duration-500"
-                          : "opacity-100 transition-opacity duration-300"
-                    }`}
+                    width={1200}
+                    height={800}
+                    className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
                     priority
                     onLoad={handleLowResLoad}
                   />
@@ -986,7 +952,12 @@ export default function Photos() {
                 </motion.div>
               </motion.div>
 
-              <div className="p-4 bg-white border-t border-slate-200">
+              <div
+                className="p-4 bg-white border-t border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
                 <div className="flex flex-wrap gap-2 mt-2">
                   {filteredPhotos[currentPhotoIndex].tags.map(
                     (tag, tagIndex) => (
@@ -1005,7 +976,12 @@ export default function Photos() {
                   )}
                 </div>
 
-                <div className="justify-between items-center mt-4 text-sm text-slate-500 md:flex hidden">
+                <div
+                  className="justify-between items-center mt-4 text-sm text-gray-500 md:flex hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.3 }}
+                >
                   <p className="text-blue-600 font-medium">
                     {currentPhotoIndex + 1} / {filteredPhotos.length}
                   </p>
