@@ -35,7 +35,7 @@ export default function Videos() {
             <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
               Mes dernières créations
             </p>
-            <p className="text-blue-900 font-normal text-lg/8">
+            <p className="text-blue-900 font-normal text-lg/6">
               Une sélection variée de mes plus récentes réalisations vidéo.
             </p>
           </div>

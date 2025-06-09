@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, X, Loader2 } from "lucide-react"; // Ajout du Loader2
+import { ArrowLeft, ArrowRight, X, Loader2 } from "lucide-react";
 import ButtonSecondary from "../../../components/ButtonSecondary";
 import ButtonMain from "../../../components/ButtonMain";
 import Tag from "../../../components/Tag";
@@ -11,28 +11,29 @@ import Tag from "../../../components/Tag";
 export default function AlbumsGallery({ album }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(null);
-  // Nouvel état pour suivre le chargement des images dans la grille
   const [loadingImages, setLoadingImages] = useState({});
-  // Nouvel état pour suivre le chargement de l'image dans le modal
   const [modalImageLoading, setModalImageLoading] = useState(true);
+  const [highResLoaded, setHighResLoaded] = useState(false);
 
   const photos = album.photos_albums_link.map((p) => p.photos);
 
   const handleImageClick = (index) => {
     setCurrentPhotoIndex(index);
     setIsModalOpen(true);
-    // Réinitialiser l'état de chargement de l'image modale
     setModalImageLoading(true);
+    setHighResLoaded(false);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentPhotoIndex(null);
+    setHighResLoaded(false);
   };
 
   const handleNextPhoto = () => {
     if (currentPhotoIndex < photos.length - 1) {
       setModalImageLoading(true);
+      setHighResLoaded(false);
       setCurrentPhotoIndex(currentPhotoIndex + 1);
     }
   };
@@ -40,6 +41,7 @@ export default function AlbumsGallery({ album }) {
   const handlePrevPhoto = () => {
     if (currentPhotoIndex > 0) {
       setModalImageLoading(true);
+      setHighResLoaded(false);
       setCurrentPhotoIndex(currentPhotoIndex - 1);
     }
   };
@@ -49,6 +51,14 @@ export default function AlbumsGallery({ album }) {
       ...prev,
       [id]: false,
     }));
+  };
+
+  const handleLowResLoad = () => {
+    setModalImageLoading(false);
+  };
+
+  const handleHighResLoad = () => {
+    setHighResLoaded(true);
   };
 
   return (
@@ -101,8 +111,8 @@ export default function AlbumsGallery({ album }) {
                   <Image
                     src={photoLink.lien_low}
                     alt={photoLink.alt}
-                    width={Math.floor((photoLink.largeur || 300) / 10)}
-                    height={Math.floor((photoLink.hauteur || 200) / 10)}
+                    width={Math.floor((photoLink.largeur || 300) / 4)}
+                    height={Math.floor((photoLink.hauteur || 200) / 4)}
                     priority
                     className={`w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
                       loadingImages[photoId]
@@ -195,19 +205,46 @@ export default function AlbumsGallery({ album }) {
                     </div>
                   )}
 
+                  {/* Indicateur de chargement HD */}
+                  {!modalImageLoading && !highResLoaded && (
+                    <div className="absolute top-4 left-4 z-20 bg-blue-600 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Chargement HD...
+                    </div>
+                  )}
+
+                  {/* Image basse résolution - affichée en premier */}
                   <Image
-                    src={photos[currentPhotoIndex].lien_high}
+                    src={photos[currentPhotoIndex].lien_low}
                     alt={photos[currentPhotoIndex].alt}
                     width={Math.floor(photos[currentPhotoIndex].largeur / 4)}
                     height={Math.floor(photos[currentPhotoIndex].hauteur / 4)}
-                    className={`max-w-full max-h-[calc(90vh-10rem)] object-contain ${
+                    className={`max-w-[90%] max-h-[calc(90vh-10rem)] object-contain absolute ${
                       modalImageLoading
                         ? "opacity-0"
-                        : "opacity-100 transition-opacity duration-300"
+                        : highResLoaded
+                          ? "opacity-0 transition-opacity duration-500"
+                          : "opacity-100 transition-opacity duration-300"
                     }`}
                     priority
-                    onLoad={() => setModalImageLoading(false)}
+                    onLoad={handleLowResLoad}
                   />
+
+                  {/* Image haute résolution - se superpose */}
+                  {!modalImageLoading && (
+                    <Image
+                      src={photos[currentPhotoIndex].lien_high}
+                      alt={photos[currentPhotoIndex].alt}
+                      width={Math.floor(photos[currentPhotoIndex].largeur / 2)}
+                      height={Math.floor(photos[currentPhotoIndex].hauteur / 2)}
+                      className={`max-w-[90%] max-h-[calc(90vh-10rem)] object-contain absolute ${
+                        highResLoaded
+                          ? "opacity-100 transition-opacity duration-500"
+                          : "opacity-0"
+                      }`}
+                      onLoad={handleHighResLoad}
+                    />
+                  )}
                 </motion.div>
 
                 <motion.div
@@ -297,27 +334,6 @@ export default function AlbumsGallery({ album }) {
                   />
                 </motion.div>
               </motion.div>
-
-              <div className="p-4 bg-white border-t border-slate-200">
-                <div className="justify-between items-center text-sm text-slate-500 md:flex hidden">
-                  <p className="text-blue-600 font-medium">
-                    {currentPhotoIndex + 1} / {photos.length}
-                  </p>
-                  {photos[currentPhotoIndex].date && (
-                    <p className="text-blue-300">
-                      Ajoutée le{" "}
-                      {photos[currentPhotoIndex].date.toLocaleDateString(
-                        "fr-FR",
-                        {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        }
-                      )}
-                    </p>
-                  )}
-                </div>
-              </div>
             </motion.div>
           </motion.div>
         )}

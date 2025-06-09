@@ -33,6 +33,8 @@ export default function Photos() {
   const [isAlbumsVisuallyLoading, setIsAlbumsVisuallyLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(null);
+  const [modalImageLoading, setModalImageLoading] = useState(true);
+  const [highResLoaded, setHighResLoaded] = useState(false);
 
   const [albumImageLoadingStates, setAlbumImageLoadingStates] = useState({});
   const [photoLoadingState, setPhotoLoadingState] = useState({});
@@ -248,23 +250,38 @@ export default function Photos() {
   const handleImageClick = (index) => {
     setCurrentPhotoIndex(index);
     setIsModalOpen(true);
+    setModalImageLoading(true);
+    setHighResLoaded(false);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentPhotoIndex(null);
+    setHighResLoaded(false);
   };
 
   const handleNextPhoto = () => {
     if (currentPhotoIndex < filteredPhotos.length - 1) {
+      setModalImageLoading(true);
+      setHighResLoaded(false);
       setCurrentPhotoIndex(currentPhotoIndex + 1);
     }
   };
 
   const handlePrevPhoto = () => {
     if (currentPhotoIndex > 0) {
+      setModalImageLoading(true);
+      setHighResLoaded(false);
       setCurrentPhotoIndex(currentPhotoIndex - 1);
     }
+  };
+
+  const handleLowResLoad = () => {
+    setModalImageLoading(false);
+  };
+
+  const handleHighResLoad = () => {
+    setHighResLoaded(true);
   };
 
   const getLastAdded = () => {
@@ -818,20 +835,67 @@ export default function Photos() {
                 </motion.div>
 
                 <motion.div
-                  className="w-full h-full flex items-center justify-center p-4"
+                  className="w-full h-full flex items-center justify-center p-4 relative"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.5 }}
                   key={`photo-${currentPhotoIndex}`}
                 >
+                  {/* Spinner pour l'image modale */}
+                  {modalImageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-100 z-10">
+                      <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
+                    </div>
+                  )}
+
+                  {/* Indicateur de chargement HD */}
+                  {!modalImageLoading && !highResLoaded && (
+                    <div className="absolute top-4 left-4 z-20 bg-blue-600 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Chargement HD...
+                    </div>
+                  )}
+
+                  {/* Image basse résolution - affichée en premier */}
                   <Image
-                    src={filteredPhotos[currentPhotoIndex].lien_high}
+                    src={filteredPhotos[currentPhotoIndex].lien_low}
                     alt={filteredPhotos[currentPhotoIndex].alt}
-                    width={filteredPhotos[currentPhotoIndex].largeur}
-                    height={filteredPhotos[currentPhotoIndex].hauteur}
-                    className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
+                    width={Math.floor(
+                      filteredPhotos[currentPhotoIndex].largeur / 4
+                    )}
+                    height={Math.floor(
+                      filteredPhotos[currentPhotoIndex].hauteur / 4
+                    )}
+                    className={`max-w-[90%] max-h-[calc(90vh-10rem)] object-contain absolute ${
+                      modalImageLoading
+                        ? "opacity-0"
+                        : highResLoaded
+                          ? "opacity-0 transition-opacity duration-500"
+                          : "opacity-100 transition-opacity duration-300"
+                    }`}
                     priority
+                    onLoad={handleLowResLoad}
                   />
+
+                  {/* Image haute résolution - se superpose */}
+                  {!modalImageLoading && (
+                    <Image
+                      src={filteredPhotos[currentPhotoIndex].lien_high}
+                      alt={filteredPhotos[currentPhotoIndex].alt}
+                      width={Math.floor(
+                        filteredPhotos[currentPhotoIndex].largeur / 2
+                      )}
+                      height={Math.floor(
+                        filteredPhotos[currentPhotoIndex].hauteur / 2
+                      )}
+                      className={`max-w-[90%] max-h-[calc(90vh-10rem)] object-contain absolute ${
+                        highResLoaded
+                          ? "opacity-100 transition-opacity duration-500"
+                          : "opacity-0"
+                      }`}
+                      onLoad={handleHighResLoad}
+                    />
+                  )}
                 </motion.div>
 
                 <motion.div
@@ -922,12 +986,7 @@ export default function Photos() {
                 </motion.div>
               </motion.div>
 
-              <div
-                className="p-4 bg-white border-t border-slate-200"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.3 }}
-              >
+              <div className="p-4 bg-white border-t border-slate-200">
                 <div className="flex flex-wrap gap-2 mt-2">
                   {filteredPhotos[currentPhotoIndex].tags.map(
                     (tag, tagIndex) => (
@@ -946,12 +1005,7 @@ export default function Photos() {
                   )}
                 </div>
 
-                <div
-                  className="justify-between items-center mt-4 text-sm text-slate-500 md:flex hidden"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6, duration: 0.3 }}
-                >
+                <div className="justify-between items-center mt-4 text-sm text-slate-500 md:flex hidden">
                   <p className="text-blue-600 font-medium">
                     {currentPhotoIndex + 1} / {filteredPhotos.length}
                   </p>

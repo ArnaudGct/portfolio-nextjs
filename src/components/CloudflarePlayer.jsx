@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"; // Correction de l'impo
 export default function CloudflarePlayer() {
   // URL sans cache-busting pour éviter les rechargements complets
   const videoUrl =
-    "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/swhoreel-169.mp4";
+    "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/showreel-169.mp4";
   const videoUrlMobile =
     "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/showreel-916.mp4";
   const thumbnailUrl = "/uploads/showreel-thumbnail.webp";
