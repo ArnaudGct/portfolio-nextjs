@@ -53,7 +53,13 @@ export default function SpotifyMediaCard() {
     async function fetchTopTrack() {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/extern/spotify");
+        const timestamp = Date.now();
+        const response = await fetch(`/api/extern/spotify?t=${timestamp}`, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Échec de la récupération des données Spotify");
@@ -61,6 +67,7 @@ export default function SpotifyMediaCard() {
 
         const data = await response.json();
         setTrackData(data);
+        setError(null); // Reset error on success
       } catch (err) {
         console.error("Erreur:", err);
         setError(err.message);
@@ -69,7 +76,18 @@ export default function SpotifyMediaCard() {
       }
     }
 
+    // Fetch initial
     fetchTopTrack();
+
+    // Revalidation toutes les 3 minutes pour "currently playing"
+    const interval = setInterval(
+      () => {
+        fetchTopTrack();
+      },
+      3 * 60 * 1000
+    );
+
+    return () => clearInterval(interval);
   }, []);
 
   if (isLoading) {

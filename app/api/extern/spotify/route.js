@@ -107,7 +107,7 @@ async function generateColorScheme(imageUrl) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
     const accessToken = await getAccessToken();
 
@@ -226,17 +226,34 @@ export async function GET() {
       ...colorScheme,
     };
 
-    // Retourner les données avec en-tête de cache
+    // Retourner les données avec headers anti-cache pour mobile
     return NextResponse.json(trackInfo, {
       headers: {
-        "Cache-Control": `public, s-maxage=${CACHE_MAX_AGE}, stale-while-revalidate`,
+        // Cache court avec revalidation forcée
+        "Cache-Control":
+          "public, s-maxage=60, stale-while-revalidate=30, must-revalidate",
+        // Headers anti-cache pour mobile
+        Pragma: "no-cache",
+        Expires: "0",
+        // Vary sur User-Agent pour différencier mobile/desktop
+        Vary: "User-Agent",
+        // ETag unique pour forcer la revalidation
+        ETag: `"${Date.now()}"`,
+        "Last-Modified": new Date().toUTCString(),
       },
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des données Spotify:", error);
     return NextResponse.json(
       { error: "Échec de la récupération des données", message: error.message },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
     );
   }
 }

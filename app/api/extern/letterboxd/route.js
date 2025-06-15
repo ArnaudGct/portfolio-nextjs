@@ -100,7 +100,7 @@ async function generateColorScheme(imageUrl) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
     // Récupérer le flux RSS de votre profil Letterboxd
     const response = await fetch(
@@ -278,7 +278,17 @@ export async function GET() {
     // Retourner les données avec en-tête de cache court (5 min)
     return NextResponse.json(filmInfo, {
       headers: {
-        "Cache-Control": `public, s-maxage=300, stale-while-revalidate`,
+        // Cache court avec revalidation forcée
+        "Cache-Control":
+          "public, s-maxage=60, stale-while-revalidate=30, must-revalidate",
+        // Headers anti-cache pour mobile
+        Pragma: "no-cache",
+        Expires: "0",
+        // Vary sur User-Agent pour différencier mobile/desktop
+        Vary: "User-Agent",
+        // ETag unique pour forcer la revalidation
+        ETag: `"${Date.now()}"`,
+        "Last-Modified": new Date().toUTCString(),
       },
     });
   } catch (error) {

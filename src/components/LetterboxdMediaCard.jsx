@@ -44,34 +44,36 @@ const ErrorPlaceholder = () => (
 );
 
 export default function LetterboxdMediaCard() {
-  const [filmData, setFilmData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [movieData, setMovieData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchRecentFilm() {
+    const fetchMovieData = async () => {
       try {
-        setIsLoading(true);
-        const response = await fetch("/api/extern/letterboxd");
+        // Ajouter timestamp pour éviter le cache
+        const timestamp = Date.now();
+        const response = await fetch(`/api/extern/letterboxd?t=${timestamp}`, {
+          cache: "no-store", // Empêche Next.js de cacher
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
 
-        if (!response.ok) {
-          throw new Error("Échec de la récupération des données Letterboxd");
+        if (response.ok) {
+          const data = await response.json();
+          setMovieData(data);
         }
-
-        const data = await response.json();
-        setFilmData(data);
-      } catch (err) {
-        console.error("Erreur:", err);
-        setError(err.message);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données:", error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
-    }
+    };
 
-    fetchRecentFilm();
+    fetchMovieData();
   }, []);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="h-24">
         <MediaCard
@@ -88,8 +90,7 @@ export default function LetterboxdMediaCard() {
     );
   }
 
-  if (error || !filmData) {
-    console.error("Erreur:", error);
+  if (!movieData) {
     return (
       <div className="h-24">
         <MediaCard
@@ -112,23 +113,23 @@ export default function LetterboxdMediaCard() {
     borderColor = DEFAULT_COLORS.borderColor,
     labelColor = DEFAULT_COLORS.labelColor,
     titleColor = DEFAULT_COLORS.titleColor,
-  } = filmData;
+  } = movieData;
 
   return (
     <div className="h-24">
       <MediaCard
-        imageSrc={filmData.posterUrl}
-        imageAlt={`Affiche du film ${filmData.title}`}
+        imageSrc={movieData.posterUrl}
+        imageAlt={`Affiche du film ${movieData.title}`}
         imageType="poster"
         labelText="Le dernier film que j'ai vu"
-        titleText={filmData.title}
+        titleText={movieData.title}
         bgColor={bgColor}
         borderColor={borderColor}
         labelColor={labelColor}
         titleColor={titleColor}
         logoSrc="/letterboxd.webp"
         logoAlt="Logo de Letterboxd"
-        link={filmData.letterboxdUrl}
+        link={movieData.letterboxdUrl}
         newTab={true}
       />
     </div>
