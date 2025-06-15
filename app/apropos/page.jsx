@@ -158,7 +158,7 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
                 <p className="text-slate-900 text-2xl font-extrabold font-rethink-sans">
                   Avec quoi je travaille ?
                 </p>
-                <p className="text-slate-400 text-lg/8 font-normal">
+                <p className="text-slate-400 text-base/7 font-normal">
                   Les outils de post-production et d'organisation me permettant
                   de travailler de façon créative et efficace.
                 </p>

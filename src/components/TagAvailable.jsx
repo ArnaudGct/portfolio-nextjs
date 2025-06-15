@@ -13,16 +13,20 @@ export default function TagAvailable({ href }) {
     </>
   );
 
-  const className =
+  const baseClassName =
     "flex gap-2 items-center border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-950/30 border px-2.5 py-0.5 rounded-full";
 
   if (href) {
     return (
-      <Link href={href} target="_blank" className={className}>
+      <Link
+        href={href}
+        target="_blank"
+        className={`${baseClassName} transition hover:opacity-80`}
+      >
         {content}
       </Link>
     );
   }
 
-  return <div className={className}>{content}</div>;
+  return <div className={baseClassName}>{content}</div>;
 }
