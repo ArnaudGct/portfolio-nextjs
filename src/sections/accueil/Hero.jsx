@@ -69,7 +69,7 @@ export default function Hero() {
       >
         <div className="flex flex-col gap-2 items-start justify-center">
           <div className="flex flex-wrap items-center gap-2">
-            <TagAvailable />
+            <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
             <Tag name="monteur vidéo" background={false} />
             <Tag name="cadreur" background={false} />
           </div>
@@ -110,7 +110,7 @@ export default function Hero() {
       >
         <div className="flex flex-col gap-2 items-start justify-center">
           <div className="flex flex-wrap items-center gap-2">
-            <TagAvailable />
+            <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
             <Tag name="monteur vidéo" background={false} />
             <Tag name="cadreur" background={false} />
           </div>

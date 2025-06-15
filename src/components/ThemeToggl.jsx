@@ -60,11 +60,11 @@ export default function ThemeToggle({ mobile = false }) {
   if (isDark === undefined) return null;
 
   return (
-    <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px]">
+    <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px] dark:border dark:border-blue-200">
       {/* Switch indicator */}
       <span
         className={`absolute left-1 top-1 bottom-1 rounded-lg bg-blue-200 transition-transform duration-300 w-8 ${
-          isDark ? "translate-x-8" : "translate-x-0"
+          isDark ? "translate-x-8 dark:translate-x-[31px]" : "translate-x-0"
         }`}
       />
 

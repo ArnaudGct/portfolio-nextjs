@@ -8,8 +8,28 @@ import TagUtilities from "./../../src/components/TagUtilities";
 import SpotifyMediaCard from "./../../src/components/SpotifyMediaCard";
 import LetterboxdMediaCard from "./../../src/components/LetterboxdMediaCard";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 export default function APropos() {
+  const aboutText = `Passionné par le multimédia et la création de contenu, j'explore sans cesse de nouvelles façons d'allier technologie et créativité. Mon parcours a commencé sur **YouTube** avec des vidéos sur l'espace, où j'ai découvert ma passion pour le montage vidéo.
+
+Aujourd'hui, je propose mes services en tant que **monteur vidéo freelance**, collaborant sur des projets variés à distance. Également **cadreur à La Rochelle**, je peux réaliser des prises de vue sur place avant d'assurer le montage pour offrir des vidéos complètes et de qualité.
+
+Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, communication digitale… Toujours prêt à relever de nouveaux défis !`;
+
+  // Composant personnalisé pour les liens
+  const CustomLink = ({ href, children, ...props }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-500 underline hover:text-blue-600 transition-colors"
+      {...props}
+    >
+      {children}
+    </a>
+  );
+
   return (
     <main className="bg-white">
       <div className="pt-24 pb-20">
@@ -21,28 +41,22 @@ export default function APropos() {
               <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
                 Qui suis-je ?
               </p>
-              <div className="flex flex-col gap-4">
-                <p className="text-blue-900 text-base/8 font-normal">
-                  Passionné par le multimédia et la création de contenu,
-                  j'explore sans cesse de nouvelles façons d'allier technologie
-                  et créativité. Mon parcours a commencé sur YouTube avec des
-                  vidéos sur l'espace, où j'ai découvert ma passion pour le
-                  montage vidéo.
-                </p>
-                <p className="text-blue-900 text-base/8 font-normal">
-                  Aujourd'hui, je propose mes services en tant que{" "}
-                  <span className="text-blue-600">monteur vidéo freelance</span>
-                  , collaborant sur des projets variés à distance. Également{" "}
-                  <span className="text-blue-600">cadreur à La Rochelle</span>,
-                  je peux réaliser des prises de vue sur place avant d'assurer
-                  le montage pour offrir des vidéos complètes et de qualité.
-                </p>
-                <p className="text-blue-900 text-base/8 font-normal">
-                  Curieux et polyvalent,{" "}
-                  <span className="text-blue-600">j'aime toucher à tout</span> :
-                  audiovisuel, graphisme, communication digitale… Toujours prêt
-                  à relever de nouveaux défis !
-                </p>
+              <div className="text-blue-900 text-base/8 font-normal">
+                <ReactMarkdown
+                  components={{
+                    a: CustomLink,
+                    p: ({ children }) => (
+                      <p className="mb-4 last:mb-0">{children}</p>
+                    ),
+                    strong: ({ children }) => (
+                      <strong className="text-blue-600 font-normal">
+                        {children}
+                      </strong>
+                    ),
+                  }}
+                >
+                  {aboutText}
+                </ReactMarkdown>
               </div>
             </div>
 
@@ -80,7 +94,7 @@ export default function APropos() {
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <TagAvailable />
+                    <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
                     <Tag
                       name="21 ans"
                       background={true}

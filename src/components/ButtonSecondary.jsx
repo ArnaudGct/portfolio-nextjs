@@ -14,7 +14,7 @@ export default function ButtonSecondary({
   const sizeClass =
     size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-base";
 
-  const classes = `group flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition duration-300 ${paddingClass} ${sizeClass} ${className} ${
+  const classes = `group flex flex-row items-center gap-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition duration-300 dark:border dark:border-blue-200 ${paddingClass} ${sizeClass} ${className} ${
     isDisabled ? "cursor-not-allowed" : "cursor-pointer"
   }`;
 

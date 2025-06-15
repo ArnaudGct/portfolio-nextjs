@@ -99,7 +99,7 @@ export default function Contact() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <TagAvailable />
+              <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
             </div>
           </div>
         </div>
@@ -108,6 +108,7 @@ export default function Contact() {
             <TagSocialMedia name="mail" />
             <TagSocialMedia name="instagram" />
             <TagSocialMedia name="linkedin" />
+            <TagSocialMedia name="x" />
           </div>
           <div className="w-full sm:w-[60%] lg:w-auto flex flex-col gap-4 items-start justify-start p-7 bg-blue-50 border border-blue-300 rounded-lg">
             <div>

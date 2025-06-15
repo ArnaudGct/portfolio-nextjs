@@ -1,7 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Linkedin, Instagram, Phone, Mail } from "lucide-react";
+import { Menu, X, Phone, Mail } from "lucide-react";
+import LinkedInIcon from "../icons/LinkedInIcon";
+import XIcon from "../icons/XIcon";
+import InstagramIcon from "../icons/InstagramIcon";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
@@ -265,16 +268,23 @@ export default function Header() {
               />
 
               <ButtonSecondary
-                icon={<Instagram size={16} strokeWidth={1.75} />}
+                icon={<InstagramIcon className="text-current" size={16} />}
                 size="sm"
                 link="https://www.instagram.com/arnaud_gct/"
                 newTab={true}
               />
 
               <ButtonSecondary
-                icon={<Linkedin size={16} strokeWidth={1.75} />}
+                icon={<LinkedInIcon className="text-current" />}
                 size="sm"
                 link="https://www.linkedin.com/in/arnaud-graciet/"
+                newTab={true}
+              />
+
+              <ButtonSecondary
+                icon={<XIcon className="text-current" size={16} />}
+                size="sm"
+                link="https://x.com/ArnaudGct"
                 newTab={true}
               />
 
@@ -332,7 +342,7 @@ export default function Header() {
           {isMenuOpen ? (
             <div
               ref={menuRef} // Ajout de la référence au menu
-              className="fixed flex items-end justify-between z-50 w-full px-8 py-1"
+              className="fixed flex items-end justify-between z-50 w-full px-8 py-1 gap-8"
             >
               <motion.nav
                 className="flex flex-col items-start justify-center gap-4"
@@ -373,7 +383,7 @@ export default function Header() {
                 >
                   <ThemeToggle mobile={true} />
                 </motion.div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 flex-wrap justify-end">
                   <motion.div
                     exit={{ opacity: 0 }}
                     initial={{ opacity: 0 }}
@@ -394,7 +404,9 @@ export default function Header() {
                     transition={{ ease: "easeOut", duration: 0.3 }}
                   >
                     <ButtonSecondary
-                      icon={<Instagram size={16} strokeWidth={1.75} />}
+                      icon={
+                        <InstagramIcon className="text-current" size={16} />
+                      }
                       size="sm"
                       link="https://www.instagram.com/arnaud_gct/"
                       newTab={true}
@@ -407,9 +419,22 @@ export default function Header() {
                     transition={{ ease: "easeOut", duration: 0.3 }}
                   >
                     <ButtonSecondary
-                      icon={<Linkedin size={16} strokeWidth={1.75} />}
+                      icon={<LinkedInIcon className="text-current" size={16} />}
                       size="sm"
                       link="https://www.linkedin.com/in/arnaud-graciet/"
+                      newTab={true}
+                    />
+                  </motion.div>
+                  <motion.div
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ ease: "easeOut", duration: 0.3 }}
+                  >
+                    <ButtonSecondary
+                      icon={<XIcon className="text-current" size={16} />}
+                      size="sm"
+                      link="https://x.com/ArnaudGct"
                       newTab={true}
                     />
                   </motion.div>

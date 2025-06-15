@@ -32,10 +32,11 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col xl:flex-row xl:flex-wrap gap-2">
             <TagSocialMedia name="mail" />
             <TagSocialMedia name="instagram" />
             <TagSocialMedia name="linkedin" />
+            <TagSocialMedia name="x" />
           </div>
         </div>
         <div className="flex flex-col gap-8 items-start lg:items-end justify-start">
@@ -85,7 +86,7 @@ export default function Footer() {
               </Link>{" "}
               et développé en{" "}
               <Link
-                href="https://github.com/ArnaudGct/portfolio-next"
+                href="https://github.com/ArnaudGct/portfolio-nextjs"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-bold"

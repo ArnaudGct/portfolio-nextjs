@@ -20,7 +20,7 @@ export default function ButtonMain({
   }[size];
 
   const paddingWithText = {
-    sm: "px-3 py-1.5",
+    sm: "px-4 py-1.5 lg:py-2.5",
     base: "px-6 md:px-14 py-2",
     lg: "px-5 py-3",
   }[size];

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { parse } from "node-html-parser";
 import { Vibrant } from "node-vibrant/node";
-import { colord } from "colord";
+import { colord, extend } from "colord";
+import a11yPlugin from "colord/plugins/a11y";
+
+extend([a11yPlugin]);
 
 // Durée de mise en cache (4 heures)
 const CACHE_MAX_AGE = 60 * 60 * 4;
@@ -42,26 +45,41 @@ async function generateColorScheme(imageUrl) {
     // Générer une couleur de bordure plus claire pour un bon contraste
     const borderColor = primaryColor.lighten(0.15).toHex();
 
-    // Pour le texte, utiliser des couleurs qui garantissent un bon contraste
+    // Pour le texte, utiliser les couleurs recommandées par Vibrant si disponible
     let labelColor, titleColor;
 
     if (primaryColor.isDark()) {
-      // Fond sombre: utiliser des textes clairs
-      labelColor = "#FFFFFF";
+      // Fond sombre: utiliser des textes clairs avec les couleurs Vibrant
+      labelColor = primarySwatch.titleTextColor || "#FFFFFF";
       titleColor = "#FFFFFF";
     } else {
-      // Fond clair: utiliser des textes foncés
-      labelColor = "#333333";
+      // Fond clair: utiliser des textes foncés avec les couleurs Vibrant
+      labelColor = primarySwatch.bodyTextColor || "#333333";
       titleColor = "#000000";
     }
 
-    // Assurer un contraste suffisant pour l'accessibilité
-    if (primaryColor.contrast(colord(labelColor)) < 3) {
-      labelColor = primaryColor.isDark() ? "#d0d0d0" : "#404040";
+    // Assurer un contraste suffisant pour l'accessibilité (ratio WCAG AA)
+    const labelColorObj = colord(labelColor);
+    const titleColorObj = colord(titleColor);
+
+    if (primaryColor.contrast(labelColorObj) < 3) {
+      labelColor = primaryColor.isDark() ? "#e0e0e0" : "#404040";
     }
 
-    if (primaryColor.contrast(colord(titleColor)) < 4.5) {
+    if (primaryColor.contrast(titleColorObj) < 4.5) {
       titleColor = primaryColor.isDark() ? "#FFFFFF" : "#000000";
+    }
+
+    // Vérification finale du contraste et ajustement si nécessaire
+    const finalLabelColor = colord(labelColor);
+    const finalTitleColor = colord(titleColor);
+
+    if (primaryColor.contrast(finalLabelColor) < 3) {
+      labelColor = primaryColor.isReadable("#FFFFFF") ? "#FFFFFF" : "#000000";
+    }
+
+    if (primaryColor.contrast(finalTitleColor) < 4.5) {
+      titleColor = primaryColor.isReadable("#FFFFFF") ? "#FFFFFF" : "#000000";
     }
 
     return {
@@ -72,11 +90,11 @@ async function generateColorScheme(imageUrl) {
     };
   } catch (error) {
     console.error("Erreur lors de l'extraction des couleurs:", error);
-    // Retourner des couleurs par défaut en cas d'erreur
+    // Retourner des couleurs par défaut avec bon contraste en cas d'erreur
     return {
       bgColor: "#1e3a8a", // Bleu foncé
       borderColor: "#3b82f6", // Bleu plus clair pour la bordure
-      labelColor: "#93c5fd", // Bleu clair pour les étiquettes
+      labelColor: "#e0e7ff", // Bleu très clair pour les étiquettes
       titleColor: "#ffffff", // Blanc pour le texte principal
     };
   }

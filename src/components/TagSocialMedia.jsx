@@ -32,6 +32,14 @@ export default function TagSocialMedia({ name }) {
       bg: "bg-[#edf8ff] dark:bg-[#0a275a]/30",
       border: "border-[#bddcff] dark:border-[#2a5db3]",
     },
+    x: {
+      label: "X",
+      icon: <Image src="/x.webp" alt="X" width={16} height={16} />,
+      href: "https://x.com/ArnaudGct",
+      text: "text-[#0F172A] dark:text-[#94A3B8]",
+      bg: "bg-[#F8FAFC] dark:bg-gray-800/30",
+      border: "border-[#CBD5E1] dark:border-gray-600",
+    },
   };
 
   const social = config[name];

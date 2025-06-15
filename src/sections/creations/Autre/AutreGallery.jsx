@@ -4,7 +4,8 @@ import { useState } from "react";
 import ButtonSecondary from "../../../components/ButtonSecondary";
 import Tag from "../../../components/Tag";
 import { ArrowUpRight, Loader2 } from "lucide-react";
-import { SiFigma, SiGithub } from "@icons-pack/react-simple-icons";
+import FigmaIcon from "../../../icons/FigmaIcon";
+import GitHubIcon from "../../../icons/GitHubIcon";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 
@@ -88,13 +89,13 @@ export default function VideosGallery({ autre }) {
 
             <div className="flex-shrink-0 min-w-fit flex gap-2">
               <ButtonSecondary
-                icon={<SiGithub size={16} />}
+                icon={<GitHubIcon className="text-current" size={16} />}
                 link={autre.lien_github}
                 newTab={true}
                 size="base"
               />
               <ButtonSecondary
-                icon={<SiFigma size={16} />}
+                icon={<FigmaIcon className="text-current" size={16} />}
                 link={autre.lien_figma}
                 newTab={true}
                 size="base"

@@ -1,15 +1,32 @@
 import Image from "next/image";
 import Tag from "./../../components/Tag";
 import TagAvailable from "./../../components/TagAvailable";
-import { Cake, MapPin } from "lucide-react"; // Assurez-vous d'avoir installé lucide-react
+import { Cake, MapPin } from "lucide-react";
 import ButtonMain from "./../../components/ButtonMain";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 export default function Presentation() {
+  const presentationText = `Après trois ans d'études en multimédia et plusieurs années à créer du contenu sur YouTube, je travaille aujourd'hui en freelance comme **monteur vidéo** et **cadreur**.
+
+Mon parcours m'a permis de toucher à **différents domaines** (vidéo, photo, web design) mais c'est dans le **montage**, surtout pour YouTube et les réseaux sociaux, que je suis le plus à l'aise. En proposant mes services à distance ou sur place à La Rochelle, j'apporte une approche **polyvalente** et **adaptée à chaque projet**.`;
+
+  // Composant personnalisé pour les liens
+  const CustomLink = ({ href, children, ...props }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-500 underline hover:text-blue-600 transition-colors"
+      {...props}
+    >
+      {children}
+    </a>
+  );
+
   return (
     <section className="relative w-[90%] max-w-[1440px] mx-auto flex flex-col sm:flex-row gap-5 md:gap-8 items-start sm:items-center justify-center sm:justify-start">
-      <div className="relative flex items-stretch h-[500px] lg:h-[350px] w-full sm:w-[70%] lg:w-[50%] lg:max-w-[350px]">
-        {/* Définis une hauteur */}
+      <div className="relative flex items-stretch h-[500px] lg:h-[400px] w-full sm:w-[70%] lg:w-[50%] lg:max-w-[350px]">
         <Image
           src="/arnaud_graciet-accueil.webp"
           alt="Arnaud Graciet l'air surpris qui tient sa caméra et son objectif"
@@ -19,7 +36,6 @@ export default function Presentation() {
           priority
         />
 
-        {/* Crédit photo */}
         <Link
           href="https://www.instagram.com/amyr.mp5/"
           target="_blank"
@@ -41,7 +57,7 @@ export default function Presentation() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <TagAvailable />
+            <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
             <Tag
               name="21 ans"
               background={true}
@@ -50,24 +66,27 @@ export default function Presentation() {
             <Tag
               name="La Rochelle"
               background={true}
+              href="https://maps.apple.com/place?z=15&auid=6034166720712255280&address=17000+La+Rochelle%2C+France&coordinate=46.1622489%2C-1.1550672&name=La+Rochelle&lsp=6489"
               icon={<MapPin size={14} strokeWidth={1.75} />}
             />
             <Tag name="monteur vidéo" background={false} />
             <Tag name="cadreur" background={false} />
           </div>
         </div>
-        <div>
-          <p className="text-blue-900 text-base font-normal font-outfit">
-            En tant qu'étudiant passionné, j'ai toujours été attiré par des
-            domaines variés tels que l'audiovisuel, le webdesign, et le
-            développement web.
-            <br />
-            <br />
-            Mon parcours m'a conduit à créer des vidéos captivantes sur YouTube,
-            et au cœur de ce processus créatif, le montage vidéo s'est
-            rapidement imposé comme ma spécialité et où j'ai acquis une
-            expertise particulière.
-          </p>
+        <div className="text-blue-900 text-base/8 font-normal font-outfit">
+          <ReactMarkdown
+            components={{
+              a: CustomLink,
+              p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
+              strong: ({ children }) => (
+                <strong className="text-blue-600 font-normal">
+                  {children}
+                </strong>
+              ),
+            }}
+          >
+            {presentationText}
+          </ReactMarkdown>
         </div>
         <ButtonMain
           link="/apropos"
