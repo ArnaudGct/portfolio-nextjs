@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./../src/sections/Header";
 import Footer from "./../src/sections/Footer";
 import { usePathname } from "next/navigation";
+import { themeScript } from "./../lib/themeScript";
 
 const rethinkSans = Rethink_Sans({
   subsets: ["latin"],
@@ -40,13 +41,14 @@ export default function RootLayout({ children }) {
     !isAutrePage;
 
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <head>
         <title>Arnaud Graciet - Vidéaste freelance</title>
         <meta
           name="description"
           content="Explorez le portfolio de Arnaud Graciet, monteur vidéo en freelance."
         />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
         className={`${rethinkSans.variable} ${outfit.variable} ${coveredByYourGrace.variable} antialiased flex flex-col min-h-screen bg-white`}

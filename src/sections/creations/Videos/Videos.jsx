@@ -153,14 +153,45 @@ export default function Videos() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             {allTags.map((type) => {
-              const count = videos.filter((video) =>
+              // Au lieu de compter sur toutes les vidéos, compter seulement sur les vidéos filtrées
+              let availableVideos = videos;
+
+              // Si des tags sont sélectionnés, filtrer d'abord par les autres tags (excluant le tag actuel)
+              if (selectedTags.length > 0) {
+                const otherSelectedTags = selectedTags.filter(
+                  (t) => t !== type
+                );
+
+                if (otherSelectedTags.length > 0) {
+                  availableVideos = videos.filter((video) =>
+                    otherSelectedTags.every((selectedTag) =>
+                      video.tags.includes(selectedTag)
+                    )
+                  );
+                }
+              }
+
+              // Appliquer le filtre de recherche si présent
+              if (searchQuery.trim() !== "") {
+                const query = searchQuery.toLowerCase();
+                availableVideos = availableVideos.filter(
+                  (video) =>
+                    video.titre.toLowerCase().includes(query) ||
+                    (video.description &&
+                      video.description.toLowerCase().includes(query))
+                );
+              }
+
+              // Maintenant compter seulement les vidéos disponibles qui ont ce tag
+              const count = availableVideos.filter((video) =>
                 video.tags.includes(type)
               ).length;
+
               return (
                 <TagCheckbox
                   key={type}
                   type={type}
-                  count={count}
+                  count={<NumberFlow value={count} />}
                   selected={selectedTags.includes(type)}
                   onToggle={toggleTag}
                 />

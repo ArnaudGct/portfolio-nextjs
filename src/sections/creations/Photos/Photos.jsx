@@ -28,6 +28,7 @@ export default function Photos() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [photoLoadingState, setPhotoLoadingState] = useState({});
   const [isAlbumsLoading, setIsAlbumsLoading] = useState(true);
   const [albumImageLoadingStates, setAlbumImageLoadingStates] = useState({});
   const [isVisuallyLoading, setIsVisuallyLoading] = useState(true);
@@ -332,14 +333,23 @@ export default function Photos() {
       <div className="flex flex-col gap-8 md:gap-4">
         <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
           <div className="flex flex-col">
-            <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-              <NumberFlow value={filteredAlbums.length} /> album
-              {filteredAlbums.length > 1 ? "s" : ""} et{" "}
-              <NumberFlow value={filteredPhotos.length} /> photo
-              {filteredPhotos.length > 1 ? "s" : ""} disponible
-              {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
-            </p>
-            <p className="text-lg text-blue-900">{getLastAdded()}</p>
+            {isVisuallyLoading ? (
+              <>
+                <div className="h-8 w-80 bg-blue-100/40 rounded-md mb-2"></div>
+                <div className="h-6 w-72 bg-blue-100/40 rounded-md"></div>
+              </>
+            ) : (
+              <>
+                <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
+                  <NumberFlow value={filteredAlbums.length} /> album
+                  {filteredAlbums.length > 1 ? "s" : ""} et{" "}
+                  <NumberFlow value={filteredPhotos.length} /> photo
+                  {filteredPhotos.length > 1 ? "s" : ""} disponible
+                  {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
+                </p>
+                <p className="text-lg text-blue-900">{getLastAdded()}</p>
+              </>
+            )}
           </div>
           <div className="w-full md:w-auto relative">
             <div className="flex">
@@ -356,24 +366,68 @@ export default function Photos() {
 
         <div className="flex flex-wrap gap-2">
           {allTags.map((tag) => {
-            // Compter les photos ayant ce tag
-            const photoCount = photos.filter((photo) =>
+            // Au lieu de compter sur tous les éléments, compter seulement sur les éléments filtrés
+            let availablePhotos = photos;
+            let availableAlbums = albums;
+
+            // Si des tags sont sélectionnés, filtrer d'abord par les autres tags (excluant le tag actuel)
+            if (selectedTags.length > 0) {
+              const otherSelectedTags = selectedTags.filter((t) => t !== tag);
+
+              if (otherSelectedTags.length > 0) {
+                availablePhotos = photos.filter((photo) =>
+                  otherSelectedTags.every((selectedTag) =>
+                    (photo.allTagsSearch || []).includes(selectedTag)
+                  )
+                );
+
+                availableAlbums = albums.filter((album) =>
+                  otherSelectedTags.every((selectedTag) =>
+                    (album.tags || []).includes(selectedTag)
+                  )
+                );
+              }
+            }
+
+            // Appliquer le filtre de recherche si présent
+            if (searchQuery.trim() !== "") {
+              const query = searchQuery.toLowerCase().trim();
+
+              availablePhotos = availablePhotos.filter((photo) => {
+                const titleMatch =
+                  photo.titre && photo.titre.toLowerCase().includes(query);
+                const tagsMatch = (photo.allTagsSearch || []).some((photoTag) =>
+                  (photoTag || "").toLowerCase().includes(query)
+                );
+                return titleMatch || tagsMatch;
+              });
+
+              availableAlbums = availableAlbums.filter((album) => {
+                const titleMatch =
+                  album.titre && album.titre.toLowerCase().includes(query);
+                const tagsMatch = (album.tags || []).some((albumTag) =>
+                  (albumTag || "").toLowerCase().includes(query)
+                );
+                return titleMatch || tagsMatch;
+              });
+            }
+
+            // Maintenant compter seulement les éléments disponibles qui ont ce tag
+            const photoCount = availablePhotos.filter((photo) =>
               (photo.allTags || []).includes(tag)
             ).length;
 
-            // Compter les albums ayant ce tag
-            const albumCount = albums.filter((album) =>
+            const albumCount = availableAlbums.filter((album) =>
               (album.tags || []).includes(tag)
             ).length;
 
-            // Total des éléments ayant ce tag
             const totalCount = photoCount + albumCount;
 
             return (
               <TagCheckbox
                 key={tag}
                 type={tag}
-                count={totalCount}
+                count={<NumberFlow value={totalCount} />}
                 selected={selectedTags.includes(tag)}
                 onToggle={toggleTag}
               />

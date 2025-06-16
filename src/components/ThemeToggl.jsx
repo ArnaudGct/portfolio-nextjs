@@ -2,62 +2,74 @@ import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle({ mobile = false }) {
-  // État initial à undefined pour éviter un rendu incorrect
-  const [isDark, setIsDark] = useState(undefined);
+  const [isDark, setIsDark] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Synchroniser l'état avec le localStorage au montage du composant
+  // Synchroniser l'état avec le DOM au montage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Récupérer la préférence du localStorage
-      const savedTheme = localStorage.getItem("theme");
-
-      if (savedTheme) {
-        setIsDark(savedTheme === "dark");
-      } else {
-        // Détecter la préférence système si aucun thème n'est sauvegardé
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
-        setIsDark(prefersDark);
-        localStorage.setItem("theme", prefersDark ? "dark" : "light");
-      }
+      const root = window.document.documentElement;
+      const currentTheme = root.classList.contains("dark");
+      setIsDark(currentTheme);
+      setIsInitialized(true);
     }
   }, []);
 
-  // Appliquer le thème quand l'état change
-  useEffect(() => {
-    if (isDark !== undefined && typeof window !== "undefined") {
+  // Fonction pour changer le thème
+  const toggleTheme = (value) => {
+    if (typeof window !== "undefined") {
       const root = window.document.documentElement;
 
-      if (isDark) {
+      if (value) {
         root.classList.add("dark");
         localStorage.setItem("theme", "dark");
       } else {
         root.classList.remove("dark");
         localStorage.setItem("theme", "light");
       }
-    }
-  }, [isDark]);
 
-  // Fonction pour changer le thème
-  const toggleTheme = (value) => {
-    setIsDark(value);
+      setIsDark(value);
+    }
   };
 
   // Écouter les changements de thème depuis d'autres onglets
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === "theme") {
-        setIsDark(e.newValue === "dark");
+      if (e.key === "theme" && e.newValue) {
+        const newTheme = e.newValue === "dark";
+        setIsDark(newTheme);
+
+        if (typeof window !== "undefined") {
+          const root = window.document.documentElement;
+          if (newTheme) {
+            root.classList.add("dark");
+          } else {
+            root.classList.remove("dark");
+          }
+        }
       }
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    if (typeof window !== "undefined") {
+      window.addEventListener("storage", handleStorageChange);
+      return () => window.removeEventListener("storage", handleStorageChange);
+    }
   }, []);
 
-  // Ne pas rendre le bouton tant que isDark n'est pas défini
-  if (isDark === undefined) return null;
+  // Ne pas rendre le bouton tant qu'il n'est pas initialisé
+  if (!isInitialized) {
+    return (
+      <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px] dark:border dark:border-blue-200 opacity-50">
+        <div className="absolute left-1 top-1 bottom-1 rounded-lg bg-blue-200 w-8" />
+        <div className="flex items-center justify-center w-8 h-full p-2">
+          <Sun size={16} className="text-blue-600" />
+        </div>
+        <div className="flex items-center justify-center w-8 h-full p-2">
+          <Moon size={16} className="text-blue-600" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px] dark:border dark:border-blue-200">

@@ -207,8 +207,41 @@ export default function Autre() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             {allTags.map((tag) => {
-              // Compter les autres créations ayant ce tag
-              const count = autres.filter(
+              // Au lieu de compter sur toutes les autres créations, compter seulement sur les créations filtrées
+              let availableAutres = autres;
+
+              // Si des tags sont sélectionnés, filtrer d'abord par les autres tags (excluant le tag actuel)
+              if (selectedTags.length > 0) {
+                const otherSelectedTags = selectedTags.filter((t) => t !== tag);
+
+                if (otherSelectedTags.length > 0) {
+                  availableAutres = autres.filter((autre) =>
+                    otherSelectedTags.every(
+                      (selectedTag) =>
+                        Array.isArray(autre.tags) &&
+                        autre.tags.some(
+                          (autreTag) => autreTag.titre === selectedTag
+                        )
+                    )
+                  );
+                }
+              }
+
+              // Appliquer le filtre de recherche si présent
+              if (searchQuery.trim() !== "") {
+                const query = searchQuery.toLowerCase();
+                availableAutres = availableAutres.filter(
+                  (autre) =>
+                    (typeof autre.titre === "string" &&
+                      autre.titre.toLowerCase().includes(query)) ||
+                    (autre.description &&
+                      typeof autre.description === "string" &&
+                      autre.description.toLowerCase().includes(query))
+                );
+              }
+
+              // Maintenant compter seulement les autres créations disponibles qui ont ce tag
+              const count = availableAutres.filter(
                 (autre) =>
                   Array.isArray(autre.tags) &&
                   autre.tags.some((autreTag) => autreTag.titre === tag)
@@ -218,7 +251,7 @@ export default function Autre() {
                 <TagCheckbox
                   key={tag}
                   type={tag}
-                  count={count}
+                  count={<NumberFlow value={count} />}
                   selected={selectedTags.includes(tag)}
                   onToggle={toggleTag}
                 />
