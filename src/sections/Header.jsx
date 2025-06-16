@@ -35,7 +35,11 @@ export default function Header() {
 
   // const headerScale = useTransform(scrollY, [0, 100], [1, 0.95]);
   const headerWidth = useTransform(scrollY, [0, 100], ["100%", "60%"]);
-  const headerPadding = useTransform(scrollY, [0, 100], ["0 2rem", "0 1.5rem"]);
+  const headerPadding = useTransform(
+    scrollY,
+    [0, 100],
+    ["0px 32px", "0px 16px"]
+  );
   const headerPositionY = useTransform(scrollY, [0, 100], ["0px", "10px"]);
 
   const springConfig = {
@@ -153,9 +157,10 @@ export default function Header() {
         style={{
           // scale: smoothScale,
           width: smoothWidth,
-          padding: smoothPadding,
           position: "relative",
           top: smoothPositionY,
+          paddingRight: "32px",
+          paddingLeft: "32px",
         }}
         animate={{
           backgroundColor: isScrolled
@@ -166,6 +171,8 @@ export default function Header() {
             : "0px 0px 0px var(--header-shadow-color-transparent)",
           backdropFilter: isScrolled ? "blur(8px)" : "blur(0px)",
           WebkitBackdropFilter: isScrolled ? "blur(8px)" : "blur(0px)", // Safari support
+          paddingLeft: isScrolled ? "20px" : "32px",
+          paddingRight: isScrolled ? "12px" : "32px",
         }}
         transition={{
           backgroundColor: { duration: 0.2 },

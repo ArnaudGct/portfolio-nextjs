@@ -86,7 +86,6 @@ export default function ButtonMain({
     <Link
       href={link}
       target={newTab ? "_blank" : "_self"}
-      rel="noopener noreferrer"
       className={className}
     >
       <button className={classes}>{animatedContent}</button>
