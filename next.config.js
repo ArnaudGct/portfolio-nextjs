@@ -4,10 +4,6 @@ const nextConfig = {
   serverExternalPackages: ["sharp"],
   reactStrictMode: true,
 
-  module.exports = {
-    output: 'standalone',
-  }
-
   // Pour gérer les uploads volumineux
   async headers() {
     return [
