@@ -1,88 +1,56 @@
-export const runtime = "nodejs";
-import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-// Configurer le transporteur Nodemailer avec Gmail
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-  debug: true, // Active le débogage nodemailer
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request) {
   try {
-    console.log("Début du traitement de la requête POST");
+    const { firstName, lastName, email, message } = await request.json();
 
-    // Vérifier que l'on peut lire le corps de la requête
-    let requestBody;
-    try {
-      requestBody = await request.json();
-      console.log("Corps de la requête:", requestBody);
-    } catch (error) {
-      console.error("Erreur lors du parsing du JSON:", error);
-      return NextResponse.json(
-        { error: "Format de requête invalide" },
-        { status: 400 }
-      );
-    }
-
-    const { firstName, lastName, email, message } = requestBody;
-
-    // Validation des champs
+    // Validation des données
     if (!firstName || !lastName || !email || !message) {
-      console.log("Validation échouée: champs manquants");
-      return NextResponse.json(
-        { error: "Tous les champs sont requis" },
+      return Response.json(
+        { success: false, error: { message: "Tous les champs sont requis" } },
         { status: 400 }
       );
     }
 
-    console.log("Préparation de l'email avec les données:", {
-      firstName,
-      lastName,
-      email,
+    // Envoi de l'email
+    const { data, error } = await resend.emails.send({
+      from: "no-reply@arnaudgct.fr", // Remplacez par votre domaine vérifié
+      to: ["contact@arnaudgct.fr"], // Votre email de destination
+      subject: `Nouveau message de ${firstName} ${lastName}`,
+      html: `
+        <h2>Nouveau message de contact</h2>
+        <p><strong>Nom :</strong> ${firstName} ${lastName}</p>
+        <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Message :</strong></p>
+        <p>${message.replace(/\n/g, "<br>")}</p>
+      `,
+      text: `
+        Nouveau message de contact
+        
+        Nom : ${firstName} ${lastName}
+        Email : ${email}
+        Message : ${message}
+      `,
     });
 
-    // Vérification des variables d'environnement
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-      console.error("Variables d'environnement manquantes");
-      return NextResponse.json(
-        { error: "Configuration du serveur incomplète" },
+    if (error) {
+      console.error("Erreur Resend:", error);
+      return Response.json(
+        {
+          success: false,
+          error: { message: "Erreur lors de l'envoi de l'email" },
+        },
         { status: 500 }
       );
     }
 
-    // Préparer le contenu de l'email
-    const mailOptions = {
-      from: process.env.GMAIL_USER,
-      to: "contact@arnaudgct.fr",
-      subject: `Nouveau message de ${firstName} ${lastName}`,
-      replyTo: email,
-      html: `
-        <h2>Nouveau message de contact</h2>
-        <p><strong>Nom:</strong> ${firstName} ${lastName}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `,
-    };
-
-    console.log("Tentative d'envoi d'email...");
-
-    // Envoyer l'email avec Nodemailer
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email envoyé avec succès:", info.messageId);
-
-    return NextResponse.json({ success: true, messageId: info.messageId });
+    return Response.json({ success: true, data }, { status: 200 });
   } catch (error) {
-    console.error("Erreur détaillée:", error);
-    return NextResponse.json(
-      {
-        error: "Erreur du serveur lors de l'envoi du message: " + error.message,
-      },
+    console.error("Erreur lors de l'envoi:", error);
+    return Response.json(
+      { success: false, error: { message: "Erreur serveur" } },
       { status: 500 }
     );
   }
