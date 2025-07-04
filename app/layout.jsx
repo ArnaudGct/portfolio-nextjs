@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./../src/sections/Header";
 import Footer from "./../src/sections/Footer";
 import { usePathname } from "next/navigation";
+import Script from "next/script";
 import { themeScript } from "./../lib/themeScript";
 
 const rethinkSans = Rethink_Sans({
@@ -43,6 +44,19 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-R6313JH5FT"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-R6313JH5FT');
+          `}
+        </Script>
         <title>Arnaud Graciet - Vidéaste freelance</title>
         <meta
           name="description"

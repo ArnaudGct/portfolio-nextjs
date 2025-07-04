@@ -40,6 +40,7 @@ const nextConfig = {
       "a.ltrbxd.com",
       "image.tmdb.org",
       "api.mapbox.com",
+      "res.cloudinary.com",
     ],
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

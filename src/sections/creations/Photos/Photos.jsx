@@ -22,6 +22,8 @@ import Link from "next/link";
 export default function Photos() {
   const [photos, setPhotos] = useState([]);
   const [albums, setAlbums] = useState([]);
+  const [modalImageLoading, setModalImageLoading] = useState(true);
+  const [highResLoaded, setHighResLoaded] = useState(false);
   const [filteredPhotos, setFilteredPhotos] = useState([]);
   const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [allTags, setAllTags] = useState([]);
