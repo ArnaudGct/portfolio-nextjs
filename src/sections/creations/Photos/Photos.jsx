@@ -67,18 +67,11 @@ export default function Photos() {
         setPhotos(cleanedData);
         setFilteredPhotos(cleanedData);
 
-        // Initialiser les états de chargement des photos immédiatement
-        const initialPhotoStates = {};
-        cleanedData.forEach((photo) => {
-          initialPhotoStates[photo.id_pho] = false; // Les photos sont chargées individuellement
-        });
-        setPhotoLoadingState(initialPhotoStates);
-
         // Marquer que le chargement réel est terminé
         setIsLoading(false);
 
         // Imposer un délai minimum pour l'affichage du skeleton
-        const minLoadingTime = 300;
+        const minLoadingTime = 300; // 600ms minimum
         setTimeout(() => {
           setIsVisuallyLoading(false);
         }, minLoadingTime);
@@ -97,30 +90,11 @@ export default function Photos() {
         const data = await res.json();
         setAlbums(data);
 
-        // Initialiser les états de chargement des albums de manière séquentielle
-        const initialAlbumStates = {};
-        data.forEach((album, albumIndex) => {
-          initialAlbumStates[album.id_alb] = {
-            isFullyLoaded: false,
-            loadingOrder: albumIndex, // Ordre de chargement
-          };
-
-          // Initialiser toutes les images comme "en cours de chargement"
-          for (let i = 0; i < Math.min(5, album.photos.length); i++) {
-            initialAlbumStates[album.id_alb][i] = true;
-          }
-        });
-
-        setAlbumImageLoadingStates(initialAlbumStates);
-
-        // Démarrer le chargement séquentiel des albums
-        startSequentialAlbumLoading(data);
-
         // Marquer que le chargement réel est terminé
         setIsAlbumsLoading(false);
 
         // Imposer un délai minimum pour l'affichage du skeleton
-        const minLoadingTime = 300;
+        const minLoadingTime = 300; // 600ms minimum
         setTimeout(() => {
           setIsAlbumsVisuallyLoading(false);
         }, minLoadingTime);
@@ -134,93 +108,6 @@ export default function Photos() {
     fetchPhotos();
     fetchAlbums();
   }, []);
-
-  // Nouvelle fonction pour gérer le chargement séquentiel des albums
-  const startSequentialAlbumLoading = (albums) => {
-    let currentAlbumIndex = 0;
-
-    const loadNextAlbum = () => {
-      if (currentAlbumIndex >= albums.length) return;
-
-      const currentAlbum = albums[currentAlbumIndex];
-      const albumId = currentAlbum.id_alb;
-
-      // Marquer cet album comme "en cours de chargement prioritaire"
-      setAlbumImageLoadingStates((prev) => ({
-        ...prev,
-        [albumId]: {
-          ...prev[albumId],
-          isPriorityLoading: true,
-        },
-      }));
-
-      // Précharger les images de cet album
-      const imagePromises = currentAlbum.photos
-        .slice(0, 5)
-        .map((photo, index) => {
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-              // Marquer cette image comme chargée
-              setAlbumImageLoadingStates((prev) => {
-                if (!prev[albumId]) return prev;
-
-                const updatedAlbumState = {
-                  ...prev[albumId],
-                  [index]: false, // Image chargée
-                };
-
-                // Vérifier si toutes les images de cet album sont chargées
-                const imageStates = Object.entries(updatedAlbumState).filter(
-                  ([key]) =>
-                    ![
-                      "isFullyLoaded",
-                      "loadingOrder",
-                      "isPriorityLoading",
-                    ].includes(key)
-                );
-                const allImagesLoaded = imageStates.every(
-                  ([_, isLoading]) => !isLoading
-                );
-
-                if (allImagesLoaded) {
-                  updatedAlbumState.isFullyLoaded = true;
-                  updatedAlbumState.isPriorityLoading = false;
-                }
-
-                return {
-                  ...prev,
-                  [albumId]: updatedAlbumState,
-                };
-              });
-              resolve();
-            };
-            img.onerror = () => {
-              // Même en cas d'erreur, marquer comme "chargée" pour ne pas bloquer
-              setAlbumImageLoadingStates((prev) => ({
-                ...prev,
-                [albumId]: {
-                  ...prev[albumId],
-                  [index]: false,
-                },
-              }));
-              resolve();
-            };
-            img.src = photo.lien_low;
-          });
-        });
-
-      // Attendre que toutes les images de cet album soient chargées avant de passer au suivant
-      Promise.all(imagePromises).then(() => {
-        currentAlbumIndex++;
-        // Petit délai pour éviter de surcharger le navigateur
-        setTimeout(loadNextAlbum, 100);
-      });
-    };
-
-    // Démarrer le chargement du premier album
-    loadNextAlbum();
-  };
 
   useEffect(() => {
     const tagsFromPhotos = photos.flatMap((p) => p.allTags || []);
@@ -298,7 +185,10 @@ export default function Photos() {
     setFilteredPhotos(resultPhotos);
     setFilteredAlbums(resultAlbums);
 
-    // Pour les albums filtrés, ne créer des états de chargement que pour les nouveaux albums
+    // SUPPRIMER complètement ce setTimeout qui réinitialise les états de chargement
+    // et le remplacer par une initialisation intelligente SEULEMENT pour les nouveaux éléments
+
+    // Pour les albums filtrés, ne créer des états de chargement que pour les NOUVEAUX albums
     if (resultAlbums.length > 0) {
       setAlbumImageLoadingStates((prevState) => {
         const newState = { ...prevState };
@@ -308,8 +198,6 @@ export default function Photos() {
           if (!newState[album.id_alb]) {
             newState[album.id_alb] = {
               isFullyLoaded: false,
-              loadingOrder: 0,
-              isPriorityLoading: false,
             };
             // Initialiser le chargement pour chaque photo de l'album
             for (let i = 0; i < Math.min(5, album.photos.length); i++) {
@@ -323,7 +211,7 @@ export default function Photos() {
       });
     }
 
-    // Pour les photos filtrées, ne créer des états de chargement que pour les nouvelles photos
+    // Pour les photos filtrées, ne créer des états de chargement que pour les NOUVELLES photos
     if (resultPhotos.length > 0) {
       setPhotoLoadingState((prevState) => {
         const newState = { ...prevState };
@@ -392,16 +280,15 @@ export default function Photos() {
 
       // Vérifie si toutes les images de l'album sont chargées
       const albumImages = updatedState[albumId];
+      // Exclure isFullyLoaded du calcul
       const imageStates = Object.entries(albumImages).filter(
-        ([key]) =>
-          !["isFullyLoaded", "loadingOrder", "isPriorityLoading"].includes(key)
+        ([key]) => key !== "isFullyLoaded"
       );
-      const allImagesLoaded = imageStates.every(([_, isLoading]) => !isLoading);
+      const allImagesLoaded = imageStates.every(([key, isLoaded]) => !isLoaded);
 
       // Si toutes les images sont chargées, marque l'album comme entièrement chargé
       if (allImagesLoaded && imageStates.length > 0) {
         updatedState[albumId].isFullyLoaded = true;
-        updatedState[albumId].isPriorityLoading = false;
       }
 
       return updatedState;
@@ -743,7 +630,9 @@ export default function Photos() {
                                       src={album.photos[0].lien_low}
                                       alt={album.photos[0].alt}
                                       fill
-                                      priority
+                                      placeholder="blur"
+                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                      priority={false}
                                       sizes="(max-width: 768px) 50vw, 25vw"
                                       className="object-cover rounded-tl-lg rounded-bl-lg"
                                       onLoad={() =>
@@ -760,7 +649,9 @@ export default function Photos() {
                                       src={album.photos[1].lien_low}
                                       alt={album.photos[1].alt}
                                       fill
-                                      priority
+                                      placeholder="blur"
+                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                      priority={false}
                                       sizes="(max-width: 768px) 50vw, 25vw"
                                       className="object-cover rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none"
                                       onLoad={() =>
@@ -777,7 +668,9 @@ export default function Photos() {
                                       src={album.photos[2].lien_low}
                                       alt={album.photos[2].alt}
                                       fill
-                                      priority
+                                      placeholder="blur"
+                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                      priority={false}
                                       sizes="(max-width: 768px) 50vw, 25vw"
                                       className="object-cover rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg"
                                       onLoad={() =>
@@ -794,7 +687,9 @@ export default function Photos() {
                                       src={album.photos[3].lien_low}
                                       alt={album.photos[3].alt}
                                       fill
-                                      priority
+                                      placeholder="blur"
+                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                      priority={false}
                                       sizes="25vw"
                                       className="object-cover rounded-tr-none xs:rounded-tr-br md:rounded-tr-none"
                                       onLoad={() =>
@@ -811,7 +706,9 @@ export default function Photos() {
                                       src={album.photos[4].lien_low}
                                       alt={album.photos[4].alt}
                                       fill
-                                      priority
+                                      placeholder="blur"
+                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                      priority={false}
                                       sizes="25vw"
                                       className="object-cover rounded-br-lg xs:rounded-br-none md:rounded-br-lg"
                                       onLoad={() =>

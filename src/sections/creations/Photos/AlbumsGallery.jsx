@@ -102,18 +102,20 @@ export default function AlbumsGallery({ album }) {
                   onClick={() => handleImageClick(index)}
                 >
                   {/* Spinner pour les images de la grille */}
-                  {loadingImages[photoId] && (
+                  {/* {loadingImages[photoId] && (
                     <div className="absolute inset-0 flex items-center justify-center bg-slate-100 rounded-lg z-10">
                       <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
                     </div>
-                  )}
+                  )} */}
 
                   <Image
                     src={photoLink.lien_low}
                     alt={photoLink.alt}
                     width={Math.floor((photoLink.largeur || 300) / 4)}
                     height={Math.floor((photoLink.hauteur || 200) / 4)}
-                    priority
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    priority={false}
                     className={`w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
                       loadingImages[photoId]
                         ? "opacity-0"
