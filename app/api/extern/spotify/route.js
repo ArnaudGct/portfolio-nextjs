@@ -111,14 +111,14 @@ export async function GET(request) {
   try {
     const accessToken = await getAccessToken();
 
-    // Variables pour stocker les différentes sources d'information
-    let currentTrack = null; // Morceau en cours de lecture
-    let topTrack = null; // Morceau le plus écouté du mois
-    let recentTrack = null; // Dernier morceau écouté
-
+    let currentTrack = null;
+    let topTrack = null;
+    let recentTrack = null;
     let isCurrentlyPlaying = false;
+    let progress = 0;
+    let duration = 0;
 
-    // 1. Récupérer le morceau actuellement en cours de lecture (priorité maximum)
+    // 1. Récupérer le morceau actuellement en cours de lecture
     let response = await fetch(
       "https://api.spotify.com/v1/me/player/currently-playing",
       {
@@ -128,16 +128,19 @@ export async function GET(request) {
       }
     );
 
-    // Si un morceau est dans le lecteur (en lecture ou en pause)
     if (response.status === 200) {
       const data = await response.json();
       currentTrack = data.item;
-
-      // Vérifier si le morceau est réellement en cours de lecture
       isCurrentlyPlaying = data.is_playing && data.item;
+
+      // Récupérer les données de progression
+      if (data.item) {
+        progress = data.progress_ms || 0;
+        duration = data.item.duration_ms || 0;
+      }
     }
 
-    // 2. Récupérer le morceau le plus écouté des 4 dernières semaines (toujours)
+    // 2. Récupérer le morceau le plus écouté des 4 dernières semaines
     response = await fetch(
       "https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=1",
       {
@@ -152,11 +155,9 @@ export async function GET(request) {
       if (data.items && data.items.length > 0) {
         topTrack = data.items[0];
       }
-    } else {
-      console.warn(`Erreur API Spotify (top-tracks): ${response.statusText}`);
     }
 
-    // 3. En dernier recours, récupérer le dernier morceau joué
+    // 3. Récupérer le dernier morceau joué si nécessaire
     if (!currentTrack && !topTrack) {
       response = await fetch(
         "https://api.spotify.com/v1/me/player/recently-played?limit=1",
@@ -172,10 +173,6 @@ export async function GET(request) {
         if (data.items && data.items.length > 0) {
           recentTrack = data.items[0].track;
         }
-      } else if (!currentTrack && !topTrack) {
-        throw new Error(
-          `Échec de récupération des données Spotify pour tous les endpoints`
-        );
       }
     }
 
@@ -209,11 +206,8 @@ export async function GET(request) {
     }
 
     const albumImageUrl = track.album.images[0].url;
-
-    // Générer le schéma de couleurs basé sur la pochette d'album
     const colorScheme = await generateColorScheme(albumImageUrl);
 
-    // Construire l'objet de réponse avec les informations de la piste et le schéma de couleurs
     const trackInfo = {
       title: track.name,
       artist: track.artists.map((artist) => artist.name).join(", "),
@@ -222,22 +216,20 @@ export async function GET(request) {
       spotifyUrl: track.external_urls.spotify,
       isCurrentlyPlaying,
       isMostPlayed,
-      // Ajouter le schéma de couleurs
+      // Ajouter les données de progression
+      progress: isCurrentlyPlaying ? progress : undefined,
+      duration: track.duration_ms,
       ...colorScheme,
     };
 
-    // Retourner les données avec headers anti-cache pour mobile
     return NextResponse.json(trackInfo, {
       headers: {
-        // Cache court avec revalidation forcée
-        "Cache-Control":
-          "public, s-maxage=60, stale-while-revalidate=30, must-revalidate",
-        // Headers anti-cache pour mobile
+        "Cache-Control": isCurrentlyPlaying
+          ? "public, s-maxage=10, stale-while-revalidate=5, must-revalidate"
+          : "public, s-maxage=60, stale-while-revalidate=30, must-revalidate",
         Pragma: "no-cache",
         Expires: "0",
-        // Vary sur User-Agent pour différencier mobile/desktop
         Vary: "User-Agent",
-        // ETag unique pour forcer la revalidation
         ETag: `"${Date.now()}"`,
         "Last-Modified": new Date().toUTCString(),
       },

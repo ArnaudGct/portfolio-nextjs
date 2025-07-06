@@ -4,20 +4,23 @@ import Link from "next/link";
 export default function MediaCard({
   imageSrc,
   imageAlt,
-  imageType = "cover", // "cover" = carré, "poster" = ratio affiche
-  imageComponent, // Nouveau prop pour composant image personnalisé
+  imageType = "cover",
+  imageComponent,
   labelText,
   titleText,
   subtitleText,
-  bgColor = "#1a66a5",
-  borderColor = "#5e9eda",
-  labelColor = "#ffffff",
-  titleColor = "#ffffff",
+  bgColor = "#FF6B6B",
+  borderColor = "#FF8E8E",
+  labelColor = "#FFB3B3",
+  titleColor = "#FFFFFF",
   logoSrc,
   logoAlt,
-  link = null,
-  newTab = true,
-  className = "", // Ajout de className pour pouvoir ajouter des classes depuis le parent
+  link,
+  newTab = false,
+  additionalContent,
+  onMouseEnter,
+  onMouseLeave,
+  ...props
 }) {
   // Dimensions de l'image selon le type
   const imageSize =
@@ -31,21 +34,45 @@ export default function MediaCard({
       ? "h-[64px] w-[42px]" // Ratio 2:3 (poster)
       : "h-[64px] w-[64px]"; // Ratio 1:1 (carré)
 
-  const content = (
-    <div
-      className={`flex justify-between items-center p-4 rounded-lg h-full ${
-        link ? "hover:brightness-105 transition-all" : ""
-      } ${className}`}
-      style={{
-        backgroundColor: bgColor,
-        border: `1px solid ${borderColor}`,
-      }}
-    >
-      {/* Structure modifiée pour avoir le logo centré verticalement */}
-      <div className="flex items-center gap-4 min-w-0 w-full">
+  return (
+    <div className="w-full h-full" {...props}>
+      {link ? (
+        <a
+          href={link}
+          target={newTab ? "_blank" : "_self"}
+          rel={newTab ? "noopener noreferrer" : ""}
+          className="block w-full h-full"
+        >
+          <CardContent />
+        </a>
+      ) : (
+        <CardContent />
+      )}
+    </div>
+  );
+
+  function CardContent() {
+    return (
+      <div
+        className="relative w-full h-full rounded-lg p-3 flex items-center space-x-3 transition-all duration-300 group overflow-hidden"
+        style={{
+          backgroundColor: bgColor,
+          border: `1px solid ${borderColor}`,
+        }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        {/* Barre de slide au hover - même couleur que la bordure */}
+        <div
+          className="absolute top-0 left-0 h-full w-1 transition-all duration-500 ease-out group-hover:w-full group-hover:opacity-50"
+          style={{
+            backgroundColor: borderColor, // Utilise la même couleur que borderLeft
+          }}
+        />
+
         {/* Bloc de gauche: image */}
         <div
-          className={`relative ${containerDimensions} overflow-hidden rounded-lg flex-shrink-0`}
+          className={`relative ${containerDimensions} overflow-hidden rounded-lg flex-shrink-0 z-10`}
         >
           {imageComponent ? (
             imageComponent
@@ -64,30 +91,37 @@ export default function MediaCard({
           )}
         </div>
 
-        {/* Bloc central: contenu textuel avec flex-1 pour prendre l'espace disponible */}
-        <div className="min-w-0 flex-1">
+        <div className="flex-1 min-w-0 flex flex-col justify-center z-10">
+          {/* Texte de label */}
           <p
-            className="text-sm font-rethink-sans"
+            className="text-sm font-rethink-sans leading-tight"
             style={{ color: labelColor }}
           >
             {labelText}
           </p>
+
+          {/* Titre et sous-titre */}
           <div className="min-w-0">
             <p
-              className="text-lg font-rethink-sans font-bold truncate"
+              className="text-lg font-rethink-sans font-bold truncate leading-tight"
               style={{ color: titleColor }}
             >
               {titleText}
               {subtitleText && (
-                <span className="ml-1 text-sm">- {subtitleText}</span>
+                <span className="ml-1 text-sm font-normal">
+                  - {subtitleText}
+                </span>
               )}
             </p>
           </div>
+
+          {/* Contenu additionnel (barre de progression) */}
+          {additionalContent && <div className="mt-1">{additionalContent}</div>}
         </div>
 
         {/* Bloc de droite: logo, centré verticalement */}
         {logoSrc && (
-          <div className="hidden xs:flex items-center self-stretch pl-2">
+          <div className="hidden xs:flex items-center self-stretch pl-2 z-10">
             <Image
               src={logoSrc}
               alt={logoAlt || "Logo"}
@@ -98,21 +132,6 @@ export default function MediaCard({
           </div>
         )}
       </div>
-    </div>
-  );
-
-  if (link) {
-    return (
-      <Link
-        href={link}
-        target={newTab ? "_blank" : "_self"}
-        rel={newTab ? "noopener noreferrer" : ""}
-        className="block h-full"
-      >
-        {content}
-      </Link>
     );
   }
-
-  return content;
 }

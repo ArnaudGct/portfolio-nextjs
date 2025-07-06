@@ -1,9 +1,8 @@
-// ...existing code...
 "use client";
 import { Play, Pause } from "lucide-react";
 import Toggl from "./Toggl";
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion"; // Correction de l'import si c'était "motion/react"
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CloudflarePlayer() {
   // URL sans cache-busting pour éviter les rechargements complets
@@ -14,13 +13,14 @@ export default function CloudflarePlayer() {
   const thumbnailUrl = "/uploads/showreel-thumbnail.webp";
   const videoRef = useRef(null);
   const playerContainerRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true); // true car autoPlay
-  const [isMuted, setIsMuted] = useState(true); // La vidéo commence en muet
-  const [isHoveringVideo, setIsHoveringVideo] = useState(true); // Initialisé à false pour la logique de handleInitialGlobalMouseMove
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isHoveringVideo, setIsHoveringVideo] = useState(true);
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isMobile, setIsMobile] = useState(false); // Nouvel état pour la détection mobile
-  const [currentVideoUrl, setCurrentVideoUrl] = useState(""); // Nouvel état pour l'URL vidéo actuelle
+  const [isMobile, setIsMobile] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState("");
+  const [isManuallyPaused, setIsManuallyPaused] = useState(false); // Nouvel état
 
   // Effet pour détecter la taille de l'écran (mobile/desktop)
   useEffect(() => {
@@ -64,9 +64,11 @@ export default function CloudflarePlayer() {
       if (videoRef.current.paused) {
         videoRef.current.play();
         setIsPlaying(true);
+        setIsManuallyPaused(false); // Réinitialiser quand on relance
       } else {
         videoRef.current.pause();
         setIsPlaying(false);
+        setIsManuallyPaused(true); // Marquer comme mis en pause manuellement
       }
     }
   };
@@ -79,7 +81,12 @@ export default function CloudflarePlayer() {
   };
 
   const handleVideoClick = () => {
-    if (isMuted) {
+    if (!isPlaying && isMuted) {
+      toggleMute();
+      videoRef.current.play();
+      setIsPlaying(true);
+      setIsManuallyPaused(false);
+    } else if (isMuted) {
       toggleMute();
     } else {
       togglePlayPause();
@@ -96,9 +103,11 @@ export default function CloudflarePlayer() {
           if (!videoElement.paused) {
             videoElement.pause();
             setIsPlaying(false);
+            // Ne pas marquer comme mise en pause manuelle lors du scroll
           }
         } else {
-          if (videoElement.paused) {
+          // Ne reprendre la lecture que si elle n'a pas été mise en pause manuellement
+          if (videoElement.paused && !isManuallyPaused) {
             videoElement.play();
             setIsPlaying(true);
           }
@@ -145,13 +154,13 @@ export default function CloudflarePlayer() {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleInitialGlobalMouseMove); // S'assurer qu'il est bien retiré
+      window.removeEventListener("mousemove", handleInitialGlobalMouseMove);
       if (videoElement) {
         videoElement.removeEventListener("play", handlePlay);
         videoElement.removeEventListener("pause", handlePause);
       }
     };
-  }, [isMobile]); // Ajouter isMobile aux dépendances pour réévaluer si l'écouteur doit être actif
+  }, [isMobile, isManuallyPaused]); // Ajouter isManuallyPaused aux dépendances
 
   const handleMouseMove = (event) => {
     if (event.currentTarget && !isMobile) {
