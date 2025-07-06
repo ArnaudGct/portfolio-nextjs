@@ -102,11 +102,11 @@ export default function AlbumsGallery({ album }) {
                   onClick={() => handleImageClick(index)}
                 >
                   {/* Spinner pour les images de la grille */}
-                  {/* {loadingImages[photoId] && (
+                  {loadingImages[photoId] && (
                     <div className="absolute inset-0 flex items-center justify-center bg-slate-100 rounded-lg z-10">
                       <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
                     </div>
-                  )} */}
+                  )}
 
                   <Image
                     src={photoLink.lien_low}
