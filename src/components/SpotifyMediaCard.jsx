@@ -258,9 +258,12 @@ export default function SpotifyMediaCard() {
     };
   }, []);
 
+  // Déterminer la hauteur selon l'état de lecture
+  const cardHeight = trackData?.isCurrentlyPlaying ? "h-32" : "h-24";
+
   if (isLoading && !trackData) {
     return (
-      <div className="h-32">
+      <div className={cardHeight}>
         <MediaCard
           imageComponent={<SpinnerLoader />}
           imageType="custom"
@@ -278,7 +281,7 @@ export default function SpotifyMediaCard() {
   if (error && !trackData) {
     console.error("Erreur:", error);
     return (
-      <div className="h-32">
+      <div className={cardHeight}>
         <MediaCard
           imageComponent={<ErrorPlaceholder />}
           imageType="custom"
@@ -295,7 +298,7 @@ export default function SpotifyMediaCard() {
 
   if (!trackData) {
     return (
-      <div className="h-32">
+      <div className={cardHeight}>
         <MediaCard
           imageComponent={<ErrorPlaceholder />}
           imageType="custom"
@@ -325,7 +328,7 @@ export default function SpotifyMediaCard() {
 
   return (
     <div
-      className="h-32"
+      className={cardHeight}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
