@@ -51,9 +51,9 @@ export default function LetterboxdMediaCard() {
   const abortControllerRef = useRef(null);
   const retryTimeoutRef = useRef(null);
   const isInitialMount = useRef(true);
-  const maxRetries = 10; // Augmenté pour plus de persistence
+  const maxRetries = 3; // Réduit de 10 à 3 pour éviter les délais excessifs
 
-  // Fonction de fetch sans dépendances qui changent
+  // Fonction de fetch optimisée
   const fetchMovieData = useCallback(
     async (isRetry = false) => {
       try {
@@ -76,12 +76,12 @@ export default function LetterboxdMediaCard() {
           .toString(36)
           .substr(2, 9)}`;
 
-        // Timeout de 8 secondes pour chaque tentative
+        // Timeout réduit à 5 secondes pour chaque tentative
         const timeoutId = setTimeout(() => {
           if (abortControllerRef.current) {
             abortControllerRef.current.abort();
           }
-        }, 8000);
+        }, 5000);
 
         const response = await fetch(
           `/api/extern/letterboxd?bust=${uniqueId}`,
@@ -132,7 +132,7 @@ export default function LetterboxdMediaCard() {
 
         console.error("Erreur lors de la récupération des données:", error);
 
-        // Gestion des erreurs avec retry automatique
+        // Gestion des erreurs avec retry automatique mais plus rapide
         setRetryCount((prevCount) => {
           const newCount = prevCount + 1;
 
@@ -142,10 +142,12 @@ export default function LetterboxdMediaCard() {
               error.message
             );
 
-            // Programmer la prochaine tentative dans 1 seconde
+            // Délai progressif : 500ms, 1s, 2s au lieu de 1s constant
+            const retryDelay = Math.min(500 * newCount, 2000);
+
             retryTimeoutRef.current = setTimeout(() => {
               fetchMovieData(true);
-            }, 1000);
+            }, retryDelay);
 
             // On continue à afficher le loading pendant les retries
             return newCount;
@@ -186,10 +188,14 @@ export default function LetterboxdMediaCard() {
     // Reset du flag lors du montage
     isInitialMount.current = false;
 
-    fetchMovieData(false);
+    // Démarrer le fetch avec un petit délai pour éviter les blocages
+    const initialFetchTimeout = setTimeout(() => {
+      fetchMovieData(false);
+    }, 100);
 
     // Cleanup : annuler la requête et les timeouts si le composant est démonté
     return () => {
+      clearTimeout(initialFetchTimeout);
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
         abortControllerRef.current = null;
