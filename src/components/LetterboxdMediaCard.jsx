@@ -51,9 +51,9 @@ export default function LetterboxdMediaCard() {
   const abortControllerRef = useRef(null);
   const retryTimeoutRef = useRef(null);
   const isInitialMount = useRef(true);
-  const maxRetries = 3; // Réduit de 10 à 3 pour éviter les délais excessifs
+  const maxRetries = 2; // Réduit encore plus pour éviter les délais
 
-  // Fonction de fetch optimisée
+  // Fonction de fetch optimisée avec timeout plus court
   const fetchMovieData = useCallback(
     async (isRetry = false) => {
       try {
@@ -76,12 +76,16 @@ export default function LetterboxdMediaCard() {
           .toString(36)
           .substr(2, 9)}`;
 
-        // Timeout réduit à 5 secondes pour chaque tentative
+        // Timeout réduit à 8 secondes pour la première requête, 5 pour les retry
+        const timeoutDuration = isRetry ? 5000 : 8000;
         const timeoutId = setTimeout(() => {
           if (abortControllerRef.current) {
             abortControllerRef.current.abort();
           }
-        }, 5000);
+        }, timeoutDuration);
+
+        console.log("🎬 Début de la requête Letterboxd...");
+        const startTime = Date.now();
 
         const response = await fetch(
           `/api/extern/letterboxd?bust=${uniqueId}`,
@@ -100,6 +104,11 @@ export default function LetterboxdMediaCard() {
 
         clearTimeout(timeoutId);
 
+        const endTime = Date.now();
+        console.log(
+          `✅ Requête Letterboxd terminée en ${endTime - startTime}ms`
+        );
+
         if (!response.ok) {
           throw new Error(
             `Erreur HTTP: ${response.status} ${response.statusText}`
@@ -115,7 +124,7 @@ export default function LetterboxdMediaCard() {
 
         setMovieData(data);
         setError(null);
-        setRetryCount(0); // Reset retry count on success
+        setRetryCount(0);
         setLoading(false);
 
         // Nettoyer le timeout de retry s'il existe
@@ -124,32 +133,31 @@ export default function LetterboxdMediaCard() {
           retryTimeoutRef.current = null;
         }
       } catch (error) {
-        // Ne pas traiter les erreurs d'annulation et éviter les logs d'erreur
+        // Ne pas traiter les erreurs d'annulation
         if (error.name === "AbortError") {
-          console.log("Requête annulée");
+          console.log("⏹️ Requête annulée");
           return;
         }
 
-        console.error("Erreur lors de la récupération des données:", error);
+        console.error("❌ Erreur lors de la récupération des données:", error);
 
-        // Gestion des erreurs avec retry automatique mais plus rapide
+        // Gestion des erreurs avec retry automatique plus rapide
         setRetryCount((prevCount) => {
           const newCount = prevCount + 1;
 
           if (newCount <= maxRetries) {
             console.log(
-              `Tentative ${newCount}/${maxRetries} après erreur:`,
+              `🔄 Tentative ${newCount}/${maxRetries} après erreur:`,
               error.message
             );
 
-            // Délai progressif : 500ms, 1s, 2s au lieu de 1s constant
-            const retryDelay = Math.min(500 * newCount, 2000);
+            // Délai progressif plus court : 300ms, 600ms
+            const retryDelay = 300 * newCount;
 
             retryTimeoutRef.current = setTimeout(() => {
               fetchMovieData(true);
             }, retryDelay);
 
-            // On continue à afficher le loading pendant les retries
             return newCount;
           }
 
@@ -188,14 +196,11 @@ export default function LetterboxdMediaCard() {
     // Reset du flag lors du montage
     isInitialMount.current = false;
 
-    // Démarrer le fetch avec un petit délai pour éviter les blocages
-    const initialFetchTimeout = setTimeout(() => {
-      fetchMovieData(false);
-    }, 100);
+    // Démarrer le fetch immédiatement
+    fetchMovieData(false);
 
     // Cleanup : annuler la requête et les timeouts si le composant est démonté
     return () => {
-      clearTimeout(initialFetchTimeout);
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
         abortControllerRef.current = null;

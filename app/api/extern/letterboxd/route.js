@@ -15,6 +15,27 @@ const LETTERBOXD_USERNAME = process.env.LETTERBOXD_USERNAME || "ArnaudGct";
 // Clé API TMDB (à ajouter dans votre fichier .env)
 const TMDB_API_KEY = process.env.TMDB_API_KEY || "votre_clé_api_tmdb";
 
+// Timeout pour les requêtes
+const FETCH_TIMEOUT = 3000; // 3 secondes max par requête
+
+// Fonction helper pour créer un fetch avec timeout
+const fetchWithTimeout = async (url, options = {}) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+};
+
 async function generateColorScheme(imageUrl) {
   try {
     // Si l'URL est null, retourner les couleurs par défaut
@@ -22,8 +43,14 @@ async function generateColorScheme(imageUrl) {
       throw new Error("URL d'image manquante");
     }
 
-    // Extraire les couleurs avec Vibrant
-    const palette = await Vibrant.from(imageUrl).getPalette();
+    // Timeout plus court pour l'extraction des couleurs
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Timeout couleurs")), 2000);
+    });
+
+    // Extraire les couleurs avec Vibrant avec timeout
+    const palettePromise = Vibrant.from(imageUrl).getPalette();
+    const palette = await Promise.race([palettePromise, timeoutPromise]);
 
     // Utiliser Vibrant ou DarkVibrant comme couleur principale
     const primarySwatch =
@@ -41,24 +68,20 @@ async function generateColorScheme(imageUrl) {
 
     // Créer un schéma de couleurs harmonieux
     const bgColor = primaryColor.toHex();
-
-    // Générer une couleur de bordure plus claire pour un bon contraste
     const borderColor = primaryColor.lighten(0.15).toHex();
 
     // Pour le texte, utiliser les couleurs recommandées par Vibrant si disponible
     let labelColor, titleColor;
 
     if (primaryColor.isDark()) {
-      // Fond sombre: utiliser des textes clairs avec les couleurs Vibrant
       labelColor = primarySwatch.titleTextColor || "#FFFFFF";
       titleColor = "#FFFFFF";
     } else {
-      // Fond clair: utiliser des textes foncés avec les couleurs Vibrant
       labelColor = primarySwatch.bodyTextColor || "#333333";
       titleColor = "#000000";
     }
 
-    // Assurer un contraste suffisant pour l'accessibilité (ratio WCAG AA)
+    // Assurer un contraste suffisant pour l'accessibilité (version simplifiée)
     const labelColorObj = colord(labelColor);
     const titleColorObj = colord(titleColor);
 
@@ -70,18 +93,6 @@ async function generateColorScheme(imageUrl) {
       titleColor = primaryColor.isDark() ? "#FFFFFF" : "#000000";
     }
 
-    // Vérification finale du contraste et ajustement si nécessaire
-    const finalLabelColor = colord(labelColor);
-    const finalTitleColor = colord(titleColor);
-
-    if (primaryColor.contrast(finalLabelColor) < 3) {
-      labelColor = primaryColor.isReadable("#FFFFFF") ? "#FFFFFF" : "#000000";
-    }
-
-    if (primaryColor.contrast(finalTitleColor) < 4.5) {
-      titleColor = primaryColor.isReadable("#FFFFFF") ? "#FFFFFF" : "#000000";
-    }
-
     return {
       bgColor,
       borderColor,
@@ -90,229 +101,26 @@ async function generateColorScheme(imageUrl) {
     };
   } catch (error) {
     console.error("Erreur lors de l'extraction des couleurs:", error);
-    // Retourner des couleurs par défaut avec bon contraste en cas d'erreur
+    // Retourner des couleurs par défaut rapidement
     return {
-      bgColor: "#1e3a8a", // Bleu foncé
-      borderColor: "#3b82f6", // Bleu plus clair pour la bordure
-      labelColor: "#e0e7ff", // Bleu très clair pour les étiquettes
-      titleColor: "#ffffff", // Blanc pour le texte principal
+      bgColor: "#1e3a8a",
+      borderColor: "#3b82f6",
+      labelColor: "#e0e7ff",
+      titleColor: "#ffffff",
     };
-  }
-}
-
-export async function GET(request) {
-  try {
-    // Récupérer le flux RSS de votre profil Letterboxd
-    const response = await fetch(
-      `https://letterboxd.com/${LETTERBOXD_USERNAME}/rss/`,
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        },
-        cache: "no-store", // Force un rechargement pour obtenir les données les plus récentes
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Échec de la récupération du flux RSS Letterboxd: ${response.status}`
-      );
-    }
-
-    const rssContent = await response.text();
-    console.log("RSS Content:", rssContent.substring(0, 500)); // Pour le débogage
-
-    // Trouver tous les <item> dans le flux RSS
-    const itemMatches = rssContent.match(/<item>[\s\S]*?<\/item>/g);
-
-    if (!itemMatches || itemMatches.length === 0) {
-      throw new Error("Aucun film trouvé dans le flux RSS");
-    }
-
-    // Tableau pour stocker tous les films avec leurs dates de publication
-    const moviesWithDates = [];
-
-    // Parcourir tous les items pour trouver des films visionnés
-    for (const item of itemMatches) {
-      // Différencier les types de films (séries TV vs films)
-      const hasTvId = item.includes("<tmdb:tvId>");
-      const hasMovieId = item.includes("<tmdb:movieId>");
-
-      // Extraire les informations du film à partir de l'élément <item>
-      const titleMatch = item.match(/<title>(.*?), (\d{4}) - (.+?)<\/title>/);
-      const linkMatch = item.match(/<link>(.*?)<\/link>/);
-      const tmdbMovieIdMatch = item.match(
-        /<tmdb:movieId>(\d+)<\/tmdb:movieId>/
-      );
-      const tmdbTvIdMatch = item.match(/<tmdb:tvId>(\d+)<\/tmdb:tvId>/);
-      const pubDateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
-      const watchedDateMatch = item.match(
-        /<letterboxd:watchedDate>(.*?)<\/letterboxd:watchedDate>/
-      );
-
-      // Vérifier si nous avons trouvé les informations essentielles
-      if (
-        titleMatch &&
-        linkMatch &&
-        (tmdbMovieIdMatch || tmdbTvIdMatch) &&
-        pubDateMatch &&
-        watchedDateMatch
-      ) {
-        const englishTitle = titleMatch[1];
-        const year = titleMatch[2];
-        const rating = titleMatch[3];
-        const filmUrl = linkMatch[1];
-        const tmdbId = tmdbMovieIdMatch
-          ? tmdbMovieIdMatch[1]
-          : tmdbTvIdMatch[1];
-        const pubDate = new Date(pubDateMatch[1]); // Date de publication dans le flux
-        const watchedDate = new Date(watchedDateMatch[1]); // Date réelle de visionnage
-
-        // Type de média (film ou série TV)
-        const mediaType = hasMovieId ? "movie" : "tv";
-
-        // Ajouter au tableau avec toutes les dates
-        moviesWithDates.push({
-          englishTitle,
-          year,
-          rating,
-          filmUrl,
-          tmdbId,
-          pubDate,
-          watchedDate,
-          mediaType,
-        });
-      }
-    }
-
-    // Trier les films par date de visionnage réelle, du plus récent au plus ancien
-    moviesWithDates.sort((a, b) => b.watchedDate - a.watchedDate);
-
-    // Si aucun film n'est trouvé après filtrage
-    if (moviesWithDates.length === 0) {
-      throw new Error(
-        "Aucun film avec des informations complètes n'a été trouvé"
-      );
-    }
-
-    // Afficher les films trouvés pour le débogage
-    console.log(
-      "Films trouvés:",
-      moviesWithDates
-        .map((m) => `${m.englishTitle} (${m.watchedDate.toISOString()})`)
-        .join(", ")
-    );
-
-    // Prendre le film le plus récent
-    const latestMovie = moviesWithDates[0];
-    console.log("Film le plus récent:", latestMovie.englishTitle);
-
-    // Récupérer les détails du film depuis TMDB
-    const tmdbDetails = await getTmdbMovieDetails(
-      latestMovie.tmdbId,
-      latestMovie.mediaType
-    );
-
-    // Utiliser le titre français s'il existe, sinon utiliser le titre anglais de Letterboxd
-    const title = tmdbDetails.frenchTitle || latestMovie.englishTitle;
-
-    // Récupérer l'URL de l'affiche
-    let posterUrl = tmdbDetails.posterUrl;
-
-    // Si TMDB ne fournit pas d'affiche, utiliser une image par défaut
-    if (!posterUrl) {
-      posterUrl = "/letterboxd-fallback.webp";
-    }
-    // Récupérer plus d'informations à partir de la page du film
-    const filmPageResponse = await fetch(latestMovie.filmUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      },
-      cache: "no-store", // Force le rechargement de la page
-    });
-
-    if (!filmPageResponse.ok) {
-      throw new Error(
-        `Échec de la récupération de la page du film: ${filmPageResponse.status}`
-      );
-    }
-
-    const filmPageHtml = await filmPageResponse.text();
-    const root = parse(filmPageHtml);
-
-    // Extraire le réalisateur
-    const directorElement = root.querySelector('meta[name="twitter:data2"]');
-    const director = directorElement
-      ? directorElement.getAttribute("content")
-      : "Inconnu";
-
-    // Construction d'un objet représentant la note
-    let ratingValue = 0;
-    if (latestMovie.rating.includes("★")) {
-      ratingValue = latestMovie.rating.split("★").length - 1;
-      if (latestMovie.rating.includes("½")) ratingValue += 0.5;
-    }
-
-    // Générer le schéma de couleurs à partir de l'affiche TMDB
-    const colorScheme = await generateColorScheme(posterUrl);
-
-    // Construire l'objet de réponse
-    const filmInfo = {
-      title, // Titre français
-      originalTitle: latestMovie.englishTitle, // Conserver le titre original/anglais
-      director,
-      year: latestMovie.year,
-      rating: ratingValue,
-      posterUrl,
-      letterboxdUrl: latestMovie.filmUrl,
-      tmdbId: latestMovie.tmdbId,
-      mediaType: latestMovie.mediaType, // Ajout du type (film ou série TV)
-      summary: tmdbDetails.summary || "", // Résumé en français
-      watchedDate: latestMovie.watchedDate.toISOString(), // Date de visionnage réelle
-      // Inclure le schéma de couleurs
-      ...colorScheme,
-    };
-
-    // Retourner les données avec en-tête de cache court (5 min)
-    return NextResponse.json(filmInfo, {
-      headers: {
-        // Cache court avec revalidation forcée
-        "Cache-Control":
-          "public, s-maxage=60, stale-while-revalidate=30, must-revalidate",
-        // Headers anti-cache pour mobile
-        Pragma: "no-cache",
-        Expires: "0",
-        // Vary sur User-Agent pour différencier mobile/desktop
-        Vary: "User-Agent",
-        // ETag unique pour forcer la revalidation
-        ETag: `"${Date.now()}"`,
-        "Last-Modified": new Date().toUTCString(),
-      },
-    });
-  } catch (error) {
-    console.error(
-      "Erreur lors de la récupération des données Letterboxd:",
-      error
-    );
-    return NextResponse.json(
-      { error: "Échec de la récupération des données", message: error.message },
-      { status: 500 }
-    );
   }
 }
 
 async function getTmdbMovieDetails(id, mediaType = "movie") {
   try {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/${mediaType}/${id}?api_key=${TMDB_API_KEY}&language=fr-FR&append_to_response=translations`,
+    const response = await fetchWithTimeout(
+      `https://api.themoviedb.org/3/${mediaType}/${id}?api_key=${TMDB_API_KEY}&language=fr-FR`,
       {
         headers: {
           Accept: "application/json",
           "User-Agent": "Portfolio-Project",
         },
-        cache: "no-store", // Forcer la récupération de données fraîches
+        cache: "no-store",
       }
     );
 
@@ -329,12 +137,10 @@ async function getTmdbMovieDetails(id, mediaType = "movie") {
     let posterUrl = null;
 
     // Si on a une image d'affiche, on crée l'URL complète
-    // On utilise "w185" au lieu de "w500" pour une résolution plus petite et adaptée
     if (data.poster_path) {
       posterUrl = `https://image.tmdb.org/t/p/w185${data.poster_path}`;
     }
 
-    // On peut aussi récupérer d'autres métadonnées utiles
     const summary = data.overview || "";
     const originalTitle =
       mediaType === "movie" ? data.original_title : data.original_name;
@@ -356,5 +162,213 @@ async function getTmdbMovieDetails(id, mediaType = "movie") {
       summary: null,
       releaseDate: null,
     };
+  }
+}
+
+async function getDirectorFromPage(filmUrl) {
+  try {
+    const filmPageResponse = await fetchWithTimeout(filmUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      },
+      cache: "no-store",
+    });
+
+    if (!filmPageResponse.ok) {
+      throw new Error(
+        `Échec de la récupération de la page du film: ${filmPageResponse.status}`
+      );
+    }
+
+    const filmPageHtml = await filmPageResponse.text();
+    const root = parse(filmPageHtml);
+
+    // Extraire le réalisateur
+    const directorElement = root.querySelector('meta[name="twitter:data2"]');
+    return directorElement
+      ? directorElement.getAttribute("content")
+      : "Inconnu";
+  } catch (error) {
+    console.error("Erreur lors de la récupération du réalisateur:", error);
+    return "Inconnu";
+  }
+}
+
+export async function GET(request) {
+  try {
+    console.log("🎬 Début de la récupération des données Letterboxd");
+
+    // Récupérer le flux RSS de votre profil Letterboxd
+    const response = await fetchWithTimeout(
+      `https://letterboxd.com/${LETTERBOXD_USERNAME}/rss/`,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Échec de la récupération du flux RSS Letterboxd: ${response.status}`
+      );
+    }
+
+    const rssContent = await response.text();
+    console.log("✅ RSS récupéré");
+
+    // Trouver tous les <item> dans le flux RSS
+    const itemMatches = rssContent.match(/<item>[\s\S]*?<\/item>/g);
+
+    if (!itemMatches || itemMatches.length === 0) {
+      throw new Error("Aucun film trouvé dans le flux RSS");
+    }
+
+    // Tableau pour stocker tous les films avec leurs dates de publication
+    const moviesWithDates = [];
+
+    // Parcourir tous les items pour trouver des films visionnés
+    for (const item of itemMatches) {
+      const hasTvId = item.includes("<tmdb:tvId>");
+      const hasMovieId = item.includes("<tmdb:movieId>");
+
+      const titleMatch = item.match(/<title>(.*?), (\d{4}) - (.+?)<\/title>/);
+      const linkMatch = item.match(/<link>(.*?)<\/link>/);
+      const tmdbMovieIdMatch = item.match(
+        /<tmdb:movieId>(\d+)<\/tmdb:movieId>/
+      );
+      const tmdbTvIdMatch = item.match(/<tmdb:tvId>(\d+)<\/tmdb:tvId>/);
+      const pubDateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+      const watchedDateMatch = item.match(
+        /<letterboxd:watchedDate>(.*?)<\/letterboxd:watchedDate>/
+      );
+
+      if (
+        titleMatch &&
+        linkMatch &&
+        (tmdbMovieIdMatch || tmdbTvIdMatch) &&
+        pubDateMatch &&
+        watchedDateMatch
+      ) {
+        const englishTitle = titleMatch[1];
+        const year = titleMatch[2];
+        const rating = titleMatch[3];
+        const filmUrl = linkMatch[1];
+        const tmdbId = tmdbMovieIdMatch
+          ? tmdbMovieIdMatch[1]
+          : tmdbTvIdMatch[1];
+        const pubDate = new Date(pubDateMatch[1]);
+        const watchedDate = new Date(watchedDateMatch[1]);
+        const mediaType = hasMovieId ? "movie" : "tv";
+
+        moviesWithDates.push({
+          englishTitle,
+          year,
+          rating,
+          filmUrl,
+          tmdbId,
+          pubDate,
+          watchedDate,
+          mediaType,
+        });
+      }
+    }
+
+    // Trier les films par date de visionnage réelle, du plus récent au plus ancien
+    moviesWithDates.sort((a, b) => b.watchedDate - a.watchedDate);
+
+    if (moviesWithDates.length === 0) {
+      throw new Error(
+        "Aucun film avec des informations complètes n'a été trouvé"
+      );
+    }
+
+    // Prendre le film le plus récent
+    const latestMovie = moviesWithDates[0];
+    console.log("🎯 Film le plus récent:", latestMovie.englishTitle);
+
+    // **OPTIMISATION CLÉE : Exécuter les requêtes en parallèle**
+    console.log("🚀 Lancement des requêtes parallèles...");
+
+    const [tmdbDetails, director] = await Promise.allSettled([
+      getTmdbMovieDetails(latestMovie.tmdbId, latestMovie.mediaType),
+      getDirectorFromPage(latestMovie.filmUrl),
+    ]);
+
+    // Récupérer les résultats ou utiliser des valeurs par défaut
+    const tmdbData =
+      tmdbDetails.status === "fulfilled"
+        ? tmdbDetails.value
+        : {
+            frenchTitle: null,
+            originalTitle: null,
+            posterUrl: null,
+            summary: null,
+            releaseDate: null,
+          };
+
+    const directorName =
+      director.status === "fulfilled" ? director.value : "Inconnu";
+
+    console.log("✅ Données TMDB et réalisateur récupérées");
+
+    // Utiliser le titre français s'il existe, sinon utiliser le titre anglais de Letterboxd
+    const title = tmdbData.frenchTitle || latestMovie.englishTitle;
+
+    // Récupérer l'URL de l'affiche
+    let posterUrl = tmdbData.posterUrl;
+    if (!posterUrl) {
+      posterUrl = "/letterboxd-fallback.webp";
+    }
+
+    // Construction d'un objet représentant la note
+    let ratingValue = 0;
+    if (latestMovie.rating.includes("★")) {
+      ratingValue = latestMovie.rating.split("★").length - 1;
+      if (latestMovie.rating.includes("½")) ratingValue += 0.5;
+    }
+
+    // Générer le schéma de couleurs en arrière-plan (non bloquant)
+    console.log("🎨 Génération des couleurs...");
+    const colorScheme = await generateColorScheme(posterUrl);
+    console.log("✅ Couleurs générées");
+
+    // Construire l'objet de réponse
+    const filmInfo = {
+      title,
+      originalTitle: latestMovie.englishTitle,
+      director: directorName,
+      year: latestMovie.year,
+      rating: ratingValue,
+      posterUrl,
+      letterboxdUrl: latestMovie.filmUrl,
+      tmdbId: latestMovie.tmdbId,
+      mediaType: latestMovie.mediaType,
+      summary: tmdbData.summary || "",
+      watchedDate: latestMovie.watchedDate.toISOString(),
+      ...colorScheme,
+    };
+
+    console.log("✅ Données complètes récupérées en", Date.now());
+
+    // Retourner les données avec en-tête de cache optimisé
+    return NextResponse.json(filmInfo, {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60", // 5 min de cache
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error(
+      "❌ Erreur lors de la récupération des données Letterboxd:",
+      error
+    );
+    return NextResponse.json(
+      { error: "Échec de la récupération des données", message: error.message },
+      { status: 500 }
+    );
   }
 }
