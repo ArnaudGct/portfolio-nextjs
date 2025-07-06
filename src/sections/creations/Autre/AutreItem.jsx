@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import Tag from "../../../components/Tag";
-import { SquareArrowOutUpRight } from "lucide-react";
+import { SquareArrowOutUpRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -53,12 +53,17 @@ export default function AutreItem({ id, title, tags, miniature }) {
           className="relative aspect-video overflow-hidden rounded-lg"
           ref={videoRef}
         >
-          {/* Skeleton loader */}
-          {!isInView || loading ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-50 opacity-70">
-              <div className="w-full h-full bg-gradient-to-r from-blue-200 to-blue-50 rounded-lg animate-pulse opacity-70"></div>
+          {/* Spinner de chargement centré - affiché pendant le chargement */}
+          {(!isInView || loading) && (
+            <div className="absolute inset-0 bg-blue-50 rounded-lg z-10 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+                <p className="text-sm text-blue-600 font-medium">
+                  Chargement de l'image...
+                </p>
+              </div>
             </div>
-          ) : null}
+          )}
 
           {/* Lorsque l'élément est dans la vue et que l'image est prête */}
           {isInView && (
@@ -67,7 +72,9 @@ export default function AutreItem({ id, title, tags, miniature }) {
               src={miniature}
               fill
               priority
-              className="object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
+              className={`object-cover rounded-lg transition-all duration-500 group-hover:scale-105 ${
+                loading ? "opacity-0 scale-95" : "opacity-100 scale-100"
+              }`}
               sizes="(max-width: 768px) 100vw, 33vw"
               onLoad={handleImageLoad} // Cette fonction est appelée lorsque l'image est chargée
             />

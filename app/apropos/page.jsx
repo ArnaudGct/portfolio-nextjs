@@ -122,7 +122,7 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
                   href="https://maps.apple.com/place?z=15&auid=6034166720712255280&address=17000+La+Rochelle%2C+France&coordinate=46.1622489%2C-1.1550672&name=La+Rochelle&lsp=6489"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative overflow-hidden w-full h-52 rounded-lg border border-blue-300 transition-shadow duration-300 ease-in-out hover:shadow-lg"
+                  className="group relative overflow-hidden w-full h-56 sm:h-full md:h-56 lg:h-full rounded-lg border border-blue-300 transition-shadow duration-300 ease-in-out hover:shadow-lg"
                 >
                   <div className="relative w-full h-full">
                     <Image

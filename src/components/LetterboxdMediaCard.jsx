@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import MediaCard from "./MediaCard";
 import { AlertCircle, Loader2 } from "lucide-react";
 
@@ -46,33 +46,168 @@ const ErrorPlaceholder = () => (
 export default function LetterboxdMediaCard() {
   const [movieData, setMovieData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const abortControllerRef = useRef(null);
+  const retryTimeoutRef = useRef(null);
+  const isInitialMount = useRef(true);
+  const maxRetries = 3; // Réduit de 10 à 3 pour éviter les délais excessifs
 
-  useEffect(() => {
-    const fetchMovieData = async () => {
+  // Fonction de fetch optimisée
+  const fetchMovieData = useCallback(
+    async (isRetry = false) => {
       try {
-        // Ajouter timestamp pour éviter le cache
-        const timestamp = Date.now();
-        const response = await fetch(`/api/extern/letterboxd?t=${timestamp}`, {
-          cache: "no-store", // Empêche Next.js de cacher
-          headers: {
-            "Cache-Control": "no-cache",
-          },
-        });
+        // Annuler la requête précédente si elle existe
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
 
-        if (response.ok) {
-          const data = await response.json();
-          setMovieData(data);
+        // Créer un nouveau contrôleur pour cette requête
+        abortControllerRef.current = new AbortController();
+
+        // Toujours afficher le loading au début, sauf si on a déjà des données et que c'est un retry
+        if (!isRetry || !movieData) {
+          setLoading(true);
+        }
+        setError(null);
+
+        // Générer un ID unique pour éviter le cache
+        const uniqueId = `${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`;
+
+        // Timeout réduit à 5 secondes pour chaque tentative
+        const timeoutId = setTimeout(() => {
+          if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+          }
+        }, 5000);
+
+        const response = await fetch(
+          `/api/extern/letterboxd?bust=${uniqueId}`,
+          {
+            method: "GET",
+            cache: "no-store",
+            signal: abortControllerRef.current.signal,
+            headers: {
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+              Pragma: "no-cache",
+              Expires: "0",
+              "X-Requested-With": "XMLHttpRequest",
+            },
+          }
+        );
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(
+            `Erreur HTTP: ${response.status} ${response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+
+        // Vérifier que les données sont valides
+        if (!data || typeof data !== "object") {
+          throw new Error("Données invalides reçues de l'API");
+        }
+
+        setMovieData(data);
+        setError(null);
+        setRetryCount(0); // Reset retry count on success
+        setLoading(false);
+
+        // Nettoyer le timeout de retry s'il existe
+        if (retryTimeoutRef.current) {
+          clearTimeout(retryTimeoutRef.current);
+          retryTimeoutRef.current = null;
         }
       } catch (error) {
+        // Ne pas traiter les erreurs d'annulation et éviter les logs d'erreur
+        if (error.name === "AbortError") {
+          console.log("Requête annulée");
+          return;
+        }
+
         console.error("Erreur lors de la récupération des données:", error);
-      } finally {
-        setLoading(false);
+
+        // Gestion des erreurs avec retry automatique mais plus rapide
+        setRetryCount((prevCount) => {
+          const newCount = prevCount + 1;
+
+          if (newCount <= maxRetries) {
+            console.log(
+              `Tentative ${newCount}/${maxRetries} après erreur:`,
+              error.message
+            );
+
+            // Délai progressif : 500ms, 1s, 2s au lieu de 1s constant
+            const retryDelay = Math.min(500 * newCount, 2000);
+
+            retryTimeoutRef.current = setTimeout(() => {
+              fetchMovieData(true);
+            }, retryDelay);
+
+            // On continue à afficher le loading pendant les retries
+            return newCount;
+          }
+
+          // Si on a épuisé les tentatives
+          setError(error.message || "Erreur inconnue");
+          setLoading(false);
+          return newCount;
+        });
+      }
+    },
+    [] // Pas de dépendances pour éviter les re-renders infinis
+  );
+
+  // Fonction pour forcer le rechargement
+  const forceReload = useCallback(() => {
+    // Nettoyer les timeouts existants
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+
+    // Annuler la requête en cours si elle existe
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    setRetryCount(0);
+    setError(null);
+    setMovieData(null);
+    setLoading(true);
+    fetchMovieData(false);
+  }, [fetchMovieData]);
+
+  // useEffect qui ne s'exécute qu'une seule fois au montage
+  useEffect(() => {
+    // Reset du flag lors du montage
+    isInitialMount.current = false;
+
+    // Démarrer le fetch avec un petit délai pour éviter les blocages
+    const initialFetchTimeout = setTimeout(() => {
+      fetchMovieData(false);
+    }, 100);
+
+    // Cleanup : annuler la requête et les timeouts si le composant est démonté
+    return () => {
+      clearTimeout(initialFetchTimeout);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+        retryTimeoutRef.current = null;
       }
     };
+  }, []); // Tableau de dépendances vide = exécution une seule fois
 
-    fetchMovieData();
-  }, []);
-
+  // État de chargement - pendant le chargement initial ou les retries
   if (loading) {
     return (
       <div className="h-24">
@@ -80,7 +215,11 @@ export default function LetterboxdMediaCard() {
           imageComponent={<SpinnerLoader />}
           imageType="custom"
           labelText="Chargement..."
-          titleText="En cours..."
+          titleText={
+            retryCount > 0
+              ? `Tentative ${retryCount}/${maxRetries}`
+              : "En cours..."
+          }
           subtitleText="Letterboxd"
           {...SKELETON_COLORS}
           logoSrc="/letterboxd.webp"
@@ -90,7 +229,8 @@ export default function LetterboxdMediaCard() {
     );
   }
 
-  if (!movieData) {
+  // État d'erreur - seulement si on a vraiment une erreur ET qu'on n'est pas en train de charger
+  if (error && !loading) {
     return (
       <div className="h-24">
         <MediaCard
@@ -98,8 +238,27 @@ export default function LetterboxdMediaCard() {
           imageType="custom"
           labelText="Indisponible"
           titleText="Letterboxd"
-          subtitleText="Erreur de connexion"
+          subtitleText={`Échec après ${retryCount} tentatives`}
           {...ERROR_COLORS}
+          logoSrc="/letterboxd.webp"
+          logoAlt="Logo de Letterboxd"
+          onClick={forceReload}
+        />
+      </div>
+    );
+  }
+
+  // Si on n'a pas de données et qu'on n'est pas en train de charger, afficher le skeleton
+  if (!movieData && !loading) {
+    return (
+      <div className="h-24">
+        <MediaCard
+          imageComponent={<SpinnerLoader />}
+          imageType="custom"
+          labelText="Chargement..."
+          titleText="En cours..."
+          subtitleText="Letterboxd"
+          {...SKELETON_COLORS}
           logoSrc="/letterboxd.webp"
           logoAlt="Logo de Letterboxd"
         />

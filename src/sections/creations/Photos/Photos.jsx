@@ -125,13 +125,13 @@ export default function Photos() {
     setIsVisuallyLoading(false);
     setIsAlbumsVisuallyLoading(false);
 
-    // IMPORTANT: Réinitialiser les états de chargement des images individuelles
-    // pour les éléments déjà chargés
-    setAlbumImageLoadingStates({});
-    setPhotoLoadingState({});
+    // IMPORTANT: Ne plus réinitialiser les états de chargement des images individuelles
+    // pour éviter de refaire charger les images déjà chargées
+    // setAlbumImageLoadingStates({});
+    // setPhotoLoadingState({});
   };
 
-  // Modifier le useEffect de filtrage pour réinitialiser d'abord puis définir les nouveaux états
+  // Modifier le useEffect de filtrage pour mieux gérer les états de chargement
   useEffect(() => {
     // Si on est en train de filtrer (pas le chargement initial), réinitialiser d'abord les skeletons
     if (!isVisuallyLoading || !isAlbumsVisuallyLoading) {
@@ -185,35 +185,84 @@ export default function Photos() {
     setFilteredPhotos(resultPhotos);
     setFilteredAlbums(resultAlbums);
 
-    // Utiliser setTimeout pour s'assurer que cette partie s'exécute APRÈS le rendu
-    setTimeout(() => {
-      // Initialiser les états de chargement pour les nouveaux éléments filtrés
-      if (resultAlbums.length > 0) {
-        const initialLoadingState = {};
-        resultAlbums.forEach((album) => {
-          initialLoadingState[album.id_alb] = {};
-          for (let i = 0; i < 5; i++) {
-            // Marquer comme non chargé seulement si la photo existe
-            initialLoadingState[album.id_alb][i] = album.photos[i]
-              ? false
-              : false;
-          }
-        });
-        setAlbumImageLoadingStates(initialLoadingState);
-      }
+    // SUPPRIMER complètement ce setTimeout qui réinitialise les états de chargement
+    // et le remplacer par une initialisation intelligente SEULEMENT pour les nouveaux éléments
 
-      if (resultPhotos.length > 0) {
-        const initialPhotoLoadingState = {};
-        resultPhotos.forEach((photo) => {
-          // Considérer les photos comme déjà chargées (false) après le filtrage
-          initialPhotoLoadingState[photo.id_pho] = false;
+    // Pour les albums filtrés, ne créer des états de chargement que pour les NOUVEAUX albums
+    if (resultAlbums.length > 0) {
+      setAlbumImageLoadingStates((prevState) => {
+        const newState = { ...prevState };
+
+        resultAlbums.forEach((album) => {
+          // SEULEMENT si l'album n'existe pas encore dans l'état, l'initialiser
+          if (!newState[album.id_alb]) {
+            newState[album.id_alb] = {
+              isFullyLoaded: false,
+            };
+            // Initialiser le chargement pour chaque photo de l'album
+            for (let i = 0; i < Math.min(5, album.photos.length); i++) {
+              newState[album.id_alb][i] = true; // true = en cours de chargement
+            }
+          }
+          // Si l'album existe déjà, ne RIEN faire (garde son état actuel)
         });
-        setPhotoLoadingState(initialPhotoLoadingState);
-      }
-    }, 0);
+
+        return newState;
+      });
+    }
+
+    // Pour les photos filtrées, ne créer des états de chargement que pour les NOUVELLES photos
+    if (resultPhotos.length > 0) {
+      setPhotoLoadingState((prevState) => {
+        const newState = { ...prevState };
+
+        resultPhotos.forEach((photo) => {
+          // SEULEMENT si la photo n'existe pas encore dans l'état, l'initialiser
+          if (newState[photo.id_pho] === undefined) {
+            newState[photo.id_pho] = true; // true = en cours de chargement pour les nouvelles photos
+          }
+          // Si la photo existe déjà, ne RIEN faire (garde son état actuel)
+        });
+
+        return newState;
+      });
+    }
   }, [photos, albums, selectedTags, searchQuery]);
 
-  // 3. Modifiez la fonction de gestion du chargement des images d'album
+  // Ajouter une fonction pour nettoyer les états de chargement des éléments qui ne sont plus affichés
+  useEffect(() => {
+    // Nettoyer les états de chargement des albums qui ne sont plus dans les résultats filtrés
+    setAlbumImageLoadingStates((prevState) => {
+      const newState = { ...prevState };
+      const currentAlbumIds = filteredAlbums.map((album) => album.id_alb);
+
+      // Garder seulement les états des albums actuellement affichés
+      Object.keys(newState).forEach((albumId) => {
+        if (!currentAlbumIds.includes(parseInt(albumId))) {
+          delete newState[albumId];
+        }
+      });
+
+      return newState;
+    });
+
+    // Nettoyer les états de chargement des photos qui ne sont plus dans les résultats filtrés
+    setPhotoLoadingState((prevState) => {
+      const newState = { ...prevState };
+      const currentPhotoIds = filteredPhotos.map((photo) => photo.id_pho);
+
+      // Garder seulement les états des photos actuellement affichées
+      Object.keys(newState).forEach((photoId) => {
+        if (!currentPhotoIds.includes(parseInt(photoId))) {
+          delete newState[photoId];
+        }
+      });
+
+      return newState;
+    });
+  }, [filteredAlbums, filteredPhotos]);
+
+  // Améliorer la fonction de gestion du chargement des images d'album avec plus de vérifications
   const handleAlbumImageLoad = (albumId, photoIndex) => {
     setAlbumImageLoadingStates((prev) => {
       // Vérification de sécurité : si l'album n'existe pas dans l'état ou a été filtré
@@ -221,14 +270,28 @@ export default function Photos() {
         return prev;
       }
 
-      // Marque cette image spécifique comme chargée (false = chargée)
-      return {
+      const updatedState = {
         ...prev,
         [albumId]: {
           ...prev[albumId],
-          [photoIndex]: false,
+          [photoIndex]: false, // Marque cette image comme chargée
         },
       };
+
+      // Vérifie si toutes les images de l'album sont chargées
+      const albumImages = updatedState[albumId];
+      // Exclure isFullyLoaded du calcul
+      const imageStates = Object.entries(albumImages).filter(
+        ([key]) => key !== "isFullyLoaded"
+      );
+      const allImagesLoaded = imageStates.every(([key, isLoaded]) => !isLoaded);
+
+      // Si toutes les images sont chargées, marque l'album comme entièrement chargé
+      if (allImagesLoaded && imageStates.length > 0) {
+        updatedState[albumId].isFullyLoaded = true;
+      }
+
+      return updatedState;
     });
   };
 
@@ -536,138 +599,115 @@ export default function Photos() {
                     <div className="flex flex-col gap-4">
                       <div className="relative h-52 w-full overflow-hidden rounded-lg bg-slate-100">
                         {album.photos.length > 0 ? (
-                          <div className="absolute inset-0 w-full h-full transition-transform duration-500 group-hover:scale-105">
-                            <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
-                              {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
-                              {album.photos[0] && (
-                                <div className="col-span-1 row-span-2 relative rounded-tl-lg rounded-bl-lg overflow-hidden">
-                                  {/* Skeleton qui disparaît une fois l'image chargée */}
-                                  {albumImageLoadingStates[
-                                    album.id_alb
-                                  ]?.[0] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
-                                  )}
-                                  <Image
-                                    src={album.photos[0].lien_low}
-                                    alt={album.photos[0].alt}
-                                    fill
-                                    priority
-                                    sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-tl-lg rounded-bl-lg${
-                                      albumImageLoadingStates[album.id_alb]?.[0]
-                                        ? "opacity-0"
-                                        : "opacity-100 transition-opacity duration-300"
-                                    }`}
-                                    onLoad={() =>
-                                      handleAlbumImageLoad(album.id_alb, 0)
-                                    }
-                                  />
+                          <div className="absolute inset-0 w-full h-full">
+                            {/* Loader central qui s'affiche tant que l'album n'est pas entièrement chargé */}
+                            {!albumImageLoadingStates[album.id_alb]
+                              ?.isFullyLoaded && (
+                              <div className="absolute inset-0 z-20 bg-slate-100 flex items-center justify-center">
+                                <div className="flex flex-col items-center gap-3">
+                                  <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+                                  <p className="text-sm text-blue-600 font-medium">
+                                    Chargement des photos...
+                                  </p>
                                 </div>
-                              )}
+                              </div>
+                            )}
 
-                              {/* Photo 2 – colonne droite ligne 1 */}
-                              {album.photos[1] && (
-                                <div className="col-span-1 row-span-1 relative overflow-hidden rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none">
-                                  {albumImageLoadingStates[
-                                    album.id_alb
-                                  ]?.[1] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
-                                  )}
-                                  <Image
-                                    src={album.photos[1].lien_low}
-                                    alt={album.photos[1].alt}
-                                    fill
-                                    priority
-                                    sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none ${
-                                      albumImageLoadingStates[album.id_alb]?.[1]
-                                        ? "opacity-0"
-                                        : "opacity-100 transition-opacity duration-300"
-                                    }`}
-                                    onLoad={() =>
-                                      handleAlbumImageLoad(album.id_alb, 1)
-                                    }
-                                  />
-                                </div>
-                              )}
+                            {/* Conteneur des images avec transition d'opacité */}
+                            <div
+                              className={`w-full h-full transition-all duration-500 ${
+                                albumImageLoadingStates[album.id_alb]
+                                  ?.isFullyLoaded
+                                  ? "opacity-100 scale-100"
+                                  : "opacity-0 scale-95"
+                              } transition-transform duration-500 group-hover:scale-105`}
+                            >
+                              <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
+                                {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
+                                {album.photos[0] && (
+                                  <div className="col-span-1 row-span-2 relative rounded-tl-lg rounded-bl-lg overflow-hidden">
+                                    <Image
+                                      src={album.photos[0].lien_low}
+                                      alt={album.photos[0].alt}
+                                      fill
+                                      priority
+                                      sizes="(max-width: 768px) 50vw, 25vw"
+                                      className="object-cover rounded-tl-lg rounded-bl-lg"
+                                      onLoad={() =>
+                                        handleAlbumImageLoad(album.id_alb, 0)
+                                      }
+                                    />
+                                  </div>
+                                )}
 
-                              {/* Photo 3 – colonne droite ligne 2 */}
-                              {album.photos[2] && (
-                                <div className="col-span-1 row-span-1 relative rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg overflow-hidden">
-                                  {albumImageLoadingStates[
-                                    album.id_alb
-                                  ]?.[2] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
-                                  )}
-                                  <Image
-                                    src={album.photos[2].lien_low}
-                                    alt={album.photos[2].alt}
-                                    fill
-                                    priority
-                                    sizes="(max-width: 768px) 50vw, 25vw"
-                                    className={`object-cover rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg ${
-                                      albumImageLoadingStates[album.id_alb]?.[2]
-                                        ? "opacity-0"
-                                        : "opacity-100 transition-opacity duration-300"
-                                    }`}
-                                    onLoad={() =>
-                                      handleAlbumImageLoad(album.id_alb, 2)
-                                    }
-                                  />
-                                </div>
-                              )}
+                                {/* Photo 2 – colonne droite ligne 1 */}
+                                {album.photos[1] && (
+                                  <div className="col-span-1 row-span-1 relative overflow-hidden rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none">
+                                    <Image
+                                      src={album.photos[1].lien_low}
+                                      alt={album.photos[1].alt}
+                                      fill
+                                      priority
+                                      sizes="(max-width: 768px) 50vw, 25vw"
+                                      className="object-cover rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none"
+                                      onLoad={() =>
+                                        handleAlbumImageLoad(album.id_alb, 1)
+                                      }
+                                    />
+                                  </div>
+                                )}
 
-                              {/* Photo 4 – affichée uniquement en md+ */}
-                              {album.photos[3] && (
-                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-tr-none xs:rounded-tr-br md:rounded-tr-none overflow-hidden">
-                                  {albumImageLoadingStates[
-                                    album.id_alb
-                                  ]?.[3] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
-                                  )}
-                                  <Image
-                                    src={album.photos[3].lien_low}
-                                    alt={album.photos[3].alt}
-                                    fill
-                                    priority
-                                    sizes="25vw"
-                                    className={`object-cover rounded-tr-none xs:rounded-tr-br md:rounded-tr-none ${
-                                      albumImageLoadingStates[album.id_alb]?.[3]
-                                        ? "opacity-0"
-                                        : "opacity-100 transition-opacity duration-300"
-                                    }`}
-                                    onLoad={() =>
-                                      handleAlbumImageLoad(album.id_alb, 3)
-                                    }
-                                  />
-                                </div>
-                              )}
+                                {/* Photo 3 – colonne droite ligne 2 */}
+                                {album.photos[2] && (
+                                  <div className="col-span-1 row-span-1 relative rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg overflow-hidden">
+                                    <Image
+                                      src={album.photos[2].lien_low}
+                                      alt={album.photos[2].alt}
+                                      fill
+                                      priority
+                                      sizes="(max-width: 768px) 50vw, 25vw"
+                                      className="object-cover rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg"
+                                      onLoad={() =>
+                                        handleAlbumImageLoad(album.id_alb, 2)
+                                      }
+                                    />
+                                  </div>
+                                )}
 
-                              {/* Photo 5 – affichée uniquement en md+ */}
-                              {album.photos[4] && (
-                                <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-br-lg xs:rounded-br-none md:rounded-br-lg overflow-hidden">
-                                  {albumImageLoadingStates[
-                                    album.id_alb
-                                  ]?.[4] && (
-                                    <div className="absolute inset-0 z-10 bg-blue-100/60 animate-pulse"></div>
-                                  )}
-                                  <Image
-                                    src={album.photos[4].lien_low}
-                                    alt={album.photos[4].alt}
-                                    fill
-                                    priority
-                                    sizes="25vw"
-                                    className={`object-cover rounded-br-lg xs:rounded-br-none md:rounded-br-lg ${
-                                      albumImageLoadingStates[album.id_alb]?.[4]
-                                        ? "opacity-0"
-                                        : "opacity-100 transition-opacity duration-300"
-                                    }`}
-                                    onLoad={() =>
-                                      handleAlbumImageLoad(album.id_alb, 4)
-                                    }
-                                  />
-                                </div>
-                              )}
+                                {/* Photo 4 – affichée uniquement en md+ */}
+                                {album.photos[3] && (
+                                  <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-tr-none xs:rounded-tr-br md:rounded-tr-none overflow-hidden">
+                                    <Image
+                                      src={album.photos[3].lien_low}
+                                      alt={album.photos[3].alt}
+                                      fill
+                                      priority
+                                      sizes="25vw"
+                                      className="object-cover rounded-tr-none xs:rounded-tr-br md:rounded-tr-none"
+                                      onLoad={() =>
+                                        handleAlbumImageLoad(album.id_alb, 3)
+                                      }
+                                    />
+                                  </div>
+                                )}
+
+                                {/* Photo 5 – affichée uniquement en md+ */}
+                                {album.photos[4] && (
+                                  <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-br-lg xs:rounded-br-none md:rounded-br-lg overflow-hidden">
+                                    <Image
+                                      src={album.photos[4].lien_low}
+                                      alt={album.photos[4].alt}
+                                      fill
+                                      priority
+                                      sizes="25vw"
+                                      className="object-cover rounded-br-lg xs:rounded-br-none md:rounded-br-lg"
+                                      onLoad={() =>
+                                        handleAlbumImageLoad(album.id_alb, 4)
+                                      }
+                                    />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ) : (
