@@ -260,13 +260,7 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         {/* Image placeholder pendant le chargement */}
         <AnimatePresence>
           {isLoading && (
-            <motion.div
-              className="absolute inset-0 z-[11]"
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
+            <motion.div className="absolute inset-0 z-[11]">
               <img
                 src={thumbnailUrl}
                 alt="Aperçu de la vidéo"
@@ -279,9 +273,9 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         {/* Vidéo HTML */}
         <video
           ref={videoRef}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
-            isLoading ? "opacity-0" : "opacity-100"
-          }`}
+          className={
+            "w-full h-full object-cover transition-opacity duration-300"
+          }
           autoPlay
           muted
           playsInline

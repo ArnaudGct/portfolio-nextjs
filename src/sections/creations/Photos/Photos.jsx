@@ -188,23 +188,16 @@ export default function Photos() {
     // SUPPRIMER complètement ce setTimeout qui réinitialise les états de chargement
     // et le remplacer par une initialisation intelligente SEULEMENT pour les nouveaux éléments
 
-    // Pour les albums filtrés, ne créer des états de chargement que pour les NOUVEAUX albums
+    // Pour les albums filtrés, initialiser les états de chargement
     if (resultAlbums.length > 0) {
       setAlbumImageLoadingStates((prevState) => {
         const newState = { ...prevState };
 
         resultAlbums.forEach((album) => {
           // SEULEMENT si l'album n'existe pas encore dans l'état, l'initialiser
-          if (!newState[album.id_alb]) {
-            newState[album.id_alb] = {
-              isFullyLoaded: false,
-            };
-            // Initialiser le chargement pour chaque photo de l'album
-            for (let i = 0; i < Math.min(5, album.photos.length); i++) {
-              newState[album.id_alb][i] = true; // true = en cours de chargement
-            }
+          if (newState[album.id_alb] === undefined) {
+            newState[album.id_alb] = true; // true = en cours de chargement
           }
-          // Si l'album existe déjà, ne RIEN faire (garde son état actuel)
         });
 
         return newState;
@@ -262,37 +255,12 @@ export default function Photos() {
     });
   }, [filteredAlbums, filteredPhotos]);
 
-  // Améliorer la fonction de gestion du chargement des images d'album avec plus de vérifications
-  const handleAlbumImageLoad = (albumId, photoIndex) => {
-    setAlbumImageLoadingStates((prev) => {
-      // Vérification de sécurité : si l'album n'existe pas dans l'état ou a été filtré
-      if (!prev || !prev[albumId]) {
-        return prev;
-      }
-
-      const updatedState = {
-        ...prev,
-        [albumId]: {
-          ...prev[albumId],
-          [photoIndex]: false, // Marque cette image comme chargée
-        },
-      };
-
-      // Vérifie si toutes les images de l'album sont chargées
-      const albumImages = updatedState[albumId];
-      // Exclure isFullyLoaded du calcul
-      const imageStates = Object.entries(albumImages).filter(
-        ([key]) => key !== "isFullyLoaded"
-      );
-      const allImagesLoaded = imageStates.every(([key, isLoaded]) => !isLoaded);
-
-      // Si toutes les images sont chargées, marque l'album comme entièrement chargé
-      if (allImagesLoaded && imageStates.length > 0) {
-        updatedState[albumId].isFullyLoaded = true;
-      }
-
-      return updatedState;
-    });
+  // Simplifier la fonction handleAlbumImageLoad
+  const handleAlbumImageLoad = (albumId) => {
+    setAlbumImageLoadingStates((prev) => ({
+      ...prev,
+      [albumId]: false, // false = chargement terminé
+    }));
   };
 
   // Ajouter cette fonction pour gérer le chargement des photos
@@ -600,124 +568,40 @@ export default function Photos() {
                       <div className="relative h-52 w-full overflow-hidden rounded-lg bg-slate-100">
                         {album.photos.length > 0 ? (
                           <div className="absolute inset-0 w-full h-full">
-                            {/* Loader central qui s'affiche tant que l'album n'est pas entièrement chargé */}
-                            {!albumImageLoadingStates[album.id_alb]
-                              ?.isFullyLoaded && (
+                            {/* Loader pendant le chargement */}
+                            {albumImageLoadingStates[album.id_alb] !==
+                              false && (
                               <div className="absolute inset-0 z-20 bg-slate-100 flex items-center justify-center">
                                 <div className="flex flex-col items-center gap-3">
                                   <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
                                   <p className="text-sm text-blue-600 font-medium">
-                                    Chargement des photos...
+                                    Chargement de l'aperçu...
                                   </p>
                                 </div>
                               </div>
                             )}
 
-                            {/* Conteneur des images avec transition d'opacité */}
+                            {/* Image composite */}
                             <div
                               className={`w-full h-full transition-all duration-500 ${
-                                albumImageLoadingStates[album.id_alb]
-                                  ?.isFullyLoaded
+                                albumImageLoadingStates[album.id_alb] === false
                                   ? "opacity-100 scale-100"
                                   : "opacity-0 scale-95"
                               } transition-transform duration-500 group-hover:scale-105`}
                             >
-                              <div className="w-full h-full grid grid-cols-3 xs:grid-cols-2 md:grid-cols-3 grid-rows-2 gap-0.5 p-0.5 rounded-lg overflow-hidden">
-                                {/* Photo 1 – grande image, colonne de gauche (2 lignes) */}
-                                {album.photos[0] && (
-                                  <div className="col-span-1 row-span-2 relative rounded-tl-lg rounded-bl-lg overflow-hidden">
-                                    <Image
-                                      src={album.photos[0].lien_low}
-                                      alt={album.photos[0].alt}
-                                      fill
-                                      placeholder="blur"
-                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                      priority={false}
-                                      sizes="(max-width: 768px) 50vw, 25vw"
-                                      className="object-cover rounded-tl-lg rounded-bl-lg"
-                                      onLoad={() =>
-                                        handleAlbumImageLoad(album.id_alb, 0)
-                                      }
-                                    />
-                                  </div>
-                                )}
-
-                                {/* Photo 2 – colonne droite ligne 1 */}
-                                {album.photos[1] && (
-                                  <div className="col-span-1 row-span-1 relative overflow-hidden rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none">
-                                    <Image
-                                      src={album.photos[1].lien_low}
-                                      alt={album.photos[1].alt}
-                                      fill
-                                      placeholder="blur"
-                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                      priority={false}
-                                      sizes="(max-width: 768px) 50vw, 25vw"
-                                      className="object-cover rounded-tr-none xs:rounded-tr-lg md:rounded-tr-none"
-                                      onLoad={() =>
-                                        handleAlbumImageLoad(album.id_alb, 1)
-                                      }
-                                    />
-                                  </div>
-                                )}
-
-                                {/* Photo 3 – colonne droite ligne 2 */}
-                                {album.photos[2] && (
-                                  <div className="col-span-1 row-span-1 relative rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg overflow-hidden">
-                                    <Image
-                                      src={album.photos[2].lien_low}
-                                      alt={album.photos[2].alt}
-                                      fill
-                                      placeholder="blur"
-                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                      priority={false}
-                                      sizes="(max-width: 768px) 50vw, 25vw"
-                                      className="object-cover rounded-br-none rounded-tr-lg xs:rounded-br-lg xs:rounded-tr-none md:rounded-br-none md:rounded-tr-lg"
-                                      onLoad={() =>
-                                        handleAlbumImageLoad(album.id_alb, 2)
-                                      }
-                                    />
-                                  </div>
-                                )}
-
-                                {/* Photo 4 – affichée uniquement en md+ */}
-                                {album.photos[3] && (
-                                  <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-tr-none xs:rounded-tr-br md:rounded-tr-none overflow-hidden">
-                                    <Image
-                                      src={album.photos[3].lien_low}
-                                      alt={album.photos[3].alt}
-                                      fill
-                                      placeholder="blur"
-                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                      priority={false}
-                                      sizes="25vw"
-                                      className="object-cover rounded-tr-none xs:rounded-tr-br md:rounded-tr-none"
-                                      onLoad={() =>
-                                        handleAlbumImageLoad(album.id_alb, 3)
-                                      }
-                                    />
-                                  </div>
-                                )}
-
-                                {/* Photo 5 – affichée uniquement en md+ */}
-                                {album.photos[4] && (
-                                  <div className="block xs:hidden md:block col-span-1 row-span-1 relative rounded-br-lg xs:rounded-br-none md:rounded-br-lg overflow-hidden">
-                                    <Image
-                                      src={album.photos[4].lien_low}
-                                      alt={album.photos[4].alt}
-                                      fill
-                                      placeholder="blur"
-                                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                      priority={false}
-                                      sizes="25vw"
-                                      className="object-cover rounded-br-lg xs:rounded-br-none md:rounded-br-lg"
-                                      onLoad={() =>
-                                        handleAlbumImageLoad(album.id_alb, 4)
-                                      }
-                                    />
-                                  </div>
-                                )}
-                              </div>
+                              <Image
+                                src={`/api/creations/album-composite/${album.id_alb}`}
+                                alt={`Aperçu de l'album ${album.titre}`}
+                                fill
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                priority={false}
+                                sizes="(max-width: 768px) 50vw, 25vw"
+                                className="object-cover rounded-lg"
+                                onLoad={() =>
+                                  handleAlbumImageLoad(album.id_alb)
+                                }
+                              />
                             </div>
                           </div>
                         ) : (
@@ -823,7 +707,9 @@ export default function Photos() {
                     alt={photo.alt}
                     width={500}
                     height={300}
-                    priority
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    priority={false}
                     className={`w-full h-auto object-cover rounded-lg transition-transform duration-500 group-hover:scale-105 ${
                       photoLoadingState[photo.id_pho]
                         ? "opacity-0"
@@ -943,10 +829,12 @@ export default function Photos() {
                   <Image
                     src={filteredPhotos[currentPhotoIndex].lien_low}
                     alt={filteredPhotos[currentPhotoIndex].alt}
-                    width={1200}
-                    height={800}
+                    width={filteredPhotos[currentPhotoIndex].largeur}
+                    height={filteredPhotos[currentPhotoIndex].hauteur}
                     className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
-                    priority
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    priority={false}
                     onLoad={handleLowResLoad}
                   />
 
@@ -956,10 +844,10 @@ export default function Photos() {
                       src={filteredPhotos[currentPhotoIndex].lien_high}
                       alt={filteredPhotos[currentPhotoIndex].alt}
                       width={Math.floor(
-                        filteredPhotos[currentPhotoIndex].largeur / 2
+                        filteredPhotos[currentPhotoIndex].largeur
                       )}
                       height={Math.floor(
-                        filteredPhotos[currentPhotoIndex].hauteur / 2
+                        filteredPhotos[currentPhotoIndex].hauteur
                       )}
                       className={`max-w-[90%] max-h-[calc(90vh-10rem)] object-contain absolute ${
                         highResLoaded
@@ -967,6 +855,9 @@ export default function Photos() {
                           : "opacity-0"
                       }`}
                       onLoad={handleHighResLoad}
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                      priority={false}
                     />
                   )}
                 </motion.div>

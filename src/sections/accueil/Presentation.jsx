@@ -31,9 +31,11 @@ Mon parcours m'a permis de toucher à **différents domaines** (vidéo, photo, w
           src="/arnaud_graciet-accueil.webp"
           alt="Arnaud Graciet l'air surpris qui tient sa caméra et son objectif"
           fill
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+          priority={false}
           className="object-cover object-[50%_15%] rounded-lg"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 350px"
-          priority
         />
 
         <Link

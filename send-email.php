@@ -19,7 +19,7 @@ if (!$firstName || !$lastName || !$email || !$message) {
 }
 
 // Destinataire (ton adresse mail)
-$to = "contact@arnaudgct.fr";
+$to = "arnaud@arnaudgct.fr";
 
 // Sujet du mail
 $subject = "Nouveau message de $firstName $lastName";

@@ -17,7 +17,7 @@ export async function POST(request) {
     // Envoi de l'email
     const { data, error } = await resend.emails.send({
       from: "no-reply@arnaudgct.fr", // Remplacez par votre domaine vérifié
-      to: ["contact@arnaudgct.fr"], // Votre email de destination
+      to: ["arnaud@arnaudgct.fr"], // Votre email de destination
       subject: `Nouveau message de ${firstName} ${lastName}`,
       html: `
         <h2>Nouveau message de contact</h2>

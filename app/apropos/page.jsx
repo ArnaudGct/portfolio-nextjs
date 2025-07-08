@@ -68,9 +68,11 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
                     src="/arnaud_graciet-apropos.webp"
                     alt="Arnaud Graciet l'air surpris qui tient sa caméra et son objectif"
                     fill
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    priority={false}
                     sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 288px"
                     className="object-cover object-[50%_30%]  lg:object-[50%_15%] rounded-t-lg border-x border-t border-blue-300"
-                    priority
                   />
 
                   {/* Crédit photo */}
@@ -129,9 +131,11 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
                       src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
                       alt="Carte de La Rochelle"
                       fill
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                      priority={false}
                       sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 33vw"
                       className="object-cover object-center rounded-lg transition-transform duration-500 ease-in-out group-hover:scale-105"
-                      priority
                     />
                   </div>
                   <div className="absolute bottom-2 left-4 flex flex-col items-start z-10">

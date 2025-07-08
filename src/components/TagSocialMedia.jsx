@@ -5,9 +5,9 @@ import Link from "next/link";
 export default function TagSocialMedia({ name }) {
   const config = {
     mail: {
-      label: "contact@arnaudgct.fr",
+      label: "arnaud@arnaudgct.fr",
       icon: <Mail width={16} strokeWidth={1.75} />,
-      href: "mailto:contact@arnaudgct.fr",
+      href: "mailto:arnaud@arnaudgct.fr",
       text: "text-blue-600",
       bg: "bg-blue-50",
       border: "border-blue-300",
