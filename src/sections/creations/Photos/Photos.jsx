@@ -590,7 +590,7 @@ export default function Photos() {
                               } transition-transform duration-500 group-hover:scale-105`}
                             >
                               <Image
-                                src={`/api/creations/album-composite/${album.id_alb}`}
+                                src={album.lien_cover}
                                 alt={`Aperçu de l'album ${album.titre}`}
                                 fill
                                 placeholder="blur"
