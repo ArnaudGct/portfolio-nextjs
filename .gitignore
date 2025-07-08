@@ -40,7 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/public/uploads
+/public/uploads/autres/
+/public/uploads/photos/
+/public/uploads/journal-personnel/
 
 .next.zip
 public.zip
