@@ -270,7 +270,7 @@ export default function Header() {
               <ButtonSecondary
                 icon={<Mail size={16} strokeWidth={1.75} />}
                 size="sm"
-                link="mailto:contact@arnaudgct.fr"
+                link="mailto:arnaud@arnaudgct.fr"
                 newTab={true}
               />
 
@@ -400,7 +400,7 @@ export default function Header() {
                     <ButtonSecondary
                       icon={<Mail size={16} strokeWidth={1.75} />}
                       size="sm"
-                      link="mailto:contact@arnaudgct.fr"
+                      link="mailto:arnaud@arnaudgct.fr"
                       newTab={true}
                     />
                   </motion.div>

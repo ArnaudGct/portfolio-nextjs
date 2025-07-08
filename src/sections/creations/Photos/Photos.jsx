@@ -943,8 +943,8 @@ export default function Photos() {
                   <Image
                     src={filteredPhotos[currentPhotoIndex].lien_low}
                     alt={filteredPhotos[currentPhotoIndex].alt}
-                    width={1200}
-                    height={800}
+                    width={filteredPhotos[currentPhotoIndex].largeur}
+                    height={filteredPhotos[currentPhotoIndex].hauteur}
                     className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
                     priority
                     onLoad={handleLowResLoad}
@@ -956,10 +956,10 @@ export default function Photos() {
                       src={filteredPhotos[currentPhotoIndex].lien_high}
                       alt={filteredPhotos[currentPhotoIndex].alt}
                       width={Math.floor(
-                        filteredPhotos[currentPhotoIndex].largeur / 2
+                        filteredPhotos[currentPhotoIndex].largeur
                       )}
                       height={Math.floor(
-                        filteredPhotos[currentPhotoIndex].hauteur / 2
+                        filteredPhotos[currentPhotoIndex].hauteur
                       )}
                       className={`max-w-[90%] max-h-[calc(90vh-10rem)] object-contain absolute ${
                         highResLoaded

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +14,20 @@ export default function AlbumsGallery({ album }) {
   const [loadingImages, setLoadingImages] = useState({});
   const [modalImageLoading, setModalImageLoading] = useState(true);
   const [highResLoaded, setHighResLoaded] = useState(false);
+
+  // Bloquer le scroll quand la modal est ouverte
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Nettoyer au démontage du composant
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
 
   const photos = album.photos_albums_link.map((p) => p.photos);
 
