@@ -20,11 +20,11 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.8.1
+ * Prisma Client JS version: 6.8.2
  * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
  */
 Prisma.prismaVersion = {
-  client: "6.8.1",
+  client: "6.8.2",
   engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
 }
 
@@ -181,6 +181,7 @@ exports.Prisma.Photos_albumsScalarFieldEnum = {
   id_alb: 'id_alb',
   titre: 'titre',
   description: 'description',
+  lien_cover: 'lien_cover',
   date: 'date',
   afficher: 'afficher',
   derniere_modification: 'derniere_modification'
@@ -358,7 +359,8 @@ exports.Prisma.photosOrderByRelevanceFieldEnum = {
 
 exports.Prisma.photos_albumsOrderByRelevanceFieldEnum = {
   titre: 'titre',
-  description: 'description'
+  description: 'description',
+  lien_cover: 'lien_cover'
 };
 
 exports.Prisma.NullsOrder = {
