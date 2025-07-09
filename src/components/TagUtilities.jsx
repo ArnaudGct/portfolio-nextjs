@@ -12,11 +12,24 @@ export default function TagUtilities({
   link = null,
   newTab = true,
   bgColor = "",
+  bgColorDark = "",
   borderColor = "",
+  borderColorDark = "",
   textColor = "",
+  textColorDark = "",
   rounded = true,
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
+
+  // Créer les styles CSS custom properties pour gérer le mode sombre
+  const styleVars = {
+    "--bg-color-light": bgColor,
+    "--bg-color-dark": bgColorDark || bgColor,
+    "--border-color-light": borderColor,
+    "--border-color-dark": borderColorDark || borderColor,
+    "--text-color-light": textColor,
+    "--text-color-dark": textColorDark || textColor,
+  };
 
   // Contenu du tag
   const tagContent = (
@@ -37,9 +50,7 @@ export default function TagUtilities({
       )}
 
       {/* Nom du logiciel */}
-      <p
-        className={`font-medium whitespace-nowrap overflow-hidden text-ellipsis ${textColor}`}
-      >
+      <p className="font-medium whitespace-nowrap overflow-hidden text-ellipsis [color:var(--text-color-light)] dark:[color:var(--text-color-dark)]">
         {label}
       </p>
 
@@ -91,7 +102,8 @@ export default function TagUtilities({
         href={link}
         target={newTab ? "_blank" : "_self"}
         rel={newTab ? "noopener noreferrer" : ""}
-        className={`relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full transition-transform hover:scale-105 ${bgColor} ${borderColor}`}
+        className="relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full transition-transform hover:scale-105 [background-color:var(--bg-color-light)] [border-color:var(--border-color-light)] dark:[background-color:var(--bg-color-dark)] dark:[border-color:var(--border-color-dark)]"
+        style={styleVars}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         onFocus={() => setShowTooltip(true)}
@@ -104,7 +116,8 @@ export default function TagUtilities({
 
   return (
     <div
-      className={`relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full cursor-pointer ${bgColor} ${borderColor}`}
+      className="relative inline-flex gap-2 items-center justify-center py-2 px-5 border rounded-full cursor-pointer [background-color:var(--bg-color-light)] [border-color:var(--border-color-light)] dark:[background-color:var(--bg-color-dark)] dark:[border-color:var(--border-color-dark)]"
+      style={styleVars}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
       onFocus={() => setShowTooltip(true)}
