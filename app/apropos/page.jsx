@@ -1,6 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import ButtonMain from "./../../src/components/ButtonMain";
-import { ArrowUpRight, Cake } from "lucide-react";
+import { ArrowUpRight, Cake, Loader2 } from "lucide-react";
 import Tag from "./../../src/components/Tag";
 import TagAvailable from "./../../src/components/TagAvailable";
 import MediaCard from "./../../src/components/MediaCard";
@@ -9,13 +11,36 @@ import SpotifyMediaCard from "./../../src/components/SpotifyMediaCard";
 import LetterboxdMediaCard from "./../../src/components/LetterboxdMediaCard";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { useEffect, useState } from "react";
 
 export default function APropos() {
-  const aboutText = `Passionné par le multimédia et la création de contenu, j'explore sans cesse de nouvelles façons d'allier technologie et créativité. Mon parcours a commencé sur **YouTube** avec des vidéos sur l'espace, où j'ai découvert ma passion pour le montage vidéo.
+  const [aproposData, setAproposData] = useState(null);
+  const [outilsData, setOutilsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
 
-Aujourd'hui, je propose mes services en tant que **monteur vidéo freelance**, collaborant sur des projets variés à distance. Également **cadreur à La Rochelle**, je peux réaliser des prises de vue sur place avant d'assurer le montage pour offrir des vidéos complètes et de qualité.
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [aproposResponse, outilsResponse] = await Promise.all([
+          fetch("/api/a-propos/general"),
+          fetch("/api/a-propos/outils"),
+        ]);
 
-Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, communication digitale… Toujours prêt à relever de nouveaux défis !`;
+        const aproposData = await aproposResponse.json();
+        const outilsData = await outilsResponse.json();
+
+        setAproposData(aproposData);
+        setOutilsData(outilsData);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Composant personnalisé pour les liens
   const CustomLink = ({ href, children, ...props }) => (
@@ -29,6 +54,105 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
       {children}
     </a>
   );
+
+  // Composant Skeleton pour le texte
+  const TextSkeleton = ({ className = "", width = "100%" }) => (
+    <div
+      className={`animate-pulse bg-blue-100  rounded ${className}`}
+      style={{ width }}
+    ></div>
+  );
+
+  if (loading) {
+    return (
+      <main className="bg-white">
+        <div className="pt-24 pb-20">
+          <div className="max-w-[1440px] mx-auto w-[90%]">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:order-2 lg:grid-cols-[auto_1fr] gap-6 sm:gap-10">
+              {/* Section "Qui suis-je?" - Skeleton */}
+              <div className="flex flex-col gap-4 bg-white rounded-lg order-1 lg:order-2 lg:col-start-2">
+                <TextSkeleton className="h-8" width="200px" />
+                <div className="space-y-3">
+                  <TextSkeleton className="h-4" width="100%" />
+                  <TextSkeleton className="h-4" width="95%" />
+                  <TextSkeleton className="h-4" width="90%" />
+                  <TextSkeleton className="h-4" width="85%" />
+                  <TextSkeleton className="h-4" width="80%" />
+                </div>
+              </div>
+
+              {/* Colonne de gauche - Skeleton */}
+              <div className="flex flex-col gap-4 mx-auto lg:mx-0 w-full lg:max-w-72 order-2 md:order-1 lg:order-1 lg:col-start-1 lg:row-span-3 lg:sticky lg:top-24 lg:self-start">
+                <div className="flex flex-col rounded-lg">
+                  <div className="relative flex items-stretch h-[450px] md:h-[300px] lg:h-[350px] w-full">
+                    <div className="w-full h-full bg-blue-100 rounded-t-lg animate-pulse flex items-center justify-center">
+                      <Loader2
+                        size={48}
+                        className="text-blue-400 animate-spin"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-4 p-5 bg-blue-50 rounded-b-lg">
+                    <div className="flex flex-col items-start justify-start">
+                      <TextSkeleton className="h-6 mb-2" width="80px" />
+                      <TextSkeleton className="h-12 mb-4" width="150px" />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <TextSkeleton
+                        className="h-8 rounded-full"
+                        width="120px"
+                      />
+                      <TextSkeleton className="h-8 rounded-full" width="80px" />
+                    </div>
+                  </div>
+                </div>
+                <TextSkeleton className="h-12 rounded-lg" width="150px" />
+              </div>
+
+              {/* Section des cartes media - Skeleton */}
+              <div className="order-3 lg:order-3 lg:col-start-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4">
+                  <TextSkeleton className="h-56 rounded-lg" width="100%" />
+                  <div className="flex flex-col gap-4">
+                    <TextSkeleton className="h-24 rounded-lg" width="100%" />
+                    <TextSkeleton className="h-24 rounded-lg" width="100%" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section outils - Skeleton */}
+              <div className="flex flex-col gap-6 rounded-lg p-6 bg-blue-50 order-4 lg:order-4 lg:col-start-2">
+                <TextSkeleton className="h-8" width="250px" />
+                <div className="flex flex-wrap gap-4">
+                  {[...Array(7)].map((_, i) => (
+                    <TextSkeleton
+                      key={i}
+                      className="h-16 rounded-lg"
+                      width="150px"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!aproposData) {
+    return (
+      <main className="bg-white">
+        <div className="pt-24 pb-20">
+          <div className="max-w-[1440px] mx-auto w-[90%]">
+            <div className="text-center p-8">
+              Erreur lors du chargement des données
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-white">
@@ -55,7 +179,7 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
                     ),
                   }}
                 >
-                  {aboutText}
+                  {aproposData.description}
                 </ReactMarkdown>
               </div>
             </div>
@@ -64,25 +188,37 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
             <div className="flex flex-col gap-4 mx-auto lg:mx-0 w-full lg:max-w-72 order-2 md:order-1 lg:order-1 lg:col-start-1 lg:row-span-3 lg:sticky lg:top-24 lg:self-start">
               <div className="flex flex-col rounded-lg">
                 <div className="relative flex items-stretch h-[450px] md:h-[300px] lg:h-[350px] w-full">
+                  {/* Spinner pendant le chargement de l'image */}
+                  {imageLoading && (
+                    <div className="absolute inset-0 bg-blue-100 rounded-t-lg flex items-center justify-center z-10">
+                      <Loader2
+                        size={48}
+                        className="text-blue-400 animate-spin"
+                      />
+                    </div>
+                  )}
+
                   <Image
-                    src="/arnaud_graciet-apropos.webp"
-                    alt="Arnaud Graciet l'air surpris qui tient sa caméra et son objectif"
+                    src={aproposData.photo}
+                    alt={aproposData.photo_alt}
                     fill
                     placeholder="blur"
                     blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                     priority={false}
                     sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 288px"
                     className="object-cover object-[50%_30%]  lg:object-[50%_15%] rounded-t-lg border-x border-t border-blue-300"
+                    onLoad={() => setImageLoading(false)}
+                    onError={() => setImageLoading(false)}
                   />
 
                   {/* Crédit photo */}
                   <Link
-                    href="https://www.instagram.com/amyr.mp5/"
+                    href={aproposData.credit_url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <div className="absolute bottom-2 left-2 bg-blue-900/50 px-2 py-1 rounded text-xs text-white backdrop-blur-xs">
-                      <p>📸 Amir Metmati</p>
+                      <p>📸 {aproposData.credit_nom}</p>
                     </div>
                   </Link>
                 </div>
@@ -168,96 +304,21 @@ Curieux et polyvalent, **j'aime toucher à tout** : audiovisuel, graphisme, comm
                 </p>
               </div>
               <div className="flex flex-wrap gap-4 items-center justify-start">
-                <TagUtilities
-                  logoSrc="/premiere_pro.webp"
-                  logoAlt="Logo Premiere Pro"
-                  label="Première Pro"
-                  description="Montage vidéo professionnel."
-                  bgColor="bg-[#edf3ff] dark:bg-[#1e1b4b]"
-                  borderColor="border-[#a2b5ff] dark:border-[#4338ca]"
-                  textColor="text-[#4e4aec] dark:text-[#818cf8]"
-                  rounded={false}
-                  link="https://www.adobe.com/fr/products/premiere.html"
-                  newTab={true}
-                />
-
-                <TagUtilities
-                  logoSrc="/after_effects.webp"
-                  logoAlt="Logo After Effects"
-                  label="After Effects"
-                  description="Création d'effets spéciaux et animation graphique."
-                  bgColor="bg-[#edf3ff] dark:bg-[#1e1b4b]"
-                  borderColor="border-[#a2b5ff] dark:border-[#4338ca]"
-                  textColor="text-[#4e4aec] dark:text-[#818cf8]"
-                  rounded={false}
-                  link="https://www.adobe.com/fr/products/aftereffects.html"
-                  newTab={true}
-                />
-
-                <TagUtilities
-                  logoSrc="/artlist.webp"
-                  logoAlt="Logo Artlist"
-                  label="Artlist"
-                  description="Musique libre de droits pour créateurs."
-                  bgColor="bg-[#fffeed] dark:bg-[#422006]"
-                  borderColor="border-[#ffe6a2] dark:border-[#d97706]"
-                  textColor="text-[#ecae4a] dark:text-[#fbbf24]"
-                  rounded={true}
-                  link="https://artlist.io/"
-                  newTab={true}
-                />
-
-                <TagUtilities
-                  logoSrc="/figma.webp"
-                  logoAlt="Logo de Figma"
-                  label="Figma"
-                  description="Design collaboratif et prototypage."
-                  bgColor="bg-[#ffeeed] dark:bg-[#450a0a]"
-                  borderColor="border-[#ffa5a2] dark:border-[#dc2626]"
-                  textColor="text-[#ec4a4a] dark:text-[#f87171]"
-                  rounded={false}
-                  link="https://www.figma.com/"
-                  newTab={true}
-                />
-
-                <TagUtilities
-                  logoSrc="/eagle.webp"
-                  logoAlt="Logo de Eagle"
-                  label="Eagle"
-                  description="Gestion de fichiers pour designers."
-                  bgColor="bg-[#e8f3ff] dark:bg-[#0c4a6e]"
-                  borderColor="border-[#66a9f9] dark:border-[#0284c7]"
-                  textColor="text-[#3186ff] dark:text-[#38bdf8]"
-                  rounded={true}
-                  link="https://eagle.cool/"
-                  newTab={true}
-                />
-
-                <TagUtilities
-                  logoSrc="/notion.webp"
-                  logoAlt="Logo de Notion"
-                  label="Notion"
-                  description="Prise de notes et gestion de projets."
-                  bgColor="bg-[#F8FAFC] dark:bg-[#1e1e1e]"
-                  borderColor="border-[#CBD5E1] dark:border-[#3f3f46]"
-                  textColor="text-[#475569] dark:text-[#e1e1e1]"
-                  rounded={false}
-                  link="https://www.notion.so/"
-                  newTab={true}
-                />
-
-                <TagUtilities
-                  logoSrc="/toggl_track.webp"
-                  logoAlt="Logo de Toggl Track"
-                  label="Toggl Track"
-                  description="Suivi du temps pour la productivité."
-                  bgColor="bg-[#ffedff] dark:bg-[#4a044e]"
-                  borderColor="border-[#ffa2d2] dark:border-[#c026d3]"
-                  textColor="text-[#ec4abb] dark:text-[#e879f9]"
-                  rounded={false}
-                  link="https://toggl.com/track/"
-                  newTab={true}
-                />
+                {outilsData.map((outil) => (
+                  <TagUtilities
+                    key={outil.id_outil}
+                    logoSrc={outil.icone}
+                    logoAlt={outil.icone_alt}
+                    label={outil.titre}
+                    description={outil.description}
+                    bgColor={`bg-[${outil.couleur_fond}] dark:bg-[${outil.couleur_fond_dark}]`}
+                    borderColor={`border-[${outil.couleur_contour}] dark:border-[${outil.couleur_contour_dark}]`}
+                    textColor={`text-[${outil.couleur_texte}] dark:text-[${outil.couleur_texte_dark}]`}
+                    rounded={outil.icone_rounded}
+                    link={outil.lien}
+                    newTab={true}
+                  />
+                ))}
               </div>
             </div>
           </div>
