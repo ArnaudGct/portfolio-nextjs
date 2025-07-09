@@ -311,9 +311,12 @@ export default function APropos() {
                     logoAlt={outil.icone_alt}
                     label={outil.titre}
                     description={outil.description}
-                    bgColor={`bg-[${outil.couleur_fond}] dark:bg-[${outil.couleur_fond_dark}]`}
-                    borderColor={`border-[${outil.couleur_contour}] dark:border-[${outil.couleur_contour_dark}]`}
-                    textColor={`text-[${outil.couleur_texte}] dark:text-[${outil.couleur_texte_dark}]`}
+                    bgColor={outil.couleur_fond}
+                    bgColorDark={outil.couleur_fond_dark}
+                    borderColor={outil.couleur_contour}
+                    borderColorDark={outil.couleur_contour_dark}
+                    textColor={outil.couleur_texte}
+                    textColorDark={outil.couleur_texte_dark}
                     rounded={outil.icone_rounded}
                     link={outil.lien}
                     newTab={true}

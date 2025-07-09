@@ -17,7 +17,7 @@ export default function Presentation() {
   useEffect(() => {
     const fetchAccueilData = async () => {
       try {
-        const response = await fetch("/api/accueil/presentation");
+        const response = await fetch("/api/accueil/general");
         const data = await response.json();
         setAccueilData(data);
       } catch (error) {

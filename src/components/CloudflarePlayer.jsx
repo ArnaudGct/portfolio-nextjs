@@ -5,28 +5,67 @@ import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CloudflarePlayer({ infoBoxRef }) {
-  // URL sans cache-busting pour éviter les rechargements complets
-  const videoUrl =
-    "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/showreel-169.mp4";
-  const videoUrlMobile =
-    "https://pub-3a398e3ba4054303b331ad4a0434b478.r2.dev/showreel-916.mp4";
-  const thumbnailUrl = "/uploads/showreel-thumbnail.webp";
   const videoRef = useRef(null);
   const playerContainerRef = useRef(null);
+  const [videoData, setVideoData] = useState(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isHoveringVideo, setIsHoveringVideo] = useState(true);
   const [isHoveringControls, setIsHoveringControls] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
-  const [currentVideoUrl, setCurrentVideoUrl] = useState(videoUrl);
   const [isManuallyPaused, setIsManuallyPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [infoBoxHeight, setInfoBoxHeight] = useState(0);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState(null); // Initialisé à null
+  const [videoUrl, setVideoUrl] = useState(null);
+  const [videoUrlMobile, setVideoUrlMobile] = useState(null);
+  const thumbnailUrl = "/uploads/showreel-thumbnail.webp";
+
+  useEffect(() => {
+    const fetchVideoData = async () => {
+      try {
+        const response = await fetch("/api/accueil/general");
+        const data = await response.json();
+        console.log("Données de la vidéo récupérées:", data);
+        console.log("video_desktop:", data.video_desktop);
+        console.log("video_mobile:", data.video_mobile);
+        setVideoData(data);
+        setVideoUrl(data.video_desktop);
+        setVideoUrlMobile(data.video_mobile);
+
+        // Définir immédiatement l'URL appropriée selon la taille d'écran
+        const mobile = window.innerWidth < 640;
+        const initialVideoUrl = mobile ? data.video_mobile : data.video_desktop;
+        console.log(
+          "URL vidéo initiale sélectionnée:",
+          initialVideoUrl,
+          "Mobile:",
+          mobile
+        );
+
+        // Vérifier que l'URL n'est pas vide ou null
+        if (initialVideoUrl && initialVideoUrl.trim() !== "") {
+          setCurrentVideoUrl(initialVideoUrl);
+          setIsMobile(mobile);
+          // On garde isLoading à true jusqu'à ce que la vidéo soit prête
+        } else {
+          console.error("URL vidéo invalide:", initialVideoUrl);
+          setIsLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données:", error);
+        setIsLoading(false); // Arrêter le loading en cas d'erreur
+      }
+      // Ne pas mettre isLoading à false ici, laisser la vidéo gérer cet état
+    };
+
+    fetchVideoData();
+  }, []);
 
   // Effet pour mesurer la hauteur de la div d'information
   useEffect(() => {
-    setIsLoading(true);
     if (!infoBoxRef?.current) return;
 
     const element = infoBoxRef.current;
@@ -41,18 +80,18 @@ export default function CloudflarePlayer({ infoBoxRef }) {
     return () => observer.unobserve(element);
   }, [infoBoxRef]);
 
-  // Effet pour détecter la taille de l'écran (mobile/desktop)
+  // Effet pour détecter la taille de l'écran et changer l'URL vidéo si nécessaire
   useEffect(() => {
-    setIsLoading(true);
+    // Attendre que les données soient chargées et que currentVideoUrl soit définie
+    if (!videoData || !videoUrl || !videoUrlMobile || !currentVideoUrl) return;
 
     const checkIsMobile = () => {
-      const mobile = window.innerWidth < 640; // Même breakpoint que Hero (640px pour 'sm')
-      setIsMobile(mobile);
-
-      // Mettre à jour l'URL de la vidéo selon le type d'appareil
+      const mobile = window.innerWidth < 640;
       const newVideoUrl = mobile ? videoUrlMobile : videoUrl;
 
-      if (newVideoUrl !== currentVideoUrl) {
+      // Seulement changer si l'état mobile change ET que l'URL est différente
+      if (mobile !== isMobile && newVideoUrl !== currentVideoUrl) {
+        setIsMobile(mobile);
         setCurrentVideoUrl(newVideoUrl);
 
         // Si la vidéo est déjà chargée et que l'URL change, recharger la vidéo
@@ -85,7 +124,7 @@ export default function CloudflarePlayer({ infoBoxRef }) {
     checkIsMobile();
     window.addEventListener("resize", checkIsMobile);
     return () => window.removeEventListener("resize", checkIsMobile);
-  }, [currentVideoUrl]);
+  }, [videoData, videoUrl, videoUrlMobile, currentVideoUrl, isMobile]);
 
   // Calculer le style du conteneur vidéo
   const videoContainerStyle =
@@ -104,11 +143,11 @@ export default function CloudflarePlayer({ infoBoxRef }) {
       if (videoRef.current.paused) {
         videoRef.current.play();
         setIsPlaying(true);
-        setIsManuallyPaused(false); // Réinitialiser quand on relance
+        setIsManuallyPaused(false);
       } else {
         videoRef.current.pause();
         setIsPlaying(false);
-        setIsManuallyPaused(true); // Marquer comme mis en pause manuellement
+        setIsManuallyPaused(true);
       }
     }
   };
@@ -134,9 +173,10 @@ export default function CloudflarePlayer({ infoBoxRef }) {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-
     const videoElement = videoRef.current;
+
+    // Ne pas exécuter si la vidéo n'existe pas ou si pas d'URL
+    if (!videoElement || !currentVideoUrl) return;
 
     const handleScroll = () => {
       if (videoElement) {
@@ -158,19 +198,18 @@ export default function CloudflarePlayer({ infoBoxRef }) {
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
 
-    // Optimiser la gestion du loading
     const handleLoadedData = () => {
-      // Ajouter un petit délai pour éviter le scintillement
-      setTimeout(() => setIsLoading(false), 100);
+      console.log("Video loadeddata event fired");
+      setIsLoading(false);
     };
 
     const handleCanPlay = () => {
-      // Plus agressif pour cacher le loader dès que possible
+      console.log("Video canplay event fired");
       setIsLoading(false);
     };
 
     const handleWaiting = () => {
-      // Seulement montrer le loader si ça prend du temps
+      console.log("Video waiting event fired");
       setTimeout(() => {
         if (videoElement && videoElement.readyState < 3) {
           setIsLoading(true);
@@ -178,19 +217,41 @@ export default function CloudflarePlayer({ infoBoxRef }) {
       }, 200);
     };
 
-    if (videoElement) {
-      videoElement.addEventListener("play", handlePlay);
-      videoElement.addEventListener("pause", handlePause);
-      videoElement.addEventListener("loadeddata", handleLoadedData);
-      videoElement.addEventListener("canplay", handleCanPlay);
-      videoElement.addEventListener("waiting", handleWaiting);
-      setIsMuted(videoElement.muted);
+    const handleLoadStart = () => {
+      console.log("Video loadstart event fired");
+      setIsLoading(true);
+    };
 
-      // Vérifier immédiatement si la vidéo est déjà prête
+    // Attacher les event listeners
+    videoElement.addEventListener("play", handlePlay);
+    videoElement.addEventListener("pause", handlePause);
+    videoElement.addEventListener("loadeddata", handleLoadedData);
+    videoElement.addEventListener("canplay", handleCanPlay);
+    videoElement.addEventListener("waiting", handleWaiting);
+    videoElement.addEventListener("loadstart", handleLoadStart);
+    setIsMuted(videoElement.muted);
+
+    // Vérifier l'état de la vidéo après un petit délai pour s'assurer qu'elle est prête
+    const checkVideoState = () => {
+      console.log("Checking video state, readyState:", videoElement.readyState);
       if (videoElement.readyState >= 3) {
+        console.log(
+          "Video ready (readyState >= 3), setting isLoading to false"
+        );
+        setIsLoading(false);
+      } else if (videoElement.readyState >= 1) {
+        console.log(
+          "Video metadata loaded (readyState >= 1), setting isLoading to false"
+        );
         setIsLoading(false);
       }
-    }
+    };
+
+    // Vérifier immédiatement
+    checkVideoState();
+
+    // Et aussi après un petit délai au cas où
+    const timeoutId = setTimeout(checkVideoState, 100);
 
     window.addEventListener("scroll", handleScroll);
 
@@ -217,6 +278,7 @@ export default function CloudflarePlayer({ infoBoxRef }) {
     }
 
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("mousemove", handleInitialGlobalMouseMove);
       if (videoElement) {
@@ -225,13 +287,13 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         videoElement.removeEventListener("loadeddata", handleLoadedData);
         videoElement.removeEventListener("waiting", handleWaiting);
         videoElement.removeEventListener("canplay", handleCanPlay);
+        videoElement.removeEventListener("loadstart", handleLoadStart);
       }
     };
-  }, [isMobile, isManuallyPaused]);
+  }, [isMobile, isManuallyPaused, currentVideoUrl]); // Ajout de currentVideoUrl comme dépendance
 
   const handleMouseMove = (event) => {
     if (event.currentTarget && !isMobile) {
-      // Ne pas suivre la souris sur mobile
       const rect = event.currentTarget.getBoundingClientRect();
       setMousePosition({
         x: event.clientX - rect.left,
@@ -239,6 +301,18 @@ export default function CloudflarePlayer({ infoBoxRef }) {
       });
     }
   };
+
+  // Debug logs
+  console.log("État actuel:", {
+    currentVideoUrl,
+    isLoading,
+    videoData: !!videoData,
+    videoUrl,
+    videoUrlMobile,
+    videoReadyState: videoRef.current?.readyState,
+    videoExists: !!videoRef.current,
+    videoSrc: videoRef.current?.src,
+  });
 
   return (
     <div className="absolute left-0 w-full z-10" style={videoContainerStyle}>
@@ -271,29 +345,29 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         </AnimatePresence>
 
         {/* Vidéo HTML */}
-        <video
-          ref={videoRef}
-          className={
-            "w-full h-full object-cover transition-opacity duration-300"
-          }
-          autoPlay
-          muted
-          playsInline
-          loop
-          preload="auto"
-          onClick={handleVideoClick}
-        >
-          <source src={currentVideoUrl} type="video/mp4" />
-          Votre navigateur ne prend pas en charge la lecture vidéo.
-        </video>
+        {currentVideoUrl && (
+          <motion.video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            playsInline
+            loop
+            preload="auto"
+            onClick={handleVideoClick}
+          >
+            <source src={currentVideoUrl} type="video/mp4" />
+            Votre navigateur ne prend pas en charge la lecture vidéo.
+          </motion.video>
+        )}
 
         {/* Curseur personnalisé qui suit la souris avec animation */}
         <AnimatePresence>
-          {!isMobile && // Ne pas afficher sur mobile
+          {!isMobile &&
             isHoveringVideo &&
             isMuted &&
             !isHoveringControls &&
-            !isLoading && ( // Ne pas afficher pendant le chargement
+            !isLoading && (
               <motion.div
                 className="absolute pointer-events-none z-[15] transform -translate-x-1/2 -translate-y-1/2"
                 style={{
@@ -326,7 +400,6 @@ export default function CloudflarePlayer({ infoBoxRef }) {
             if (!isMobile) setIsHoveringControls(false);
           }}
         >
-          {/* Bouton Play/Pause */}
           <div className="flex items-center gap-2">
             <button
               onClick={togglePlayPause}
@@ -340,7 +413,6 @@ export default function CloudflarePlayer({ infoBoxRef }) {
               )}
             </button>
           </div>
-          {/* Bouton Mute/Unmute */}
           <div className="flex items-center gap-1">
             <Toggl isChecked={isMuted} setIsChecked={toggleMute} />
             <span
