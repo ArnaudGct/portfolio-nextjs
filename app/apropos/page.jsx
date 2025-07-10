@@ -18,6 +18,7 @@ export default function APropos() {
   const [outilsData, setOutilsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
+  const [mapLoading, setMapLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -263,6 +264,16 @@ export default function APropos() {
                   className="group relative overflow-hidden w-full h-56 sm:h-full md:h-56 lg:h-full rounded-lg border border-blue-300 transition-shadow duration-300 ease-in-out hover:shadow-lg"
                 >
                   <div className="relative w-full h-full">
+                    {/* Spinner pendant le chargement de la carte */}
+                    {mapLoading && (
+                      <div className="absolute inset-0 bg-blue-100 rounded-lg flex items-center justify-center z-10">
+                        <Loader2
+                          size={48}
+                          className="text-blue-400 animate-spin"
+                        />
+                      </div>
+                    )}
+
                     <Image
                       src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
                       alt="Carte de La Rochelle"
@@ -272,6 +283,8 @@ export default function APropos() {
                       priority={false}
                       sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 33vw"
                       className="object-cover object-center rounded-lg transition-transform duration-500 ease-in-out group-hover:scale-105"
+                      onLoad={() => setMapLoading(false)}
+                      onError={() => setMapLoading(false)}
                     />
                   </div>
                   <div className="absolute bottom-2 left-4 flex flex-col items-start z-10">
