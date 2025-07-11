@@ -334,7 +334,7 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         onMouseMove={handleMouseMove}
       >
         {/* Spinner toujours visible tant que l'image ou la vidéo n'est pas prête */}
-        {(isLoading || !isImageLoaded) && (
+        {!isImageLoaded && (
           <div className="absolute inset-0 z-[12] flex items-center justify-center pointer-events-none bg-black/40">
             <Loader2
               className="animate-spin text-white/80"
