@@ -3,6 +3,7 @@ import { Play, Pause, Loader2 } from "lucide-react";
 import Toggl from "./Toggl";
 import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export default function CloudflarePlayer({ infoBoxRef }) {
   const videoRef = useRef(null);
@@ -20,6 +21,7 @@ export default function CloudflarePlayer({ infoBoxRef }) {
   const [currentVideoUrl, setCurrentVideoUrl] = useState(null); // Initialisé à null
   const [videoUrl, setVideoUrl] = useState(null);
   const [videoUrlMobile, setVideoUrlMobile] = useState(null);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const thumbnailUrl = "/uploads/showreel-thumbnail.webp";
 
   useEffect(() => {
@@ -331,14 +333,28 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         }}
         onMouseMove={handleMouseMove}
       >
-        {/* Image placeholder pendant le chargement */}
+        {/* Spinner toujours visible tant que l'image ou la vidéo n'est pas prête */}
+        {(isLoading || !isImageLoaded) && (
+          <div className="absolute inset-0 z-[12] flex items-center justify-center pointer-events-none bg-black/40">
+            <Loader2
+              className="animate-spin text-white/80"
+              size={48}
+              strokeWidth={2.5}
+            />
+          </div>
+        )}
+
+        {/* Image placeholder, visible même si elle n'est pas encore chargée */}
         <AnimatePresence>
           {isLoading && (
             <motion.div className="absolute inset-0 z-[11]">
-              <img
+              <Image
                 src={thumbnailUrl}
+                fill
                 alt="Aperçu de la vidéo"
                 className="w-full h-full object-cover"
+                onLoad={() => setIsImageLoaded(true)}
+                priority
               />
             </motion.div>
           )}

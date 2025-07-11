@@ -137,6 +137,7 @@ export default function APropos() {
             </div>
           </div>
         </div>
+        <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
       </main>
     );
   }
