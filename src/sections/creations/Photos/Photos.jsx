@@ -374,11 +374,23 @@ export default function Photos() {
             ) : (
               <>
                 <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-                  <NumberFlow value={filteredAlbums.length} /> album
-                  {filteredAlbums.length > 1 ? "s" : ""} et{" "}
-                  <NumberFlow value={filteredPhotos.length} /> photo
-                  {filteredPhotos.length > 1 ? "s" : ""} disponible
-                  {filteredAlbums.length + filteredPhotos.length > 1 ? "s" : ""}
+                  {filteredPhotos.length === 0 ? (
+                    <>
+                      <NumberFlow value={filteredAlbums.length} /> album
+                      {filteredAlbums.length > 1 ? "s" : ""} disponible
+                      {filteredAlbums.length > 1 ? "s" : ""}
+                    </>
+                  ) : (
+                    <>
+                      <NumberFlow value={filteredAlbums.length} /> album
+                      {filteredAlbums.length > 1 ? "s" : ""} et{" "}
+                      <NumberFlow value={filteredPhotos.length} /> photo
+                      {filteredPhotos.length > 1 ? "s" : ""} disponible
+                      {filteredAlbums.length + filteredPhotos.length > 1
+                        ? "s"
+                        : ""}
+                    </>
+                  )}
                 </p>
                 <p className="text-lg text-blue-900">{getLastAdded()}</p>
               </>

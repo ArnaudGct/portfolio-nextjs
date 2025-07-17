@@ -58,7 +58,6 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         console.error("Erreur lors de la récupération des données:", error);
         setIsLoading(false); // Arrêter le loading en cas d'erreur
       }
-      // Ne pas mettre isLoading à false ici, laisser la vidéo gérer cet état
     };
 
     fetchVideoData();
@@ -332,17 +331,15 @@ export default function CloudflarePlayer({ infoBoxRef }) {
         onMouseMove={handleMouseMove}
       >
         {/* Image placeholder pendant le chargement */}
-        <AnimatePresence>
-          {isLoading && (
-            <motion.div className="absolute inset-0 z-[11]">
-              <img
-                src={thumbnailUrl}
-                alt="Aperçu de la vidéo"
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isLoading && (
+          <motion.div className="absolute inset-0 z-[11]">
+            <img
+              src={thumbnailUrl}
+              alt="Aperçu de la vidéo"
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        )}
 
         {/* Vidéo HTML */}
         {currentVideoUrl && (
