@@ -374,23 +374,50 @@ export default function Photos() {
             ) : (
               <>
                 <p className="text-2xl font-extrabold font-rethink-sans text-blue-600">
-                  {filteredPhotos.length === 0 ? (
-                    <>
-                      <NumberFlow value={filteredAlbums.length} /> album
-                      {filteredAlbums.length > 1 ? "s" : ""} disponible
-                      {filteredAlbums.length > 1 ? "s" : ""}
-                    </>
-                  ) : (
-                    <>
-                      <NumberFlow value={filteredAlbums.length} /> album
-                      {filteredAlbums.length > 1 ? "s" : ""} et{" "}
-                      <NumberFlow value={filteredPhotos.length} /> photo
-                      {filteredPhotos.length > 1 ? "s" : ""} disponible
-                      {filteredAlbums.length + filteredPhotos.length > 1
-                        ? "s"
-                        : ""}
-                    </>
-                  )}
+                  <NumberFlow
+                    value={
+                      // Additionne toutes les photos des albums filtrés + les photos filtrées hors album
+                      filteredAlbums.reduce(
+                        (acc, album) => acc + (album.photos?.length || 0),
+                        0
+                      ) +
+                      filteredPhotos.filter(
+                        (photo) =>
+                          // Si la photo n'est pas dans un album filtré
+                          !filteredAlbums.some((album) =>
+                            album.photos?.some((p) => p.id_pho === photo.id_pho)
+                          )
+                      ).length
+                    }
+                  />{" "}
+                  photo
+                  {filteredAlbums.reduce(
+                    (acc, album) => acc + (album.photos?.length || 0),
+                    0
+                  ) +
+                    filteredPhotos.filter(
+                      (photo) =>
+                        !filteredAlbums.some((album) =>
+                          album.photos?.some((p) => p.id_pho === photo.id_pho)
+                        )
+                    ).length >
+                  1
+                    ? "s"
+                    : ""}
+                  {" disponible"}
+                  {filteredAlbums.reduce(
+                    (acc, album) => acc + (album.photos?.length || 0),
+                    0
+                  ) +
+                    filteredPhotos.filter(
+                      (photo) =>
+                        !filteredAlbums.some((album) =>
+                          album.photos?.some((p) => p.id_pho === photo.id_pho)
+                        )
+                    ).length >
+                  1
+                    ? "s"
+                    : ""}
                 </p>
                 <p className="text-lg text-blue-900">{getLastAdded()}</p>
               </>

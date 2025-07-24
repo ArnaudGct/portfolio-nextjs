@@ -11,6 +11,7 @@ export async function GET() {
       derniere_modification: true,
       lien: true,
       description: true,
+      date: true,
       videos_tags_link: {
         select: {
           videos_tags: {
@@ -30,6 +31,7 @@ export async function GET() {
     derniere_modification: video.derniere_modification,
     lien: video.lien,
     description: video.description,
+    date: video.date,
     tags: video.videos_tags_link.map((tagLink) => tagLink.videos_tags.titre),
   }));
 

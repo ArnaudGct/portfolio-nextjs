@@ -62,7 +62,7 @@ export default function VideosGallery({ video }) {
                   {video.titre}
                 </p>
                 <p className="text-normal text-blue-900">
-                  {formatDate(video.derniere_modification)}
+                  {formatDate(video.date)}
                 </p>
               </div>
               {video.videos_tags_link.length > 0 && (
