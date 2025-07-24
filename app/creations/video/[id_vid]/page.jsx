@@ -17,6 +17,7 @@ async function getVideoDetails(id_vid) {
         derniere_modification: true,
         lien: true,
         description: true,
+        date: true,
         videos_tags_link: {
           select: {
             videos_tags: {
