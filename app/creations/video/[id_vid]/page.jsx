@@ -68,7 +68,7 @@ export default async function VideoDetails({ params, searchParams }) {
             { name: backLinkText, path: backLink },
             {
               name: video.titre,
-              path: `${backLink}/video/${video.id_vid}`, // Correction ici aussi, pas de `${{ backLink }}`
+              path: `${backLink}/video/${video.id_vid}`,
             },
           ]}
         />
