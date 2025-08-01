@@ -39,7 +39,7 @@ export default async function VideoDetails({ params, searchParams }) {
   const { id_vid } = await params;
   const video = await getVideoDetails(id_vid);
 
-  const { from } = await searchParams; // <= ici on récupère "from"
+  const { from } = await searchParams;
 
   const backLink = from === "home" ? "/" : "/creations";
   const backLinkText = from === "home" ? "Accueil" : "Mes créations";
