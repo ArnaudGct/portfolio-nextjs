@@ -65,7 +65,7 @@ export default async function VideoDetails({ params, searchParams }) {
       <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-10 pb-20">
         <Breadcrumb
           pages={[
-            { name: backLinkText, path: backLink }, // Pas de `{}` autour des variables
+            { name: backLinkText, path: backLink },
             {
               name: video.titre,
               path: `${backLink}/video/${video.id_vid}`, // Correction ici aussi, pas de `${{ backLink }}`
