@@ -2,6 +2,7 @@
 FROM node:22-alpine AS builder
 
 RUN apk add --no-cache curl
+
 WORKDIR /app
 
 ARG API_TOKEN
@@ -38,6 +39,8 @@ RUN npm run build
 
 # Étape 2 : Image de prod
 FROM node:22-alpine
+
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
