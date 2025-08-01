@@ -1,6 +1,7 @@
 # Étape 1 : Build l'application
 FROM node:22-alpine AS builder
 
+RUN apk add --no-cache curl
 WORKDIR /app
 
 ARG API_TOKEN
