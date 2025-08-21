@@ -528,7 +528,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\wamp64\\www\\portfolio-next\\prisma\\app\\generated\\prisma\\client",
+      "value": "/Users/arnaudgct/Documents/www/portfolio-nextjs/prisma/app/generated/prisma/client",
       "fromEnvVar": null
     },
     "config": {
@@ -537,12 +537,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "darwin-arm64",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\wamp64\\www\\portfolio-next\\prisma\\schema.prisma",
+    "sourceFilePath": "/Users/arnaudgct/Documents/www/portfolio-nextjs/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
