@@ -146,11 +146,11 @@ export default function Presentation() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
-            <Tag
+            {/* <Tag
               name="21 ans"
               background={true}
               icon={<Cake size={14} strokeWidth={1.75} />}
-            />
+            /> */}
             <Tag
               name="La Rochelle"
               background={true}
