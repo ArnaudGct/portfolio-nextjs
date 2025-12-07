@@ -7,6 +7,7 @@ import {
   Quote,
   GripHorizontal,
   Loader2,
+  Star,
 } from "lucide-react";
 import ButtonSecondary from "../../components/ButtonSecondary";
 import ReactMarkdown from "react-markdown";
@@ -20,6 +21,28 @@ import "swiper/css/navigation";
 // import required modules
 import { Autoplay, Navigation } from "swiper/modules";
 
+// Avis Trustpilot statiques
+const trustpilotReviews = [
+  {
+    id_tem: "trustpilot-1",
+    client: "Gustystudio.com",
+    contenu:
+      "INCROYABLE ! C'est génial de travailler avec Arnaud. Il comprend tellement bien et vite mes demandes, que la V1 est souvent la bonne. Je recommande vivement",
+    rating: 5,
+    source: "trustpilot",
+    date: "19 novembre 2025",
+  },
+  {
+    id_tem: "trustpilot-2",
+    client: "ThibOnRoad",
+    contenu:
+      "Arnaud est quelqu'un de très professionnel. Une prestation pour la réalisation, le tournage et le cadrage d'une vidéo youtube a été commandé et le résultat est plus que convainquant et est au dela de mes esperences. Je ne peux que le recommander les yeux fermés !",
+    rating: 5,
+    source: "trustpilot",
+    date: "1 septembre 2025",
+  },
+];
+
 export default function Testimonial() {
   const [temoignages, setTemoignages] = useState([]);
   const prevButtonRef = useRef(null);
@@ -32,9 +55,14 @@ export default function Testimonial() {
         const res = await fetch("/api/accueil/temoignages");
         const data = await res.json();
         console.log("✅ Avis reçus :", data);
-        setTemoignages(data);
+        // Combiner les avis Trustpilot en premier, puis ceux de la BDD
+        const dbReviews = data.map((t) => ({ ...t, source: "database" }));
+        const allReviews = [...trustpilotReviews, ...dbReviews];
+        setTemoignages(allReviews);
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des avis :", error);
+        // En cas d'erreur, afficher au moins les avis Trustpilot
+        setTemoignages(trustpilotReviews);
       }
     };
 
@@ -62,6 +90,20 @@ export default function Testimonial() {
     }
   };
 
+  // Composant étoiles pour Trustpilot
+  const StarRating = ({ rating }) => (
+    <div className="flex gap-0.5">
+      {[...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          className={`w-4 h-4 ${
+            i < rating ? "fill-[#00b67a] text-[#00b67a]" : "text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
+
   // Composant Témoignage
   const TestimonialCard = ({ temoignage }) => (
     <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 transition-all duration-500 ease-in-out">
@@ -75,9 +117,26 @@ export default function Testimonial() {
             <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
           </div>
         </div>
-        <p className="text-blue-600 font-rethink-sans text-lg font-extrabold text-right">
-          {temoignage.client}
-        </p>
+        <div className="flex items-center justify-between">
+          {temoignage.source === "trustpilot" && (
+            <div className="flex items-center gap-2">
+              <StarRating rating={temoignage.rating} />
+              <a
+                href="https://fr.trustpilot.com/review/arnaudgct.fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-[#00b67a] font-semibold hover:underline"
+              >
+                Trustpilot
+              </a>
+            </div>
+          )}
+          <p
+            className={`text-blue-600 font-rethink-sans text-lg font-extrabold ${temoignage.source !== "trustpilot" ? "text-right w-full" : "text-right"}`}
+          >
+            {temoignage.client}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -105,10 +164,10 @@ export default function Testimonial() {
         loop={true}
         grabCursor={true}
         loopAdditionalSlides={2}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
+        // autoplay={{
+        //   delay: 6000,
+        //   disableOnInteraction: false,
+        // }}
         breakpoints={{
           640: {
             slidesPerView: 1,
@@ -158,7 +217,7 @@ export default function Testimonial() {
                         strokeWidth={1.75}
                         className="w-12 h-12 text-blue-300 shrink-0"
                       />
-                      <div className="flex flex-col flex-grow gap-2">
+                      <div className="flex flex-col grow gap-2">
                         <div className="h-4 bg-blue-200 rounded w-full"></div>
                         <div className="h-4 bg-blue-200 rounded w-3/4"></div>
                         <div className="h-4 bg-blue-200 rounded w-1/2"></div>

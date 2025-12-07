@@ -65,7 +65,7 @@ export default function Videos() {
 
     if (selectedTags.length > 0) {
       result = result.filter((video) => {
-        return selectedTags.every((tag) => video.tags.includes(tag));
+        return selectedTags.some((tag) => video.tags.includes(tag));
       });
     }
 
@@ -120,8 +120,8 @@ export default function Videos() {
   return (
     <div className="flex flex-col gap-8 md:gap-12 w-full">
       <div className="flex flex-col gap-6 md:gap-4">
-        <div className="flex flex-col gap-6 md:gap-4 md:flex-row justify-between items-start md:items-center">
-          <div className="flex flex-col gap-1 md:gap-0">
+        <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
+          <div className="flex flex-col">
             {isVisuallyLoading ? (
               <>
                 <div className="h-8 w-48 bg-blue-100/40 rounded-md mb-2"></div>
@@ -153,37 +153,8 @@ export default function Videos() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             {allTags.map((type) => {
-              // Au lieu de compter sur toutes les vidéos, compter seulement sur les vidéos filtrées
-              let availableVideos = videos;
-
-              // Si des tags sont sélectionnés, filtrer d'abord par les autres tags (excluant le tag actuel)
-              if (selectedTags.length > 0) {
-                const otherSelectedTags = selectedTags.filter(
-                  (t) => t !== type
-                );
-
-                if (otherSelectedTags.length > 0) {
-                  availableVideos = videos.filter((video) =>
-                    otherSelectedTags.every((selectedTag) =>
-                      video.tags.includes(selectedTag)
-                    )
-                  );
-                }
-              }
-
-              // Appliquer le filtre de recherche si présent
-              if (searchQuery.trim() !== "") {
-                const query = searchQuery.toLowerCase();
-                availableVideos = availableVideos.filter(
-                  (video) =>
-                    video.titre.toLowerCase().includes(query) ||
-                    (video.description &&
-                      video.description.toLowerCase().includes(query))
-                );
-              }
-
-              // Maintenant compter seulement les vidéos disponibles qui ont ce tag
-              const count = availableVideos.filter((video) =>
+              // Compter le nombre total de vidéos avec ce tag (fixe)
+              const count = videos.filter((video) =>
                 video.tags.includes(type)
               ).length;
 
@@ -191,7 +162,7 @@ export default function Videos() {
                 <TagCheckbox
                   key={type}
                   type={type}
-                  count={<NumberFlow value={count} />}
+                  count={count}
                   selected={selectedTags.includes(type)}
                   onToggle={toggleTag}
                 />

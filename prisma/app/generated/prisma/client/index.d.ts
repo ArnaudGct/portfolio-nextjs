@@ -15852,13 +15852,10 @@ export namespace Prisma {
     id_vid: number | null
     titre: string | null
     description: string | null
-    tags: string | null
     lien: string | null
     date: Date | null
-    media_webm: string | null
-    media_mp4: string | null
     duree: string | null
-    afficher_competences: string | null
+    afficher_accueil: boolean | null
     afficher: boolean | null
     derniere_modification: Date | null
   }
@@ -15867,13 +15864,10 @@ export namespace Prisma {
     id_vid: number | null
     titre: string | null
     description: string | null
-    tags: string | null
     lien: string | null
     date: Date | null
-    media_webm: string | null
-    media_mp4: string | null
     duree: string | null
-    afficher_competences: string | null
+    afficher_accueil: boolean | null
     afficher: boolean | null
     derniere_modification: Date | null
   }
@@ -15882,13 +15876,10 @@ export namespace Prisma {
     id_vid: number
     titre: number
     description: number
-    tags: number
     lien: number
     date: number
-    media_webm: number
-    media_mp4: number
     duree: number
-    afficher_competences: number
+    afficher_accueil: number
     afficher: number
     derniere_modification: number
     _all: number
@@ -15907,13 +15898,10 @@ export namespace Prisma {
     id_vid?: true
     titre?: true
     description?: true
-    tags?: true
     lien?: true
     date?: true
-    media_webm?: true
-    media_mp4?: true
     duree?: true
-    afficher_competences?: true
+    afficher_accueil?: true
     afficher?: true
     derniere_modification?: true
   }
@@ -15922,13 +15910,10 @@ export namespace Prisma {
     id_vid?: true
     titre?: true
     description?: true
-    tags?: true
     lien?: true
     date?: true
-    media_webm?: true
-    media_mp4?: true
     duree?: true
-    afficher_competences?: true
+    afficher_accueil?: true
     afficher?: true
     derniere_modification?: true
   }
@@ -15937,13 +15922,10 @@ export namespace Prisma {
     id_vid?: true
     titre?: true
     description?: true
-    tags?: true
     lien?: true
     date?: true
-    media_webm?: true
-    media_mp4?: true
     duree?: true
-    afficher_competences?: true
+    afficher_accueil?: true
     afficher?: true
     derniere_modification?: true
     _all?: true
@@ -16039,13 +16021,10 @@ export namespace Prisma {
     id_vid: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date
     _count: VideosCountAggregateOutputType | null
@@ -16073,13 +16052,10 @@ export namespace Prisma {
     id_vid?: boolean
     titre?: boolean
     description?: boolean
-    tags?: boolean
     lien?: boolean
     date?: boolean
-    media_webm?: boolean
-    media_mp4?: boolean
     duree?: boolean
-    afficher_competences?: boolean
+    afficher_accueil?: boolean
     afficher?: boolean
     derniere_modification?: boolean
     videos_tags_link?: boolean | videos$videos_tags_linkArgs<ExtArgs>
@@ -16092,18 +16068,15 @@ export namespace Prisma {
     id_vid?: boolean
     titre?: boolean
     description?: boolean
-    tags?: boolean
     lien?: boolean
     date?: boolean
-    media_webm?: boolean
-    media_mp4?: boolean
     duree?: boolean
-    afficher_competences?: boolean
+    afficher_accueil?: boolean
     afficher?: boolean
     derniere_modification?: boolean
   }
 
-  export type videosOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_vid" | "titre" | "description" | "tags" | "lien" | "date" | "media_webm" | "media_mp4" | "duree" | "afficher_competences" | "afficher" | "derniere_modification", ExtArgs["result"]["videos"]>
+  export type videosOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_vid" | "titre" | "description" | "lien" | "date" | "duree" | "afficher_accueil" | "afficher" | "derniere_modification", ExtArgs["result"]["videos"]>
   export type videosInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     videos_tags_link?: boolean | videos$videos_tags_linkArgs<ExtArgs>
     _count?: boolean | VideosCountOutputTypeDefaultArgs<ExtArgs>
@@ -16118,13 +16091,10 @@ export namespace Prisma {
       id_vid: number
       titre: string
       description: string
-      tags: string
       lien: string
       date: Date
-      media_webm: string
-      media_mp4: string
       duree: string
-      afficher_competences: string
+      afficher_accueil: boolean
       afficher: boolean
       derniere_modification: Date
     }, ExtArgs["result"]["videos"]>
@@ -16500,13 +16470,10 @@ export namespace Prisma {
     readonly id_vid: FieldRef<"videos", 'Int'>
     readonly titre: FieldRef<"videos", 'String'>
     readonly description: FieldRef<"videos", 'String'>
-    readonly tags: FieldRef<"videos", 'String'>
     readonly lien: FieldRef<"videos", 'String'>
     readonly date: FieldRef<"videos", 'DateTime'>
-    readonly media_webm: FieldRef<"videos", 'String'>
-    readonly media_mp4: FieldRef<"videos", 'String'>
     readonly duree: FieldRef<"videos", 'String'>
-    readonly afficher_competences: FieldRef<"videos", 'String'>
+    readonly afficher_accueil: FieldRef<"videos", 'Boolean'>
     readonly afficher: FieldRef<"videos", 'Boolean'>
     readonly derniere_modification: FieldRef<"videos", 'DateTime'>
   }
@@ -28392,13 +28359,10 @@ export namespace Prisma {
     id_vid: 'id_vid',
     titre: 'titre',
     description: 'description',
-    tags: 'tags',
     lien: 'lien',
     date: 'date',
-    media_webm: 'media_webm',
-    media_mp4: 'media_mp4',
     duree: 'duree',
-    afficher_competences: 'afficher_competences',
+    afficher_accueil: 'afficher_accueil',
     afficher: 'afficher',
     derniere_modification: 'derniere_modification'
   };
@@ -28668,12 +28632,8 @@ export namespace Prisma {
   export const videosOrderByRelevanceFieldEnum: {
     titre: 'titre',
     description: 'description',
-    tags: 'tags',
     lien: 'lien',
-    media_webm: 'media_webm',
-    media_mp4: 'media_mp4',
-    duree: 'duree',
-    afficher_competences: 'afficher_competences'
+    duree: 'duree'
   };
 
   export type videosOrderByRelevanceFieldEnum = (typeof videosOrderByRelevanceFieldEnum)[keyof typeof videosOrderByRelevanceFieldEnum]
@@ -29615,13 +29575,10 @@ export namespace Prisma {
     id_vid?: IntFilter<"videos"> | number
     titre?: StringFilter<"videos"> | string
     description?: StringFilter<"videos"> | string
-    tags?: StringFilter<"videos"> | string
     lien?: StringFilter<"videos"> | string
     date?: DateTimeFilter<"videos"> | Date | string
-    media_webm?: StringFilter<"videos"> | string
-    media_mp4?: StringFilter<"videos"> | string
     duree?: StringFilter<"videos"> | string
-    afficher_competences?: StringFilter<"videos"> | string
+    afficher_accueil?: BoolFilter<"videos"> | boolean
     afficher?: BoolFilter<"videos"> | boolean
     derniere_modification?: DateTimeFilter<"videos"> | Date | string
     videos_tags_link?: Videos_tags_linkListRelationFilter
@@ -29631,13 +29588,10 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
     videos_tags_link?: videos_tags_linkOrderByRelationAggregateInput
@@ -29651,13 +29605,10 @@ export namespace Prisma {
     NOT?: videosWhereInput | videosWhereInput[]
     titre?: StringFilter<"videos"> | string
     description?: StringFilter<"videos"> | string
-    tags?: StringFilter<"videos"> | string
     lien?: StringFilter<"videos"> | string
     date?: DateTimeFilter<"videos"> | Date | string
-    media_webm?: StringFilter<"videos"> | string
-    media_mp4?: StringFilter<"videos"> | string
     duree?: StringFilter<"videos"> | string
-    afficher_competences?: StringFilter<"videos"> | string
+    afficher_accueil?: BoolFilter<"videos"> | boolean
     afficher?: BoolFilter<"videos"> | boolean
     derniere_modification?: DateTimeFilter<"videos"> | Date | string
     videos_tags_link?: Videos_tags_linkListRelationFilter
@@ -29667,13 +29618,10 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
     _count?: videosCountOrderByAggregateInput
@@ -29690,13 +29638,10 @@ export namespace Prisma {
     id_vid?: IntWithAggregatesFilter<"videos"> | number
     titre?: StringWithAggregatesFilter<"videos"> | string
     description?: StringWithAggregatesFilter<"videos"> | string
-    tags?: StringWithAggregatesFilter<"videos"> | string
     lien?: StringWithAggregatesFilter<"videos"> | string
     date?: DateTimeWithAggregatesFilter<"videos"> | Date | string
-    media_webm?: StringWithAggregatesFilter<"videos"> | string
-    media_mp4?: StringWithAggregatesFilter<"videos"> | string
     duree?: StringWithAggregatesFilter<"videos"> | string
-    afficher_competences?: StringWithAggregatesFilter<"videos"> | string
+    afficher_accueil?: BoolWithAggregatesFilter<"videos"> | boolean
     afficher?: BoolWithAggregatesFilter<"videos"> | boolean
     derniere_modification?: DateTimeWithAggregatesFilter<"videos"> | Date | string
   }
@@ -31220,13 +31165,10 @@ export namespace Prisma {
   export type videosCreateInput = {
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
     videos_tags_link?: videos_tags_linkCreateNestedManyWithoutVideosInput
@@ -31236,13 +31178,10 @@ export namespace Prisma {
     id_vid?: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
     videos_tags_link?: videos_tags_linkUncheckedCreateNestedManyWithoutVideosInput
@@ -31251,13 +31190,10 @@ export namespace Prisma {
   export type videosUpdateInput = {
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
     videos_tags_link?: videos_tags_linkUpdateManyWithoutVideosNestedInput
@@ -31267,13 +31203,10 @@ export namespace Prisma {
     id_vid?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
     videos_tags_link?: videos_tags_linkUncheckedUpdateManyWithoutVideosNestedInput
@@ -31283,13 +31216,10 @@ export namespace Prisma {
     id_vid?: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
   }
@@ -31297,13 +31227,10 @@ export namespace Prisma {
   export type videosUpdateManyMutationInput = {
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31312,13 +31239,10 @@ export namespace Prisma {
     id_vid?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32866,13 +32790,10 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
   }
@@ -32885,13 +32806,10 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
   }
@@ -32900,13 +32818,10 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
   }
@@ -35122,13 +35037,10 @@ export namespace Prisma {
   export type videosCreateWithoutVideos_tags_linkInput = {
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
   }
@@ -35137,13 +35049,10 @@ export namespace Prisma {
     id_vid?: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
   }
@@ -35183,13 +35092,10 @@ export namespace Prisma {
   export type videosUpdateWithoutVideos_tags_linkInput = {
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -35198,13 +35104,10 @@ export namespace Prisma {
     id_vid?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }

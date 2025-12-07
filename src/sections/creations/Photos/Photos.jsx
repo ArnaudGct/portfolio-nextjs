@@ -142,14 +142,14 @@ export default function Photos() {
     let resultAlbums = [...albums];
     if (selectedTags.length > 0) {
       resultPhotos = resultPhotos.filter((photo) =>
-        selectedTags.every((tag) =>
+        selectedTags.some((tag) =>
           // Vérifier que allTagsSearch existe avant de l'utiliser
           (photo.allTagsSearch || []).includes(tag)
         )
       );
 
       resultAlbums = resultAlbums.filter((album) =>
-        selectedTags.every((tag) =>
+        selectedTags.some((tag) =>
           // Vérifier que tags existe avant de l'utiliser
           (album.tags || []).includes(tag)
         )
@@ -363,7 +363,7 @@ export default function Photos() {
 
   return (
     <div className="flex flex-col gap-8 md:gap-12 w-full">
-      <div className="flex flex-col gap-8 md:gap-4">
+      <div className="flex flex-col gap-6 md:gap-4">
         <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center">
           <div className="flex flex-col">
             {isVisuallyLoading ? (
@@ -438,58 +438,12 @@ export default function Photos() {
 
         <div className="flex flex-wrap gap-2">
           {allTags.map((tag) => {
-            // Au lieu de compter sur tous les éléments, compter seulement sur les éléments filtrés
-            let availablePhotos = photos;
-            let availableAlbums = albums;
-
-            // Si des tags sont sélectionnés, filtrer d'abord par les autres tags (excluant le tag actuel)
-            if (selectedTags.length > 0) {
-              const otherSelectedTags = selectedTags.filter((t) => t !== tag);
-
-              if (otherSelectedTags.length > 0) {
-                availablePhotos = photos.filter((photo) =>
-                  otherSelectedTags.every((selectedTag) =>
-                    (photo.allTagsSearch || []).includes(selectedTag)
-                  )
-                );
-
-                availableAlbums = albums.filter((album) =>
-                  otherSelectedTags.every((selectedTag) =>
-                    (album.tags || []).includes(selectedTag)
-                  )
-                );
-              }
-            }
-
-            // Appliquer le filtre de recherche si présent
-            if (searchQuery.trim() !== "") {
-              const query = searchQuery.toLowerCase().trim();
-
-              availablePhotos = availablePhotos.filter((photo) => {
-                const titleMatch =
-                  photo.titre && photo.titre.toLowerCase().includes(query);
-                const tagsMatch = (photo.allTagsSearch || []).some((photoTag) =>
-                  (photoTag || "").toLowerCase().includes(query)
-                );
-                return titleMatch || tagsMatch;
-              });
-
-              availableAlbums = availableAlbums.filter((album) => {
-                const titleMatch =
-                  album.titre && album.titre.toLowerCase().includes(query);
-                const tagsMatch = (album.tags || []).some((albumTag) =>
-                  (albumTag || "").toLowerCase().includes(query)
-                );
-                return titleMatch || tagsMatch;
-              });
-            }
-
-            // Maintenant compter seulement les éléments disponibles qui ont ce tag
-            const photoCount = availablePhotos.filter((photo) =>
+            // Compter le nombre total d'éléments avec ce tag (fixe)
+            const photoCount = photos.filter((photo) =>
               (photo.allTags || []).includes(tag)
             ).length;
 
-            const albumCount = availableAlbums.filter((album) =>
+            const albumCount = albums.filter((album) =>
               (album.tags || []).includes(tag)
             ).length;
 
@@ -499,7 +453,7 @@ export default function Photos() {
               <TagCheckbox
                 key={tag}
                 type={tag}
-                count={<NumberFlow value={totalCount} />}
+                count={totalCount}
                 selected={selectedTags.includes(tag)}
                 onToggle={toggleTag}
               />
@@ -823,7 +777,7 @@ export default function Photos() {
                 />
               </motion.div>
 
-              <div className="relative flex-grow flex items-center justify-center bg-slate-100 overflow-hidden">
+              <div className="relative grow flex items-center justify-center bg-slate-100 overflow-hidden">
                 <motion.div
                   disabled={currentPhotoIndex === 0}
                   className={`absolute left-4 z-10 hidden md:flex items-center justify-center`}

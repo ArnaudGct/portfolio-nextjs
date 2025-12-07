@@ -74,7 +74,7 @@ export default function Creations() {
 
   return (
     <main className="bg-white">
-      <div className="flex flex-col gap-8 w-[90%] pt-24 pb-20 mx-auto max-w-[1440px]">
+      <div className="flex flex-col gap-6 w-[90%] pt-24 pb-20 mx-auto max-w-[1440px]">
         {/* BOUTONS RADIO */}
         <div className="flex gap-4 flex-wrap">
           {["Vidéos", "Photos", "Autre"].map((type) => (
@@ -92,7 +92,7 @@ export default function Creations() {
       </div>
 
       {/* Effet de fond */}
-      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-linear-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
     </main>
   );
 }

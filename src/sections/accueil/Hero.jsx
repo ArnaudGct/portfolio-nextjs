@@ -21,7 +21,7 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen overflow-hidden">
       {/* Arrière-plan : fond blanc + grille */}
-      <div className="absolute top-0 left-0 w-full z-12 h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full z-12 h-14 bg-linear-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
       <div
         className="absolute inset-0 z-9 bg-repeat bg-white"
         style={{
@@ -41,14 +41,14 @@ export default function Hero() {
         <div className="flex flex-col gap-2 items-start justify-center">
           <div className="flex flex-wrap items-center gap-2">
             <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
-            <Tag name="monteur vidéo" background={false} />
-            <Tag name="cadreur" background={false} />
+            <Tag name="Monteur Vidéo" background={false} />
+            <Tag name="Cadreur" background={false} />
           </div>
           <div className="flex flex-col w-full">
             <h1 className="flex flex-col sm:flex-row sm:items-center sm:gap-x-3 max-w-[380px] sm:max-w-none text-4xl font-black text-blue-900 font-rethink-sans">
               Hey, je suis
               <div className="sm:hidden flex items-end gap-2 w-full">
-                <span className="flex-grow h-px bg-blue-600"></span>
+                <span className="grow h-px bg-blue-600"></span>
                 <span className="whitespace-nowrap font-covered-by-your-grace font-normal text-blue-600">
                   Arnaud Graciet
                 </span>

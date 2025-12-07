@@ -31,7 +31,7 @@ export default function Videos() {
     <section className="w-full bg-blue-50 py-16">
       <div className="flex flex-col gap-10 max-w-[1440px] mx-auto w-[90%]">
         <div className="flex flex-col gap-6 w-full">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
               Mes dernières créations
             </p>

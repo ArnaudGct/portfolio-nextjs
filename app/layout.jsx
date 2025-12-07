@@ -68,7 +68,7 @@ export default function RootLayout({ children }) {
         className={`${rethinkSans.variable} ${outfit.variable} ${coveredByYourGrace.variable} antialiased flex flex-col min-h-screen bg-white`}
       >
         {showHeader && <Header />}
-        <div className="flex-grow">{children}</div>
+        <div className="grow">{children}</div>
         <Footer />
       </body>
     </html>

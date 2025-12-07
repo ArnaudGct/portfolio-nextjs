@@ -188,7 +188,7 @@ export default function AlbumsGallery({ album }) {
                 />
               </motion.div>
 
-              <div className="relative flex-grow flex items-center justify-center bg-slate-100 overflow-hidden">
+              <div className="relative grow flex items-center justify-center bg-slate-100 overflow-hidden">
                 <motion.div
                   disabled={currentPhotoIndex === 0}
                   className={`absolute left-4 z-10 hidden md:flex items-center justify-center`}
