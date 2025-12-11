@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const questions = await prisma.faq.findMany({
     where: { afficher: true },
+    orderBy: { ordre: "asc" },
   });
 
   return NextResponse.json(questions);

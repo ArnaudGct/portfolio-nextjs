@@ -9,7 +9,7 @@ export async function GET() {
         afficher: true,
       },
       orderBy: {
-        id_outil: "asc",
+        ordre: "asc",
       },
     });
 

@@ -26,7 +26,7 @@ export async function GET() {
       afficher: true,
       afficher_accueil: true,
     },
-    orderBy: { date: "desc" },
+    orderBy: { ordre_accueil: "asc" },
     select: selectFields,
   });
 
