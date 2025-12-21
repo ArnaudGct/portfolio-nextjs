@@ -21,28 +21,6 @@ import "swiper/css/navigation";
 // import required modules
 import { Autoplay, Navigation } from "swiper/modules";
 
-// Avis Trustpilot statiques
-const trustpilotReviews = [
-  {
-    id_tem: "trustpilot-1",
-    client: "Gustystudio.com",
-    contenu:
-      "INCROYABLE ! C'est génial de travailler avec Arnaud. Il comprend tellement bien et vite mes demandes, que la V1 est souvent la bonne. Je recommande vivement",
-    rating: 5,
-    source: "trustpilot",
-    date: "19 novembre 2025",
-  },
-  {
-    id_tem: "trustpilot-2",
-    client: "ThibOnRoad",
-    contenu:
-      "Arnaud est quelqu'un de très professionnel. Une prestation pour la réalisation, le tournage et le cadrage d'une vidéo youtube a été commandé et le résultat est plus que convainquant et est au dela de mes esperences. Je ne peux que le recommander les yeux fermés !",
-    rating: 5,
-    source: "trustpilot",
-    date: "1 septembre 2025",
-  },
-];
-
 export default function Testimonial() {
   const [temoignages, setTemoignages] = useState([]);
   const prevButtonRef = useRef(null);
@@ -50,23 +28,42 @@ export default function Testimonial() {
   const [swiperInstance, setSwiperInstance] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchTemoignages = async () => {
       try {
-        const res = await fetch("/api/accueil/temoignages");
-        const data = await res.json();
-        console.log("✅ Avis reçus :", data);
-        // Combiner les avis Trustpilot en premier, puis ceux de la BDD
-        const dbReviews = data.map((t) => ({ ...t, source: "database" }));
-        const allReviews = [...trustpilotReviews, ...dbReviews];
-        setTemoignages(allReviews);
+        // Charger en parallèle les avis Trustpilot et de la BDD
+        const [trustpilotRes, dbRes] = await Promise.all([
+          fetch("/api/extern/trustpilot").catch(() => null),
+          fetch("/api/accueil/temoignages").catch(() => null),
+        ]);
+
+        const trustpilotData = trustpilotRes?.ok
+          ? await trustpilotRes.json()
+          : [];
+        const dbData = dbRes?.ok ? await dbRes.json() : [];
+
+        if (isMounted) {
+          // Marquer les avis de la BDD
+          const dbReviews = dbData.map((t) => ({ ...t, source: "database" }));
+          // Combiner: Trustpilot en premier, puis BDD
+          const allReviews = [...trustpilotData, ...dbReviews];
+          setTemoignages(allReviews);
+          console.log("✅ Avis chargés:", allReviews.length, "total");
+        }
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des avis :", error);
-        // En cas d'erreur, afficher au moins les avis Trustpilot
-        setTemoignages(trustpilotReviews);
+        if (isMounted) {
+          setTemoignages([]);
+        }
       }
     };
 
     fetchTemoignages();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Connecter les boutons de navigation après l'initialisation de Swiper
@@ -105,41 +102,59 @@ export default function Testimonial() {
   );
 
   // Composant Témoignage
-  const TestimonialCard = ({ temoignage }) => (
-    <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 transition-all duration-500 ease-in-out">
-      <div className="flex flex-col gap-5 select-none">
-        <div className="flex gap-5 items-start">
-          <Quote
-            strokeWidth={1.75}
-            className="w-12 h-12 text-blue-600 shrink-0"
-          />
-          <div className="text-blue-900 text-normal font-normal">
-            <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
+  const TestimonialCard = ({ temoignage }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    return (
+      <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 transition-all duration-500 ease-in-out">
+        <div className="flex flex-col gap-5 select-none">
+          <div className="flex gap-5 items-start">
+            <Quote
+              strokeWidth={1.75}
+              className="w-12 h-12 text-blue-600 shrink-0"
+            />
+            <div className="text-blue-900 text-normal font-normal flex flex-col items-start flex-1 gap-2">
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  isExpanded ? "max-h-none" : "max-h-24 line-clamp-4"
+                }`}
+              >
+                <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
+              </div>
+              {temoignage.contenu.length > 200 && (
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-blue-600 text-sm font-semibold hover:underline cursor-pointer"
+                >
+                  {isExpanded ? "Voir moins" : "Voir plus"}
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            {temoignage.source === "trustpilot" && (
+              <div className="flex items-center gap-2">
+                <StarRating rating={temoignage.rating} />
+                <a
+                  href="https://fr.trustpilot.com/review/arnaudgct.fr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-[#00b67a] font-semibold hover:underline"
+                >
+                  Trustpilot
+                </a>
+              </div>
+            )}
+            <p
+              className={`text-blue-600 font-rethink-sans text-lg font-extrabold ${temoignage.source !== "trustpilot" ? "text-right w-full" : "text-right"}`}
+            >
+              {temoignage.client}
+            </p>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          {temoignage.source === "trustpilot" && (
-            <div className="flex items-center gap-2">
-              <StarRating rating={temoignage.rating} />
-              <a
-                href="https://fr.trustpilot.com/review/arnaudgct.fr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-[#00b67a] font-semibold hover:underline"
-              >
-                Trustpilot
-              </a>
-            </div>
-          )}
-          <p
-            className={`text-blue-600 font-rethink-sans text-lg font-extrabold ${temoignage.source !== "trustpilot" ? "text-right w-full" : "text-right"}`}
-          >
-            {temoignage.client}
-          </p>
-        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <section className="max-w-[1440px] mx-auto relative w-[90%]">
