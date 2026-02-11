@@ -14,10 +14,10 @@ export default function TextRollover({
     <Link
       href={href}
       onClick={onClick}
-      className={`${isActive ? "text-blue-700" : "text-blue-900"} ${className}`}
+      className={`group ${isActive ? "text-blue-700" : "text-blue-900"} ${className}`}
     >
       <li
-        className="group overflow-hidden relative"
+        className="overflow-hidden relative"
         style={{ height: `${itemHeight}px` }}
       >
         <span className="relative inline-flex overflow-hidden">
