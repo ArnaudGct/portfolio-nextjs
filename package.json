@@ -23,7 +23,7 @@
     "lucide-react": "^0.487.0",
     "motion": "^12.6.5",
     "next": "^15.5.8",
-    "next-video": "^2.2.0",
+    "next-video": "^0.0.1",
     "node-html-parser": "^7.0.1",
     "node-vibrant": "^4.0.3",
     "nodemailer": "^7.0.11",
