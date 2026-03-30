@@ -61,7 +61,7 @@ export default function JournalPersonnel() {
       } catch (error) {
         console.error(
           "❌ Erreur lors de la récupération des expériences :",
-          error
+          error,
         );
       } finally {
         setLoading(false);
@@ -87,7 +87,7 @@ export default function JournalPersonnel() {
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
 
     // Appliquer observer après que les refs soient en place
@@ -177,7 +177,7 @@ export default function JournalPersonnel() {
                       <div className="absolute left-0 top-6 w-4 h-4 bg-blue-600 rounded-full"></div>
 
                       <div className="ml-10 flex flex-col gap-4">
-                        <div className="flex flex-col items-center justify-center lg:flex-row lg:justify-between gap-6">
+                        <div className="flex flex-col items-start justify-center lg:flex-row lg:justify-between gap-6">
                           <div className="w-full flex flex-col gap-3">
                             <div className="flex flex-col">
                               <p className="text-blue-600 font-rethink-sans font-extrabold text-xl">

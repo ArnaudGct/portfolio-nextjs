@@ -27,8 +27,8 @@ export default function Footer() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Tag name="Monteur Vidéo" background={false} />
-                <Tag name="Cadreur" background={false} />
+                <Tag name="Monteur vidéo" background={false} />
+                <Tag name="Motion designer" background={false} />
               </div>
             </div>
           </div>

@@ -60,7 +60,7 @@ export default function RootLayout({ children }) {
         <title>Arnaud Graciet - Vidéaste freelance</title>
         <meta
           name="description"
-          content="Explorez le portfolio de Arnaud Graciet, monteur vidéo en freelance."
+          content="Explorez le portfolio de Arnaud Graciet, Monteur vidéo en freelance."
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

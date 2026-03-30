@@ -41,8 +41,8 @@ export default function Hero() {
         <div className="flex flex-col gap-2 items-start justify-center">
           <div className="flex flex-wrap items-center gap-2">
             <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
-            <Tag name="Monteur Vidéo" background={false} />
-            <Tag name="Cadreur" background={false} />
+            <Tag name="Monteur vidéo" background={false} />
+            <Tag name="Motion designer" background={false} />
           </div>
           <div className="flex flex-col w-full">
             <h1 className="flex flex-col sm:flex-row sm:items-center sm:gap-x-3 max-w-[380px] sm:max-w-none text-4xl font-black text-blue-900 font-rethink-sans">
