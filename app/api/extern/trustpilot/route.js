@@ -4,6 +4,32 @@ import { parse } from "node-html-parser";
 // Cache de 1 heure pour éviter de surcharger Trustpilot
 export const revalidate = 3600;
 
+function formatFrenchDate(dateString) {
+  if (!dateString) return null;
+
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch (error) {
+    return dateString;
+  }
+}
+
+function mapReviewNode(review, index) {
+  return {
+    id_tem: `trustpilot-${index}`,
+    client: review.author?.name || "Client Trustpilot",
+    contenu: review.reviewBody || review.description || review.headline || "",
+    rating: Number(review.reviewRating?.ratingValue) || 5,
+    date: formatFrenchDate(review.datePublished),
+    source: "trustpilot",
+  };
+}
+
 export async function GET() {
   try {
     // URL de la page Trustpilot à scraper
@@ -23,7 +49,7 @@ export async function GET() {
     if (!response.ok) {
       return NextResponse.json(
         { error: "Impossible de récupérer la page Trustpilot" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -38,34 +64,25 @@ export async function GET() {
       try {
         const jsonData = JSON.parse(script.textContent);
 
-        // Trustpilot utilise le format Schema.org pour les avis
-        if (jsonData["@type"] === "Product" && jsonData.review) {
-          reviews = jsonData.review.map((review, index) => {
-            const dateString = review.datePublished;
-            let formattedDate = null;
-
-            if (dateString) {
-              try {
-                const date = new Date(dateString);
-                formattedDate = date.toLocaleDateString("fr-FR", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                });
-              } catch (e) {
-                formattedDate = dateString;
-              }
-            }
-
-            return {
-              id_tem: `trustpilot-${index}`,
-              client: review.author?.name || "Client Trustpilot",
-              contenu: review.reviewBody || review.description || "",
-              rating: review.reviewRating?.ratingValue || 5,
-              date: formattedDate,
-              source: "trustpilot",
-            };
+        // Trustpilot expose désormais souvent les avis dans @graph avec des nœuds Review.
+        if (Array.isArray(jsonData["@graph"])) {
+          const reviewNodes = jsonData["@graph"].filter((node) => {
+            const nodeType = node?.["@type"];
+            return (
+              nodeType === "Review" ||
+              (Array.isArray(nodeType) && nodeType.includes("Review"))
+            );
           });
+
+          if (reviewNodes.length > 0) {
+            reviews = reviewNodes.map(mapReviewNode);
+            break;
+          }
+        }
+
+        // Ancien format Schema.org encore supporté selon les pages.
+        if (jsonData["@type"] === "Product" && Array.isArray(jsonData.review)) {
+          reviews = jsonData.review.map(mapReviewNode);
           break;
         }
       } catch (e) {
@@ -76,28 +93,28 @@ export async function GET() {
     // Si pas de reviews via JSON-LD, essayer de scraper directement le HTML
     if (reviews.length === 0) {
       const reviewCards = root.querySelectorAll(
-        'article[data-service-review-card-paper="true"]'
+        'article[data-service-review-card-paper="true"]',
       );
 
       reviews = Array.from(reviewCards).map((card, index) => {
         // Récupérer le nom du client
         const nameElement = card.querySelector(
-          '[data-consumer-name-typography="true"]'
+          '[data-consumer-name-typography="true"]',
         );
         const client = nameElement?.textContent?.trim() || "Client Trustpilot";
 
         // Récupérer le contenu de l'avis
         const contentElement = card.querySelector(
-          '[data-service-review-text-typography="true"]'
+          '[data-service-review-text-typography="true"]',
         );
         const contenu = contentElement?.textContent?.trim() || "";
 
         // Récupérer la note (nombre d'étoiles remplies)
         const ratingElement = card.querySelector(
-          "[data-service-review-rating]"
+          "[data-service-review-rating]",
         );
         const ratingAttr = ratingElement?.getAttribute(
-          "data-service-review-rating"
+          "data-service-review-rating",
         );
         const rating = ratingAttr ? parseInt(ratingAttr) : 5;
 
@@ -124,7 +141,7 @@ export async function GET() {
           id_tem: `trustpilot-${index}`,
           client,
           contenu,
-          rating,
+          rating: Number(rating) || 5,
           date: formattedDate,
           source: "trustpilot",
         };
@@ -142,7 +159,7 @@ export async function GET() {
         error: "Erreur lors du scraping Trustpilot",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
