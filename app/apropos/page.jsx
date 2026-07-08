@@ -229,7 +229,7 @@ export default function APropos() {
                     <p className="text-blue-400 text-xl font-normal font-rethink-sans">
                       Arnaud
                     </p>
-                    <p className="text-blue-700 text-5xl font-extrabold font-rethink-sans">
+                    <p className="text-blue-600 text-5xl font-extrabold font-rethink-sans">
                       Graciet
                     </p>
                   </div>
@@ -276,7 +276,7 @@ export default function APropos() {
                     )}
 
                     <Image
-                      src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
+                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ""}`}
                       alt="Carte de La Rochelle"
                       fill
                       placeholder="blur"
