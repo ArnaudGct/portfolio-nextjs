@@ -57,6 +57,11 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-R6313JH5FT');
           `}
         </Script>
+        <script
+          defer
+          data-domain="arnaudgct.fr"
+          src="https://plausible.arnaudgct.fr/js/script.js"
+        ></script>
         <title>Arnaud Graciet - Vidéaste freelance</title>
         <meta
           name="description"
