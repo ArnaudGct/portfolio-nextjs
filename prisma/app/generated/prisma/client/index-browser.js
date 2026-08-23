@@ -21,12 +21,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.19.0
- * Query Engine version: 2ba551f319ab1df4bc874a89965d8b3641056773
+ * Prisma Client JS version: 6.19.3
+ * Query Engine version: c2990dca591cba766e3b7ef5d9e8a84796e47ab7
  */
 Prisma.prismaVersion = {
-  client: "6.19.0",
-  engine: "2ba551f319ab1df4bc874a89965d8b3641056773"
+  client: "6.19.3",
+  engine: "c2990dca591cba766e3b7ef5d9e8a84796e47ab7"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -357,6 +357,28 @@ exports.Prisma.Apropos_outilsScalarFieldEnum = {
   afficher: 'afficher'
 };
 
+exports.Prisma.OutilsScalarFieldEnum = {
+  id_outil: 'id_outil',
+  titre: 'titre',
+  description: 'description',
+  logo: 'logo',
+  miniature: 'miniature',
+  lien_github: 'lien_github',
+  lien_telechargement: 'lien_telechargement',
+  derniere_modification: 'derniere_modification'
+};
+
+exports.Prisma.Outils_tagsScalarFieldEnum = {
+  id_tags: 'id_tags',
+  titre: 'titre',
+  important: 'important'
+};
+
+exports.Prisma.Outils_tags_linkScalarFieldEnum = {
+  id_outils: 'id_outils',
+  id_tags: 'id_tags'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -514,6 +536,19 @@ exports.Prisma.apropos_outilsOrderByRelevanceFieldEnum = {
   couleur_texte_dark: 'couleur_texte_dark'
 };
 
+exports.Prisma.outilsOrderByRelevanceFieldEnum = {
+  titre: 'titre',
+  description: 'description',
+  logo: 'logo',
+  miniature: 'miniature',
+  lien_github: 'lien_github',
+  lien_telechargement: 'lien_telechargement'
+};
+
+exports.Prisma.outils_tagsOrderByRelevanceFieldEnum = {
+  titre: 'titre'
+};
+
 
 exports.Prisma.ModelName = {
   autre: 'autre',
@@ -541,7 +576,10 @@ exports.Prisma.ModelName = {
   verification: 'verification',
   accueil_general: 'accueil_general',
   apropos_general: 'apropos_general',
-  apropos_outils: 'apropos_outils'
+  apropos_outils: 'apropos_outils',
+  outils: 'outils',
+  outils_tags: 'outils_tags',
+  outils_tags_link: 'outils_tags_link'
 };
 
 /**

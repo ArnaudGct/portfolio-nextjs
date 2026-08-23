@@ -66,6 +66,14 @@ export default function Footer() {
             />
 
             <TextRollover
+              href="/outils"
+              text="Boîte à outils"
+              isActive={pathname === "/outils"}
+              className="font-medium font-rethink-sans"
+              itemHeight={23}
+            />
+
+            <TextRollover
               href="/mentions-legales"
               text="Mentions légales"
               isActive={pathname === "/mentions-legales"}
