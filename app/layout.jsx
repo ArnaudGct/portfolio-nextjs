@@ -44,23 +44,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-R6313JH5FT"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-R6313JH5FT');
-          `}
-        </Script>
+        <script
+          defer
+          data-domain="arnaudgct.fr"
+          src="https://plausible.arnaudgct.fr/js/script.js"
+        ></script>
         <title>Arnaud Graciet - Vidéaste freelance</title>
         <meta
           name="description"
-          content="Explorez le portfolio de Arnaud Graciet, monteur vidéo en freelance."
+          content="Explorez le portfolio de Arnaud Graciet, Monteur vidéo en freelance."
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
@@ -68,7 +60,7 @@ export default function RootLayout({ children }) {
         className={`${rethinkSans.variable} ${outfit.variable} ${coveredByYourGrace.variable} antialiased flex flex-col min-h-screen bg-white`}
       >
         {showHeader && <Header />}
-        <div className="flex-grow">{children}</div>
+        <div className="grow">{children}</div>
         <Footer />
       </body>
     </html>

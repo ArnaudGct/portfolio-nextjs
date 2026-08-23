@@ -146,19 +146,19 @@ export default function Presentation() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
-            <Tag
+            {/* <Tag
               name="21 ans"
               background={true}
               icon={<Cake size={14} strokeWidth={1.75} />}
-            />
+            /> */}
             <Tag
               name="La Rochelle"
               background={true}
               href="https://maps.apple.com/place?z=15&auid=6034166720712255280&address=17000+La+Rochelle%2C+France&coordinate=46.1622489%2C-1.1550672&name=La+Rochelle&lsp=6489"
               icon={<MapPin size={14} strokeWidth={1.75} />}
             />
-            <Tag name="monteur vidéo" background={false} />
-            <Tag name="cadreur" background={false} />
+            <Tag name="Monteur vidéo" background={false} />
+            <Tag name="Motion designer" background={false} />
           </div>
         </div>
         <div className="text-blue-900 text-base/8 font-normal font-outfit">

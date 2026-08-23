@@ -160,7 +160,7 @@ export type apropos_outils = $Result.DefaultSelection<Prisma.$apropos_outilsPayl
  */
 export class PrismaClient<
   ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
-  U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
+  const U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
   ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
@@ -192,13 +192,6 @@ export class PrismaClient<
    * Disconnect from the database
    */
   $disconnect(): $Utils.JsPromise<void>;
-
-  /**
-   * Add a middleware
-   * @deprecated since 4.16.0. For new code, prefer client extensions instead.
-   * @see https://pris.ly/d/extensions
-   */
-  $use(cb: Prisma.Middleware): void
 
 /**
    * Executes a prepared raw query and returns the number of affected rows.
@@ -586,8 +579,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.11.1
-   * Query Engine version: f40f79ec31188888a2e33acda0ecc8fd10a853a9
+   * Prisma Client JS version: 6.19.0
+   * Query Engine version: 2ba551f319ab1df4bc874a89965d8b3641056773
    */
   export type PrismaVersion = {
     client: string
@@ -600,6 +593,7 @@ export namespace Prisma {
    */
 
 
+  export import Bytes = runtime.Bytes
   export import JsonObject = runtime.JsonObject
   export import JsonArray = runtime.JsonArray
   export import JsonValue = runtime.JsonValue
@@ -2775,16 +2769,24 @@ export namespace Prisma {
     /**
      * @example
      * ```
-     * // Defaults to stdout
+     * // Shorthand for `emit: 'stdout'`
      * log: ['query', 'info', 'warn', 'error']
      * 
-     * // Emit as events
+     * // Emit as events only
      * log: [
-     *   { emit: 'stdout', level: 'query' },
-     *   { emit: 'stdout', level: 'info' },
-     *   { emit: 'stdout', level: 'warn' }
-     *   { emit: 'stdout', level: 'error' }
+     *   { emit: 'event', level: 'query' },
+     *   { emit: 'event', level: 'info' },
+     *   { emit: 'event', level: 'warn' }
+     *   { emit: 'event', level: 'error' }
      * ]
+     * 
+     * / Emit as events and log to stdout
+     * og: [
+     *  { emit: 'stdout', level: 'query' },
+     *  { emit: 'stdout', level: 'info' },
+     *  { emit: 'stdout', level: 'warn' }
+     *  { emit: 'stdout', level: 'error' }
+     * 
      * ```
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
@@ -2799,6 +2801,10 @@ export namespace Prisma {
       timeout?: number
       isolationLevel?: Prisma.TransactionIsolationLevel
     }
+    /**
+     * Instance of a Driver Adapter, e.g., like one provided by `@prisma/adapter-planetscale`
+     */
+    adapter?: runtime.SqlDriverAdapterFactory | null
     /**
      * Global configuration for omitting model fields by default.
      * 
@@ -2851,10 +2857,15 @@ export namespace Prisma {
     emit: 'stdout' | 'event'
   }
 
-  export type GetLogType<T extends LogLevel | LogDefinition> = T extends LogDefinition ? T['emit'] extends 'event' ? T['level'] : never : never
-  export type GetEvents<T extends any> = T extends Array<LogLevel | LogDefinition> ?
-    GetLogType<T[0]> | GetLogType<T[1]> | GetLogType<T[2]> | GetLogType<T[3]>
-    : never
+  export type CheckIsLogLevel<T> = T extends LogLevel ? T : never;
+
+  export type GetLogType<T> = CheckIsLogLevel<
+    T extends LogDefinition ? T['level'] : T
+  >;
+
+  export type GetEvents<T extends any[]> = T extends Array<LogLevel | LogDefinition>
+    ? GetLogType<T[number]>
+    : never;
 
   export type QueryEvent = {
     timestamp: Date
@@ -2894,25 +2905,6 @@ export namespace Prisma {
     | 'runCommandRaw'
     | 'findRaw'
     | 'groupBy'
-
-  /**
-   * These options are being passed into the middleware as "params"
-   */
-  export type MiddlewareParams = {
-    model?: ModelName
-    action: PrismaAction
-    args: any
-    dataPath: string[]
-    runInTransaction: boolean
-  }
-
-  /**
-   * The `T` type makes sure, that the `return proceed` is not forgotten in the middleware implementation
-   */
-  export type Middleware<T = any> = (
-    params: MiddlewareParams,
-    next: (params: MiddlewareParams) => $Utils.JsPromise<T>,
-  ) => $Utils.JsPromise<T>
 
   // tested in getLogLevel.test.ts
   export function getLogLevel(log: Array<LogLevel | LogDefinition>): LogLevel | undefined;
@@ -7164,16 +7156,19 @@ export namespace Prisma {
 
   export type FaqAvgAggregateOutputType = {
     id_faq: number | null
+    ordre: number | null
   }
 
   export type FaqSumAggregateOutputType = {
     id_faq: number | null
+    ordre: number | null
   }
 
   export type FaqMinAggregateOutputType = {
     id_faq: number | null
     titre: string | null
     contenu: string | null
+    ordre: number | null
     afficher: boolean | null
   }
 
@@ -7181,6 +7176,7 @@ export namespace Prisma {
     id_faq: number | null
     titre: string | null
     contenu: string | null
+    ordre: number | null
     afficher: boolean | null
   }
 
@@ -7188,6 +7184,7 @@ export namespace Prisma {
     id_faq: number
     titre: number
     contenu: number
+    ordre: number
     afficher: number
     _all: number
   }
@@ -7195,16 +7192,19 @@ export namespace Prisma {
 
   export type FaqAvgAggregateInputType = {
     id_faq?: true
+    ordre?: true
   }
 
   export type FaqSumAggregateInputType = {
     id_faq?: true
+    ordre?: true
   }
 
   export type FaqMinAggregateInputType = {
     id_faq?: true
     titre?: true
     contenu?: true
+    ordre?: true
     afficher?: true
   }
 
@@ -7212,6 +7212,7 @@ export namespace Prisma {
     id_faq?: true
     titre?: true
     contenu?: true
+    ordre?: true
     afficher?: true
   }
 
@@ -7219,6 +7220,7 @@ export namespace Prisma {
     id_faq?: true
     titre?: true
     contenu?: true
+    ordre?: true
     afficher?: true
     _all?: true
   }
@@ -7313,6 +7315,7 @@ export namespace Prisma {
     id_faq: number
     titre: string
     contenu: string
+    ordre: number
     afficher: boolean
     _count: FaqCountAggregateOutputType | null
     _avg: FaqAvgAggregateOutputType | null
@@ -7339,6 +7342,7 @@ export namespace Prisma {
     id_faq?: boolean
     titre?: boolean
     contenu?: boolean
+    ordre?: boolean
     afficher?: boolean
   }, ExtArgs["result"]["faq"]>
 
@@ -7348,10 +7352,11 @@ export namespace Prisma {
     id_faq?: boolean
     titre?: boolean
     contenu?: boolean
+    ordre?: boolean
     afficher?: boolean
   }
 
-  export type faqOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_faq" | "titre" | "contenu" | "afficher", ExtArgs["result"]["faq"]>
+  export type faqOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_faq" | "titre" | "contenu" | "ordre" | "afficher", ExtArgs["result"]["faq"]>
 
   export type $faqPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "faq"
@@ -7360,6 +7365,7 @@ export namespace Prisma {
       id_faq: number
       titre: string
       contenu: string
+      ordre: number
       afficher: boolean
     }, ExtArgs["result"]["faq"]>
     composites: {}
@@ -7733,6 +7739,7 @@ export namespace Prisma {
     readonly id_faq: FieldRef<"faq", 'Int'>
     readonly titre: FieldRef<"faq", 'String'>
     readonly contenu: FieldRef<"faq", 'String'>
+    readonly ordre: FieldRef<"faq", 'Int'>
     readonly afficher: FieldRef<"faq", 'Boolean'>
   }
     
@@ -13996,10 +14003,12 @@ export namespace Prisma {
 
   export type TemoignagesAvgAggregateOutputType = {
     id_tem: number | null
+    ordre: number | null
   }
 
   export type TemoignagesSumAggregateOutputType = {
     id_tem: number | null
+    ordre: number | null
   }
 
   export type TemoignagesMinAggregateOutputType = {
@@ -14008,6 +14017,7 @@ export namespace Prisma {
     client: string | null
     plateforme: string | null
     date: string | null
+    ordre: number | null
     afficher: boolean | null
   }
 
@@ -14017,6 +14027,7 @@ export namespace Prisma {
     client: string | null
     plateforme: string | null
     date: string | null
+    ordre: number | null
     afficher: boolean | null
   }
 
@@ -14026,6 +14037,7 @@ export namespace Prisma {
     client: number
     plateforme: number
     date: number
+    ordre: number
     afficher: number
     _all: number
   }
@@ -14033,10 +14045,12 @@ export namespace Prisma {
 
   export type TemoignagesAvgAggregateInputType = {
     id_tem?: true
+    ordre?: true
   }
 
   export type TemoignagesSumAggregateInputType = {
     id_tem?: true
+    ordre?: true
   }
 
   export type TemoignagesMinAggregateInputType = {
@@ -14045,6 +14059,7 @@ export namespace Prisma {
     client?: true
     plateforme?: true
     date?: true
+    ordre?: true
     afficher?: true
   }
 
@@ -14054,6 +14069,7 @@ export namespace Prisma {
     client?: true
     plateforme?: true
     date?: true
+    ordre?: true
     afficher?: true
   }
 
@@ -14063,6 +14079,7 @@ export namespace Prisma {
     client?: true
     plateforme?: true
     date?: true
+    ordre?: true
     afficher?: true
     _all?: true
   }
@@ -14159,6 +14176,7 @@ export namespace Prisma {
     client: string
     plateforme: string
     date: string | null
+    ordre: number
     afficher: boolean
     _count: TemoignagesCountAggregateOutputType | null
     _avg: TemoignagesAvgAggregateOutputType | null
@@ -14187,6 +14205,7 @@ export namespace Prisma {
     client?: boolean
     plateforme?: boolean
     date?: boolean
+    ordre?: boolean
     afficher?: boolean
   }, ExtArgs["result"]["temoignages"]>
 
@@ -14198,10 +14217,11 @@ export namespace Prisma {
     client?: boolean
     plateforme?: boolean
     date?: boolean
+    ordre?: boolean
     afficher?: boolean
   }
 
-  export type temoignagesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_tem" | "contenu" | "client" | "plateforme" | "date" | "afficher", ExtArgs["result"]["temoignages"]>
+  export type temoignagesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_tem" | "contenu" | "client" | "plateforme" | "date" | "ordre" | "afficher", ExtArgs["result"]["temoignages"]>
 
   export type $temoignagesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "temoignages"
@@ -14212,6 +14232,7 @@ export namespace Prisma {
       client: string
       plateforme: string
       date: string | null
+      ordre: number
       afficher: boolean
     }, ExtArgs["result"]["temoignages"]>
     composites: {}
@@ -14587,6 +14608,7 @@ export namespace Prisma {
     readonly client: FieldRef<"temoignages", 'String'>
     readonly plateforme: FieldRef<"temoignages", 'String'>
     readonly date: FieldRef<"temoignages", 'String'>
+    readonly ordre: FieldRef<"temoignages", 'Int'>
     readonly afficher: FieldRef<"temoignages", 'Boolean'>
   }
     
@@ -15850,23 +15872,23 @@ export namespace Prisma {
 
   export type VideosAvgAggregateOutputType = {
     id_vid: number | null
+    ordre_accueil: number | null
   }
 
   export type VideosSumAggregateOutputType = {
     id_vid: number | null
+    ordre_accueil: number | null
   }
 
   export type VideosMinAggregateOutputType = {
     id_vid: number | null
     titre: string | null
     description: string | null
-    tags: string | null
     lien: string | null
     date: Date | null
-    media_webm: string | null
-    media_mp4: string | null
     duree: string | null
-    afficher_competences: string | null
+    ordre_accueil: number | null
+    afficher_accueil: boolean | null
     afficher: boolean | null
     derniere_modification: Date | null
   }
@@ -15875,13 +15897,11 @@ export namespace Prisma {
     id_vid: number | null
     titre: string | null
     description: string | null
-    tags: string | null
     lien: string | null
     date: Date | null
-    media_webm: string | null
-    media_mp4: string | null
     duree: string | null
-    afficher_competences: string | null
+    ordre_accueil: number | null
+    afficher_accueil: boolean | null
     afficher: boolean | null
     derniere_modification: Date | null
   }
@@ -15890,13 +15910,11 @@ export namespace Prisma {
     id_vid: number
     titre: number
     description: number
-    tags: number
     lien: number
     date: number
-    media_webm: number
-    media_mp4: number
     duree: number
-    afficher_competences: number
+    ordre_accueil: number
+    afficher_accueil: number
     afficher: number
     derniere_modification: number
     _all: number
@@ -15905,23 +15923,23 @@ export namespace Prisma {
 
   export type VideosAvgAggregateInputType = {
     id_vid?: true
+    ordre_accueil?: true
   }
 
   export type VideosSumAggregateInputType = {
     id_vid?: true
+    ordre_accueil?: true
   }
 
   export type VideosMinAggregateInputType = {
     id_vid?: true
     titre?: true
     description?: true
-    tags?: true
     lien?: true
     date?: true
-    media_webm?: true
-    media_mp4?: true
     duree?: true
-    afficher_competences?: true
+    ordre_accueil?: true
+    afficher_accueil?: true
     afficher?: true
     derniere_modification?: true
   }
@@ -15930,13 +15948,11 @@ export namespace Prisma {
     id_vid?: true
     titre?: true
     description?: true
-    tags?: true
     lien?: true
     date?: true
-    media_webm?: true
-    media_mp4?: true
     duree?: true
-    afficher_competences?: true
+    ordre_accueil?: true
+    afficher_accueil?: true
     afficher?: true
     derniere_modification?: true
   }
@@ -15945,13 +15961,11 @@ export namespace Prisma {
     id_vid?: true
     titre?: true
     description?: true
-    tags?: true
     lien?: true
     date?: true
-    media_webm?: true
-    media_mp4?: true
     duree?: true
-    afficher_competences?: true
+    ordre_accueil?: true
+    afficher_accueil?: true
     afficher?: true
     derniere_modification?: true
     _all?: true
@@ -16047,13 +16061,11 @@ export namespace Prisma {
     id_vid: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    ordre_accueil: number
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date
     _count: VideosCountAggregateOutputType | null
@@ -16081,13 +16093,11 @@ export namespace Prisma {
     id_vid?: boolean
     titre?: boolean
     description?: boolean
-    tags?: boolean
     lien?: boolean
     date?: boolean
-    media_webm?: boolean
-    media_mp4?: boolean
     duree?: boolean
-    afficher_competences?: boolean
+    ordre_accueil?: boolean
+    afficher_accueil?: boolean
     afficher?: boolean
     derniere_modification?: boolean
     videos_tags_link?: boolean | videos$videos_tags_linkArgs<ExtArgs>
@@ -16100,18 +16110,16 @@ export namespace Prisma {
     id_vid?: boolean
     titre?: boolean
     description?: boolean
-    tags?: boolean
     lien?: boolean
     date?: boolean
-    media_webm?: boolean
-    media_mp4?: boolean
     duree?: boolean
-    afficher_competences?: boolean
+    ordre_accueil?: boolean
+    afficher_accueil?: boolean
     afficher?: boolean
     derniere_modification?: boolean
   }
 
-  export type videosOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_vid" | "titre" | "description" | "tags" | "lien" | "date" | "media_webm" | "media_mp4" | "duree" | "afficher_competences" | "afficher" | "derniere_modification", ExtArgs["result"]["videos"]>
+  export type videosOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_vid" | "titre" | "description" | "lien" | "date" | "duree" | "ordre_accueil" | "afficher_accueil" | "afficher" | "derniere_modification", ExtArgs["result"]["videos"]>
   export type videosInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     videos_tags_link?: boolean | videos$videos_tags_linkArgs<ExtArgs>
     _count?: boolean | VideosCountOutputTypeDefaultArgs<ExtArgs>
@@ -16126,13 +16134,11 @@ export namespace Prisma {
       id_vid: number
       titre: string
       description: string
-      tags: string
       lien: string
       date: Date
-      media_webm: string
-      media_mp4: string
       duree: string
-      afficher_competences: string
+      ordre_accueil: number
+      afficher_accueil: boolean
       afficher: boolean
       derniere_modification: Date
     }, ExtArgs["result"]["videos"]>
@@ -16508,13 +16514,11 @@ export namespace Prisma {
     readonly id_vid: FieldRef<"videos", 'Int'>
     readonly titre: FieldRef<"videos", 'String'>
     readonly description: FieldRef<"videos", 'String'>
-    readonly tags: FieldRef<"videos", 'String'>
     readonly lien: FieldRef<"videos", 'String'>
     readonly date: FieldRef<"videos", 'DateTime'>
-    readonly media_webm: FieldRef<"videos", 'String'>
-    readonly media_mp4: FieldRef<"videos", 'String'>
     readonly duree: FieldRef<"videos", 'String'>
-    readonly afficher_competences: FieldRef<"videos", 'String'>
+    readonly ordre_accueil: FieldRef<"videos", 'Int'>
+    readonly afficher_accueil: FieldRef<"videos", 'Boolean'>
     readonly afficher: FieldRef<"videos", 'Boolean'>
     readonly derniere_modification: FieldRef<"videos", 'DateTime'>
   }
@@ -27233,10 +27237,12 @@ export namespace Prisma {
 
   export type Apropos_outilsAvgAggregateOutputType = {
     id_outil: number | null
+    ordre: number | null
   }
 
   export type Apropos_outilsSumAggregateOutputType = {
     id_outil: number | null
+    ordre: number | null
   }
 
   export type Apropos_outilsMinAggregateOutputType = {
@@ -27253,6 +27259,7 @@ export namespace Prisma {
     couleur_fond_dark: string | null
     couleur_contour_dark: string | null
     couleur_texte_dark: string | null
+    ordre: number | null
     afficher: boolean | null
   }
 
@@ -27270,6 +27277,7 @@ export namespace Prisma {
     couleur_fond_dark: string | null
     couleur_contour_dark: string | null
     couleur_texte_dark: string | null
+    ordre: number | null
     afficher: boolean | null
   }
 
@@ -27287,6 +27295,7 @@ export namespace Prisma {
     couleur_fond_dark: number
     couleur_contour_dark: number
     couleur_texte_dark: number
+    ordre: number
     afficher: number
     _all: number
   }
@@ -27294,10 +27303,12 @@ export namespace Prisma {
 
   export type Apropos_outilsAvgAggregateInputType = {
     id_outil?: true
+    ordre?: true
   }
 
   export type Apropos_outilsSumAggregateInputType = {
     id_outil?: true
+    ordre?: true
   }
 
   export type Apropos_outilsMinAggregateInputType = {
@@ -27314,6 +27325,7 @@ export namespace Prisma {
     couleur_fond_dark?: true
     couleur_contour_dark?: true
     couleur_texte_dark?: true
+    ordre?: true
     afficher?: true
   }
 
@@ -27331,6 +27343,7 @@ export namespace Prisma {
     couleur_fond_dark?: true
     couleur_contour_dark?: true
     couleur_texte_dark?: true
+    ordre?: true
     afficher?: true
   }
 
@@ -27348,6 +27361,7 @@ export namespace Prisma {
     couleur_fond_dark?: true
     couleur_contour_dark?: true
     couleur_texte_dark?: true
+    ordre?: true
     afficher?: true
     _all?: true
   }
@@ -27452,6 +27466,7 @@ export namespace Prisma {
     couleur_fond_dark: string
     couleur_contour_dark: string
     couleur_texte_dark: string
+    ordre: number
     afficher: boolean
     _count: Apropos_outilsCountAggregateOutputType | null
     _avg: Apropos_outilsAvgAggregateOutputType | null
@@ -27488,6 +27503,7 @@ export namespace Prisma {
     couleur_fond_dark?: boolean
     couleur_contour_dark?: boolean
     couleur_texte_dark?: boolean
+    ordre?: boolean
     afficher?: boolean
   }, ExtArgs["result"]["apropos_outils"]>
 
@@ -27507,10 +27523,11 @@ export namespace Prisma {
     couleur_fond_dark?: boolean
     couleur_contour_dark?: boolean
     couleur_texte_dark?: boolean
+    ordre?: boolean
     afficher?: boolean
   }
 
-  export type apropos_outilsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_outil" | "titre" | "description" | "icone" | "icone_alt" | "icone_rounded" | "lien" | "couleur_fond" | "couleur_contour" | "couleur_texte" | "couleur_fond_dark" | "couleur_contour_dark" | "couleur_texte_dark" | "afficher", ExtArgs["result"]["apropos_outils"]>
+  export type apropos_outilsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_outil" | "titre" | "description" | "icone" | "icone_alt" | "icone_rounded" | "lien" | "couleur_fond" | "couleur_contour" | "couleur_texte" | "couleur_fond_dark" | "couleur_contour_dark" | "couleur_texte_dark" | "ordre" | "afficher", ExtArgs["result"]["apropos_outils"]>
 
   export type $apropos_outilsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "apropos_outils"
@@ -27529,6 +27546,7 @@ export namespace Prisma {
       couleur_fond_dark: string
       couleur_contour_dark: string
       couleur_texte_dark: string
+      ordre: number
       afficher: boolean
     }, ExtArgs["result"]["apropos_outils"]>
     composites: {}
@@ -27912,6 +27930,7 @@ export namespace Prisma {
     readonly couleur_fond_dark: FieldRef<"apropos_outils", 'String'>
     readonly couleur_contour_dark: FieldRef<"apropos_outils", 'String'>
     readonly couleur_texte_dark: FieldRef<"apropos_outils", 'String'>
+    readonly ordre: FieldRef<"apropos_outils", 'Int'>
     readonly afficher: FieldRef<"apropos_outils", 'Boolean'>
   }
     
@@ -28302,6 +28321,7 @@ export namespace Prisma {
     id_faq: 'id_faq',
     titre: 'titre',
     contenu: 'contenu',
+    ordre: 'ordre',
     afficher: 'afficher'
   };
 
@@ -28378,6 +28398,7 @@ export namespace Prisma {
     client: 'client',
     plateforme: 'plateforme',
     date: 'date',
+    ordre: 'ordre',
     afficher: 'afficher'
   };
 
@@ -28400,13 +28421,11 @@ export namespace Prisma {
     id_vid: 'id_vid',
     titre: 'titre',
     description: 'description',
-    tags: 'tags',
     lien: 'lien',
     date: 'date',
-    media_webm: 'media_webm',
-    media_mp4: 'media_mp4',
     duree: 'duree',
-    afficher_competences: 'afficher_competences',
+    ordre_accueil: 'ordre_accueil',
+    afficher_accueil: 'afficher_accueil',
     afficher: 'afficher',
     derniere_modification: 'derniere_modification'
   };
@@ -28555,6 +28574,7 @@ export namespace Prisma {
     couleur_fond_dark: 'couleur_fond_dark',
     couleur_contour_dark: 'couleur_contour_dark',
     couleur_texte_dark: 'couleur_texte_dark',
+    ordre: 'ordre',
     afficher: 'afficher'
   };
 
@@ -28676,12 +28696,8 @@ export namespace Prisma {
   export const videosOrderByRelevanceFieldEnum: {
     titre: 'titre',
     description: 'description',
-    tags: 'tags',
     lien: 'lien',
-    media_webm: 'media_webm',
-    media_mp4: 'media_mp4',
-    duree: 'duree',
-    afficher_competences: 'afficher_competences'
+    duree: 'duree'
   };
 
   export type videosOrderByRelevanceFieldEnum = (typeof videosOrderByRelevanceFieldEnum)[keyof typeof videosOrderByRelevanceFieldEnum]
@@ -29100,6 +29116,7 @@ export namespace Prisma {
     id_faq?: IntFilter<"faq"> | number
     titre?: StringFilter<"faq"> | string
     contenu?: StringFilter<"faq"> | string
+    ordre?: IntFilter<"faq"> | number
     afficher?: BoolFilter<"faq"> | boolean
   }
 
@@ -29107,6 +29124,7 @@ export namespace Prisma {
     id_faq?: SortOrder
     titre?: SortOrder
     contenu?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
     _relevance?: faqOrderByRelevanceInput
   }
@@ -29118,6 +29136,7 @@ export namespace Prisma {
     NOT?: faqWhereInput | faqWhereInput[]
     titre?: StringFilter<"faq"> | string
     contenu?: StringFilter<"faq"> | string
+    ordre?: IntFilter<"faq"> | number
     afficher?: BoolFilter<"faq"> | boolean
   }, "id_faq">
 
@@ -29125,6 +29144,7 @@ export namespace Prisma {
     id_faq?: SortOrder
     titre?: SortOrder
     contenu?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
     _count?: faqCountOrderByAggregateInput
     _avg?: faqAvgOrderByAggregateInput
@@ -29140,6 +29160,7 @@ export namespace Prisma {
     id_faq?: IntWithAggregatesFilter<"faq"> | number
     titre?: StringWithAggregatesFilter<"faq"> | string
     contenu?: StringWithAggregatesFilter<"faq"> | string
+    ordre?: IntWithAggregatesFilter<"faq"> | number
     afficher?: BoolWithAggregatesFilter<"faq"> | boolean
   }
 
@@ -29505,6 +29526,7 @@ export namespace Prisma {
     client?: StringFilter<"temoignages"> | string
     plateforme?: StringFilter<"temoignages"> | string
     date?: StringNullableFilter<"temoignages"> | string | null
+    ordre?: IntFilter<"temoignages"> | number
     afficher?: BoolFilter<"temoignages"> | boolean
   }
 
@@ -29514,6 +29536,7 @@ export namespace Prisma {
     client?: SortOrder
     plateforme?: SortOrder
     date?: SortOrderInput | SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
     _relevance?: temoignagesOrderByRelevanceInput
   }
@@ -29527,6 +29550,7 @@ export namespace Prisma {
     client?: StringFilter<"temoignages"> | string
     plateforme?: StringFilter<"temoignages"> | string
     date?: StringNullableFilter<"temoignages"> | string | null
+    ordre?: IntFilter<"temoignages"> | number
     afficher?: BoolFilter<"temoignages"> | boolean
   }, "id_tem">
 
@@ -29536,6 +29560,7 @@ export namespace Prisma {
     client?: SortOrder
     plateforme?: SortOrder
     date?: SortOrderInput | SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
     _count?: temoignagesCountOrderByAggregateInput
     _avg?: temoignagesAvgOrderByAggregateInput
@@ -29553,6 +29578,7 @@ export namespace Prisma {
     client?: StringWithAggregatesFilter<"temoignages"> | string
     plateforme?: StringWithAggregatesFilter<"temoignages"> | string
     date?: StringNullableWithAggregatesFilter<"temoignages"> | string | null
+    ordre?: IntWithAggregatesFilter<"temoignages"> | number
     afficher?: BoolWithAggregatesFilter<"temoignages"> | boolean
   }
 
@@ -29623,13 +29649,11 @@ export namespace Prisma {
     id_vid?: IntFilter<"videos"> | number
     titre?: StringFilter<"videos"> | string
     description?: StringFilter<"videos"> | string
-    tags?: StringFilter<"videos"> | string
     lien?: StringFilter<"videos"> | string
     date?: DateTimeFilter<"videos"> | Date | string
-    media_webm?: StringFilter<"videos"> | string
-    media_mp4?: StringFilter<"videos"> | string
     duree?: StringFilter<"videos"> | string
-    afficher_competences?: StringFilter<"videos"> | string
+    ordre_accueil?: IntFilter<"videos"> | number
+    afficher_accueil?: BoolFilter<"videos"> | boolean
     afficher?: BoolFilter<"videos"> | boolean
     derniere_modification?: DateTimeFilter<"videos"> | Date | string
     videos_tags_link?: Videos_tags_linkListRelationFilter
@@ -29639,13 +29663,11 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    ordre_accueil?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
     videos_tags_link?: videos_tags_linkOrderByRelationAggregateInput
@@ -29659,13 +29681,11 @@ export namespace Prisma {
     NOT?: videosWhereInput | videosWhereInput[]
     titre?: StringFilter<"videos"> | string
     description?: StringFilter<"videos"> | string
-    tags?: StringFilter<"videos"> | string
     lien?: StringFilter<"videos"> | string
     date?: DateTimeFilter<"videos"> | Date | string
-    media_webm?: StringFilter<"videos"> | string
-    media_mp4?: StringFilter<"videos"> | string
     duree?: StringFilter<"videos"> | string
-    afficher_competences?: StringFilter<"videos"> | string
+    ordre_accueil?: IntFilter<"videos"> | number
+    afficher_accueil?: BoolFilter<"videos"> | boolean
     afficher?: BoolFilter<"videos"> | boolean
     derniere_modification?: DateTimeFilter<"videos"> | Date | string
     videos_tags_link?: Videos_tags_linkListRelationFilter
@@ -29675,13 +29695,11 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    ordre_accueil?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
     _count?: videosCountOrderByAggregateInput
@@ -29698,13 +29716,11 @@ export namespace Prisma {
     id_vid?: IntWithAggregatesFilter<"videos"> | number
     titre?: StringWithAggregatesFilter<"videos"> | string
     description?: StringWithAggregatesFilter<"videos"> | string
-    tags?: StringWithAggregatesFilter<"videos"> | string
     lien?: StringWithAggregatesFilter<"videos"> | string
     date?: DateTimeWithAggregatesFilter<"videos"> | Date | string
-    media_webm?: StringWithAggregatesFilter<"videos"> | string
-    media_mp4?: StringWithAggregatesFilter<"videos"> | string
     duree?: StringWithAggregatesFilter<"videos"> | string
-    afficher_competences?: StringWithAggregatesFilter<"videos"> | string
+    ordre_accueil?: IntWithAggregatesFilter<"videos"> | number
+    afficher_accueil?: BoolWithAggregatesFilter<"videos"> | boolean
     afficher?: BoolWithAggregatesFilter<"videos"> | boolean
     derniere_modification?: DateTimeWithAggregatesFilter<"videos"> | Date | string
   }
@@ -30377,6 +30393,7 @@ export namespace Prisma {
     couleur_fond_dark?: StringFilter<"apropos_outils"> | string
     couleur_contour_dark?: StringFilter<"apropos_outils"> | string
     couleur_texte_dark?: StringFilter<"apropos_outils"> | string
+    ordre?: IntFilter<"apropos_outils"> | number
     afficher?: BoolFilter<"apropos_outils"> | boolean
   }
 
@@ -30394,6 +30411,7 @@ export namespace Prisma {
     couleur_fond_dark?: SortOrder
     couleur_contour_dark?: SortOrder
     couleur_texte_dark?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
     _relevance?: apropos_outilsOrderByRelevanceInput
   }
@@ -30415,6 +30433,7 @@ export namespace Prisma {
     couleur_fond_dark?: StringFilter<"apropos_outils"> | string
     couleur_contour_dark?: StringFilter<"apropos_outils"> | string
     couleur_texte_dark?: StringFilter<"apropos_outils"> | string
+    ordre?: IntFilter<"apropos_outils"> | number
     afficher?: BoolFilter<"apropos_outils"> | boolean
   }, "id_outil">
 
@@ -30432,6 +30451,7 @@ export namespace Prisma {
     couleur_fond_dark?: SortOrder
     couleur_contour_dark?: SortOrder
     couleur_texte_dark?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
     _count?: apropos_outilsCountOrderByAggregateInput
     _avg?: apropos_outilsAvgOrderByAggregateInput
@@ -30457,6 +30477,7 @@ export namespace Prisma {
     couleur_fond_dark?: StringWithAggregatesFilter<"apropos_outils"> | string
     couleur_contour_dark?: StringWithAggregatesFilter<"apropos_outils"> | string
     couleur_texte_dark?: StringWithAggregatesFilter<"apropos_outils"> | string
+    ordre?: IntWithAggregatesFilter<"apropos_outils"> | number
     afficher?: BoolWithAggregatesFilter<"apropos_outils"> | boolean
   }
 
@@ -30727,6 +30748,7 @@ export namespace Prisma {
   export type faqCreateInput = {
     titre: string
     contenu: string
+    ordre: number
     afficher: boolean
   }
 
@@ -30734,12 +30756,14 @@ export namespace Prisma {
     id_faq?: number
     titre: string
     contenu: string
+    ordre: number
     afficher: boolean
   }
 
   export type faqUpdateInput = {
     titre?: StringFieldUpdateOperationsInput | string
     contenu?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -30747,6 +30771,7 @@ export namespace Prisma {
     id_faq?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     contenu?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -30754,12 +30779,14 @@ export namespace Prisma {
     id_faq?: number
     titre: string
     contenu: string
+    ordre: number
     afficher: boolean
   }
 
   export type faqUpdateManyMutationInput = {
     titre?: StringFieldUpdateOperationsInput | string
     contenu?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -30767,6 +30794,7 @@ export namespace Prisma {
     id_faq?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     contenu?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -31110,6 +31138,7 @@ export namespace Prisma {
     client: string
     plateforme: string
     date?: string | null
+    ordre: number
     afficher: boolean
   }
 
@@ -31119,6 +31148,7 @@ export namespace Prisma {
     client: string
     plateforme: string
     date?: string | null
+    ordre: number
     afficher: boolean
   }
 
@@ -31127,6 +31157,7 @@ export namespace Prisma {
     client?: StringFieldUpdateOperationsInput | string
     plateforme?: StringFieldUpdateOperationsInput | string
     date?: NullableStringFieldUpdateOperationsInput | string | null
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -31136,6 +31167,7 @@ export namespace Prisma {
     client?: StringFieldUpdateOperationsInput | string
     plateforme?: StringFieldUpdateOperationsInput | string
     date?: NullableStringFieldUpdateOperationsInput | string | null
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -31145,6 +31177,7 @@ export namespace Prisma {
     client: string
     plateforme: string
     date?: string | null
+    ordre: number
     afficher: boolean
   }
 
@@ -31153,6 +31186,7 @@ export namespace Prisma {
     client?: StringFieldUpdateOperationsInput | string
     plateforme?: StringFieldUpdateOperationsInput | string
     date?: NullableStringFieldUpdateOperationsInput | string | null
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -31162,6 +31196,7 @@ export namespace Prisma {
     client?: StringFieldUpdateOperationsInput | string
     plateforme?: StringFieldUpdateOperationsInput | string
     date?: NullableStringFieldUpdateOperationsInput | string | null
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -31228,13 +31263,11 @@ export namespace Prisma {
   export type videosCreateInput = {
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    ordre_accueil: number
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
     videos_tags_link?: videos_tags_linkCreateNestedManyWithoutVideosInput
@@ -31244,13 +31277,11 @@ export namespace Prisma {
     id_vid?: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    ordre_accueil: number
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
     videos_tags_link?: videos_tags_linkUncheckedCreateNestedManyWithoutVideosInput
@@ -31259,13 +31290,11 @@ export namespace Prisma {
   export type videosUpdateInput = {
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    ordre_accueil?: IntFieldUpdateOperationsInput | number
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
     videos_tags_link?: videos_tags_linkUpdateManyWithoutVideosNestedInput
@@ -31275,13 +31304,11 @@ export namespace Prisma {
     id_vid?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    ordre_accueil?: IntFieldUpdateOperationsInput | number
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
     videos_tags_link?: videos_tags_linkUncheckedUpdateManyWithoutVideosNestedInput
@@ -31291,13 +31318,11 @@ export namespace Prisma {
     id_vid?: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    ordre_accueil: number
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
   }
@@ -31305,13 +31330,11 @@ export namespace Prisma {
   export type videosUpdateManyMutationInput = {
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    ordre_accueil?: IntFieldUpdateOperationsInput | number
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31320,13 +31343,11 @@ export namespace Prisma {
     id_vid?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    ordre_accueil?: IntFieldUpdateOperationsInput | number
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31995,6 +32016,7 @@ export namespace Prisma {
     couleur_fond_dark: string
     couleur_contour_dark: string
     couleur_texte_dark: string
+    ordre: number
     afficher: boolean
   }
 
@@ -32012,6 +32034,7 @@ export namespace Prisma {
     couleur_fond_dark: string
     couleur_contour_dark: string
     couleur_texte_dark: string
+    ordre: number
     afficher: boolean
   }
 
@@ -32028,6 +32051,7 @@ export namespace Prisma {
     couleur_fond_dark?: StringFieldUpdateOperationsInput | string
     couleur_contour_dark?: StringFieldUpdateOperationsInput | string
     couleur_texte_dark?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -32045,6 +32069,7 @@ export namespace Prisma {
     couleur_fond_dark?: StringFieldUpdateOperationsInput | string
     couleur_contour_dark?: StringFieldUpdateOperationsInput | string
     couleur_texte_dark?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -32062,6 +32087,7 @@ export namespace Prisma {
     couleur_fond_dark: string
     couleur_contour_dark: string
     couleur_texte_dark: string
+    ordre: number
     afficher: boolean
   }
 
@@ -32078,6 +32104,7 @@ export namespace Prisma {
     couleur_fond_dark?: StringFieldUpdateOperationsInput | string
     couleur_contour_dark?: StringFieldUpdateOperationsInput | string
     couleur_texte_dark?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -32095,6 +32122,7 @@ export namespace Prisma {
     couleur_fond_dark?: StringFieldUpdateOperationsInput | string
     couleur_contour_dark?: StringFieldUpdateOperationsInput | string
     couleur_texte_dark?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -32397,17 +32425,20 @@ export namespace Prisma {
     id_faq?: SortOrder
     titre?: SortOrder
     contenu?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
   export type faqAvgOrderByAggregateInput = {
     id_faq?: SortOrder
+    ordre?: SortOrder
   }
 
   export type faqMaxOrderByAggregateInput = {
     id_faq?: SortOrder
     titre?: SortOrder
     contenu?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
@@ -32415,11 +32446,13 @@ export namespace Prisma {
     id_faq?: SortOrder
     titre?: SortOrder
     contenu?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
   export type faqSumOrderByAggregateInput = {
     id_faq?: SortOrder
+    ordre?: SortOrder
   }
 
   export type Photos_albums_linkListRelationFilter = {
@@ -32766,11 +32799,13 @@ export namespace Prisma {
     client?: SortOrder
     plateforme?: SortOrder
     date?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
   export type temoignagesAvgOrderByAggregateInput = {
     id_tem?: SortOrder
+    ordre?: SortOrder
   }
 
   export type temoignagesMaxOrderByAggregateInput = {
@@ -32779,6 +32814,7 @@ export namespace Prisma {
     client?: SortOrder
     plateforme?: SortOrder
     date?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
@@ -32788,11 +32824,13 @@ export namespace Prisma {
     client?: SortOrder
     plateforme?: SortOrder
     date?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
   export type temoignagesSumOrderByAggregateInput = {
     id_tem?: SortOrder
+    ordre?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -32874,32 +32912,29 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    ordre_accueil?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
   }
 
   export type videosAvgOrderByAggregateInput = {
     id_vid?: SortOrder
+    ordre_accueil?: SortOrder
   }
 
   export type videosMaxOrderByAggregateInput = {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    ordre_accueil?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
   }
@@ -32908,19 +32943,18 @@ export namespace Prisma {
     id_vid?: SortOrder
     titre?: SortOrder
     description?: SortOrder
-    tags?: SortOrder
     lien?: SortOrder
     date?: SortOrder
-    media_webm?: SortOrder
-    media_mp4?: SortOrder
     duree?: SortOrder
-    afficher_competences?: SortOrder
+    ordre_accueil?: SortOrder
+    afficher_accueil?: SortOrder
     afficher?: SortOrder
     derniere_modification?: SortOrder
   }
 
   export type videosSumOrderByAggregateInput = {
     id_vid?: SortOrder
+    ordre_accueil?: SortOrder
   }
 
   export type videos_tagsOrderByRelevanceInput = {
@@ -33390,11 +33424,13 @@ export namespace Prisma {
     couleur_fond_dark?: SortOrder
     couleur_contour_dark?: SortOrder
     couleur_texte_dark?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
   export type apropos_outilsAvgOrderByAggregateInput = {
     id_outil?: SortOrder
+    ordre?: SortOrder
   }
 
   export type apropos_outilsMaxOrderByAggregateInput = {
@@ -33411,6 +33447,7 @@ export namespace Prisma {
     couleur_fond_dark?: SortOrder
     couleur_contour_dark?: SortOrder
     couleur_texte_dark?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
@@ -33428,11 +33465,13 @@ export namespace Prisma {
     couleur_fond_dark?: SortOrder
     couleur_contour_dark?: SortOrder
     couleur_texte_dark?: SortOrder
+    ordre?: SortOrder
     afficher?: SortOrder
   }
 
   export type apropos_outilsSumOrderByAggregateInput = {
     id_outil?: SortOrder
+    ordre?: SortOrder
   }
 
   export type autre_tags_linkCreateNestedManyWithoutAutreInput = {
@@ -35130,13 +35169,11 @@ export namespace Prisma {
   export type videosCreateWithoutVideos_tags_linkInput = {
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    ordre_accueil: number
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
   }
@@ -35145,13 +35182,11 @@ export namespace Prisma {
     id_vid?: number
     titre: string
     description: string
-    tags: string
     lien: string
     date: Date | string
-    media_webm: string
-    media_mp4: string
     duree: string
-    afficher_competences: string
+    ordre_accueil: number
+    afficher_accueil: boolean
     afficher: boolean
     derniere_modification: Date | string
   }
@@ -35191,13 +35226,11 @@ export namespace Prisma {
   export type videosUpdateWithoutVideos_tags_linkInput = {
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    ordre_accueil?: IntFieldUpdateOperationsInput | number
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -35206,13 +35239,11 @@ export namespace Prisma {
     id_vid?: IntFieldUpdateOperationsInput | number
     titre?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    tags?: StringFieldUpdateOperationsInput | string
     lien?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    media_webm?: StringFieldUpdateOperationsInput | string
-    media_mp4?: StringFieldUpdateOperationsInput | string
     duree?: StringFieldUpdateOperationsInput | string
-    afficher_competences?: StringFieldUpdateOperationsInput | string
+    ordre_accueil?: IntFieldUpdateOperationsInput | number
+    afficher_accueil?: BoolFieldUpdateOperationsInput | boolean
     afficher?: BoolFieldUpdateOperationsInput | boolean
     derniere_modification?: DateTimeFieldUpdateOperationsInput | Date | string
   }

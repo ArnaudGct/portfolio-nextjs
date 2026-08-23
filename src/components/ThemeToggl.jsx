@@ -59,7 +59,7 @@ export default function ThemeToggle({ mobile = false }) {
   // Ne pas rendre le bouton tant qu'il n'est pas initialisé
   if (!isInitialized) {
     return (
-      <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px] dark:border dark:border-blue-200 opacity-50">
+      <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px] border border-transparent dark:border-blue-200 opacity-50">
         <div className="absolute left-1 top-1 bottom-1 rounded-lg bg-blue-200 w-8" />
         <div className="flex items-center justify-center w-8 h-full p-2">
           <Sun size={16} className="text-blue-600" />
@@ -72,7 +72,7 @@ export default function ThemeToggle({ mobile = false }) {
   }
 
   return (
-    <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px] dark:border dark:border-blue-200">
+    <div className="relative flex items-center justify-between bg-blue-50 rounded-lg transition-colors duration-300 h-[40px] w-18 px-[4px] border border-transparent dark:border-blue-200">
       {/* Switch indicator */}
       <span
         className={`absolute left-1 top-1 bottom-1 rounded-lg bg-blue-200 transition-transform duration-300 w-8 ${

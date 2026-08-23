@@ -34,10 +34,16 @@ async function getAccessToken() {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(
-      `Erreur d'authentification Spotify: ${JSON.stringify(error)}`
-    );
+    const error = await response.json().catch(() => ({}));
+    const isRevokedToken = error?.error === "invalid_grant";
+    const message = isRevokedToken
+      ? "Refresh token Spotify révoqué. Regénère SPOTIFY_REFRESH_TOKEN."
+      : `Erreur d'authentification Spotify: ${JSON.stringify(error)}`;
+
+    const authError = new Error(message);
+    authError.status = isRevokedToken ? 401 : response.status;
+    authError.code = error?.error || "spotify_auth_error";
+    throw authError;
   }
 
   const data = await response.json();
@@ -125,7 +131,7 @@ export async function GET(request) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
 
     if (response.status === 200) {
@@ -147,7 +153,7 @@ export async function GET(request) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -165,7 +171,7 @@ export async function GET(request) {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -201,7 +207,7 @@ export async function GET(request) {
     if (!track) {
       return NextResponse.json(
         { error: "Aucun morceau disponible" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -236,16 +242,21 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des données Spotify:", error);
+    const status = error?.status || 500;
     return NextResponse.json(
-      { error: "Échec de la récupération des données", message: error.message },
       {
-        status: 500,
+        error: "Échec de la récupération des données",
+        message: error.message,
+        code: error?.code || "spotify_fetch_error",
+      },
+      {
+        status,
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate",
           Pragma: "no-cache",
           Expires: "0",
         },
-      }
+      },
     );
   }
 }

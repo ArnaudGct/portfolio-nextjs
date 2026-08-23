@@ -27,8 +27,8 @@ export default function Footer() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Tag name="monteur vidéo" background={false} />
-                <Tag name="cadreur" background={false} />
+                <Tag name="Monteur vidéo" background={false} />
+                <Tag name="Motion designer" background={false} />
               </div>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function Footer() {
               par Arnaud Graciet.
             </p>
             <p className="text-blue-700 text-sm font-normal font-rethink-sans">
-              © 2025 Arnaud Graciet. Tous droits réservés.
+              © {new Date().getFullYear()} Arnaud Graciet. Tous droits réservés.
             </p>
           </div>
         </div>

@@ -38,7 +38,7 @@ export default function Header() {
   const headerPadding = useTransform(
     scrollY,
     [0, 100],
-    ["0px 32px", "0px 16px"]
+    ["0px 32px", "0px 16px"],
   );
   const headerPositionY = useTransform(scrollY, [0, 100], ["0px", "10px"]);
 
@@ -193,12 +193,12 @@ export default function Header() {
             />
           </Link>
           <nav className="flex justify-between items-center">
-            <ul className="flex gap-8">
+            <ul className="flex gap-8 py-3">
               <TextRollover
                 href="/"
                 text="Accueil"
                 isActive={pathname === "/"}
-                className="font-normal py-5"
+                className="font-normal py-2"
                 itemHeight={28}
               />
 
@@ -206,7 +206,7 @@ export default function Header() {
                 href="/apropos"
                 text="À propos"
                 isActive={pathname === "/apropos"}
-                className="font-normal py-5"
+                className="font-normal py-2"
                 itemHeight={28}
               />
 
@@ -214,7 +214,7 @@ export default function Header() {
                 href="/creations"
                 text="Mes créations"
                 isActive={pathname === "/creations"}
-                className="font-normal py-5"
+                className="font-normal py-2"
                 itemHeight={28}
               />
             </ul>

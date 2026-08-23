@@ -137,7 +137,7 @@ export default function APropos() {
             </div>
           </div>
         </div>
-        <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
+        <div className="absolute top-0 left-0 w-full h-14 bg-linear-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
       </main>
     );
   }
@@ -158,10 +158,10 @@ export default function APropos() {
 
   return (
     <main className="bg-white">
-      <div className="pt-24 pb-20">
+      <div className="pt-24 pb-16">
         <div className="max-w-[1440px] mx-auto w-[90%]">
           {/* Conteneur principal - change l'ordre en responsive */}
-          <div className="grid grid-cols-1 md:grid-cols-2 md:order-2 lg:grid-cols-[auto_1fr] gap-6 sm:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:order-2 lg:grid-cols-[auto_1fr] gap-6 sm:gap-x-10 sm:gap-y-8">
             {/* Section "Qui suis-je?" - apparaît en premier sur mobile */}
             <div className="flex flex-col gap-4 bg-white rounded-lg order-1 lg:order-2 lg:col-start-2">
               <p className="text-blue-600 text-3xl font-extrabold font-rethink-sans">
@@ -229,17 +229,17 @@ export default function APropos() {
                     <p className="text-blue-400 text-xl font-normal font-rethink-sans">
                       Arnaud
                     </p>
-                    <p className="text-blue-700 text-5xl font-extrabold font-rethink-sans">
+                    <p className="text-blue-600 text-5xl font-extrabold font-rethink-sans">
                       Graciet
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <TagAvailable href="https://cal.com/arnaudgct/prise-de-contact" />
-                    <Tag
+                    {/* <Tag
                       name="21 ans"
                       background={true}
                       icon={<Cake size={14} strokeWidth={1.75} />}
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>
@@ -276,7 +276,7 @@ export default function APropos() {
                     )}
 
                     <Image
-                      src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=pk.eyJ1IjoibGFyZWZhc3RybyIsImEiOiJjbTlpejFibDcwNXpxMmtzYmZxdW1nODk0In0.AHV1GODjHroWMOUaWaIwmQ"
+                      src={`https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-1.1519041,46.1568242,12/700x500?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ""}`}
                       alt="Carte de La Rochelle"
                       fill
                       placeholder="blur"
@@ -296,7 +296,7 @@ export default function APropos() {
                       La Rochelle
                     </p>
                   </div>
-                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#4e4aec]/0 to-[#4e4aec] z-5"></div>
+                  <div className="absolute top-0 left-0 w-full h-full bg-linear-to-b from-[#4e4aec]/0 to-[#4e4aec] z-5"></div>
                 </Link>
                 {/* MediaCards */}
                 <div className="flex flex-col gap-4">
@@ -341,7 +341,7 @@ export default function APropos() {
           </div>
         </div>
       </div>
-      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-linear-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
     </main>
   );
 }

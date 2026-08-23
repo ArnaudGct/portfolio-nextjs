@@ -400,7 +400,7 @@ export default function DailymotionPlayer() {
           </p>
         </div>
       </div>
-      <div className="absolute z-9 left-0 bottom-0 w-full h-full bg-gradient-to-tr from-blue-700 from-0% via-blue-300/0 via-15% to-transparent to-100% opacity-50 pointer-events-none" />
+      <div className="absolute z-9 left-0 bottom-0 w-full h-full bg-linear-to-tr from-blue-700 from-0% via-blue-300/0 via-15% to-transparent to-100% opacity-50 pointer-events-none" />
 
       <div
         id="my-dailymotion-player"

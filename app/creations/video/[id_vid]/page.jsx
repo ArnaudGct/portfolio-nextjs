@@ -39,7 +39,7 @@ export default async function VideoDetails({ params, searchParams }) {
   const { id_vid } = await params;
   const video = await getVideoDetails(id_vid);
 
-  const { from } = await searchParams; // <= ici on récupère "from"
+  const { from } = await searchParams;
 
   const backLink = from === "home" ? "/" : "/creations";
   const backLinkText = from === "home" ? "Accueil" : "Mes créations";
@@ -65,17 +65,17 @@ export default async function VideoDetails({ params, searchParams }) {
       <div className="flex flex-col w-[90%] mx-auto max-w-[1440px] gap-10 pt-10 pb-20">
         <Breadcrumb
           pages={[
-            { name: backLinkText, path: backLink }, // Pas de `{}` autour des variables
+            { name: backLinkText, path: backLink },
             {
               name: video.titre,
-              path: `${backLink}/video/${video.id_vid}`, // Correction ici aussi, pas de `${{ backLink }}`
+              path: `${backLink}/video/${video.id_vid}`,
             },
           ]}
         />
 
         <VideosGallery video={video} />
       </div>
-      <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-14 bg-linear-to-t from-blue-100/0 to-blue-100/75 pointer-events-none"></div>
     </main>
   );
 }

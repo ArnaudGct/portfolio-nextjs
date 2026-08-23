@@ -7,6 +7,7 @@ import {
   Quote,
   GripHorizontal,
   Loader2,
+  Star,
 } from "lucide-react";
 import ButtonSecondary from "../../components/ButtonSecondary";
 import ReactMarkdown from "react-markdown";
@@ -27,18 +28,42 @@ export default function Testimonial() {
   const [swiperInstance, setSwiperInstance] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchTemoignages = async () => {
       try {
-        const res = await fetch("/api/accueil/temoignages");
-        const data = await res.json();
-        console.log("✅ Avis reçus :", data);
-        setTemoignages(data);
+        // Charger en parallèle les avis Trustpilot et de la BDD
+        const [trustpilotRes, dbRes] = await Promise.all([
+          fetch("/api/extern/trustpilot").catch(() => null),
+          fetch("/api/accueil/temoignages").catch(() => null),
+        ]);
+
+        const trustpilotData = trustpilotRes?.ok
+          ? await trustpilotRes.json()
+          : [];
+        const dbData = dbRes?.ok ? await dbRes.json() : [];
+
+        if (isMounted) {
+          // Marquer les avis de la BDD
+          const dbReviews = dbData.map((t) => ({ ...t, source: "database" }));
+          // Combiner: Trustpilot en premier, puis BDD
+          const allReviews = [...trustpilotData, ...dbReviews];
+          setTemoignages(allReviews);
+          console.log("✅ Avis chargés:", allReviews.length, "total");
+        }
       } catch (error) {
         console.error("❌ Erreur lors de la récupération des avis :", error);
+        if (isMounted) {
+          setTemoignages([]);
+        }
       }
     };
 
     fetchTemoignages();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Connecter les boutons de navigation après l'initialisation de Swiper
@@ -62,25 +87,74 @@ export default function Testimonial() {
     }
   };
 
-  // Composant Témoignage
-  const TestimonialCard = ({ temoignage }) => (
-    <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 transition-all duration-500 ease-in-out">
-      <div className="flex flex-col gap-5 select-none">
-        <div className="flex gap-5 items-start">
-          <Quote
-            strokeWidth={1.75}
-            className="w-12 h-12 text-blue-600 shrink-0"
-          />
-          <div className="text-blue-900 text-normal font-normal">
-            <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
-          </div>
-        </div>
-        <p className="text-blue-600 font-rethink-sans text-lg font-extrabold text-right">
-          {temoignage.client}
-        </p>
-      </div>
+  // Composant étoiles pour Trustpilot
+  const StarRating = ({ rating }) => (
+    <div className="flex gap-0.5">
+      {[...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          className={`w-4 h-4 ${
+            i < rating ? "fill-[#00b67a] text-[#00b67a]" : "text-gray-300"
+          }`}
+        />
+      ))}
     </div>
   );
+
+  // Composant Témoignage
+  const TestimonialCard = ({ temoignage }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    return (
+      <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 transition-all duration-500 ease-in-out">
+        <div className="flex flex-col gap-5 select-none">
+          <div className="flex gap-5 items-start">
+            <Quote
+              strokeWidth={1.75}
+              className="w-12 h-12 text-blue-600 shrink-0"
+            />
+            <div className="text-blue-900 text-normal font-normal flex flex-col items-start flex-1 gap-2">
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  isExpanded ? "max-h-none" : "max-h-24 line-clamp-4"
+                }`}
+              >
+                <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
+              </div>
+              {temoignage.contenu.length > 200 && (
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-blue-600 text-sm font-semibold hover:underline cursor-pointer"
+                >
+                  {isExpanded ? "Voir moins" : "Voir plus"}
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            {temoignage.source === "trustpilot" && (
+              <div className="flex items-center gap-2">
+                <StarRating rating={temoignage.rating} />
+                <a
+                  href="https://fr.trustpilot.com/review/arnaudgct.fr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-[#00b67a] font-semibold hover:underline"
+                >
+                  Trustpilot
+                </a>
+              </div>
+            )}
+            <p
+              className={`text-blue-600 font-rethink-sans text-lg font-extrabold ${temoignage.source !== "trustpilot" ? "text-right w-full" : "text-right"}`}
+            >
+              {temoignage.client}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <section className="max-w-[1440px] mx-auto relative w-[90%]">
@@ -105,10 +179,10 @@ export default function Testimonial() {
         loop={true}
         grabCursor={true}
         loopAdditionalSlides={2}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
+        // autoplay={{
+        //   delay: 6000,
+        //   disableOnInteraction: false,
+        // }}
         breakpoints={{
           640: {
             slidesPerView: 1,
@@ -158,7 +232,7 @@ export default function Testimonial() {
                         strokeWidth={1.75}
                         className="w-12 h-12 text-blue-300 shrink-0"
                       />
-                      <div className="flex flex-col flex-grow gap-2">
+                      <div className="flex flex-col grow gap-2">
                         <div className="h-4 bg-blue-200 rounded w-full"></div>
                         <div className="h-4 bg-blue-200 rounded w-3/4"></div>
                         <div className="h-4 bg-blue-200 rounded w-1/2"></div>

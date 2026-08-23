@@ -172,11 +172,23 @@ export default function SpotifyMediaCard() {
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Échec de la récupération des données Spotify");
-      }
+      const data = await response.json().catch(() => null);
 
-      const data = await response.json();
+      if (!response.ok) {
+        if (response.status === 404) {
+          setTrackData(null);
+          setError(null);
+          isInitialLoad.current = false;
+          return;
+        }
+
+        const errorMessage =
+          data?.message ||
+          data?.error ||
+          "Échec de la récupération des données Spotify";
+
+        throw new Error(errorMessage);
+      }
 
       // Vérifier si c'est une nouvelle musique
       const currentTrackId = data.spotifyUrl || data.title;
@@ -280,6 +292,10 @@ export default function SpotifyMediaCard() {
 
   if (error && !trackData) {
     console.error("Erreur:", error);
+    const errorSubtitle = error.includes("Refresh token Spotify révoqué")
+      ? "Authentification Spotify à régénérer"
+      : error;
+
     return (
       <div className={cardHeight}>
         <MediaCard
@@ -287,7 +303,7 @@ export default function SpotifyMediaCard() {
           imageType="custom"
           labelText="Indisponible"
           titleText="Spotify"
-          subtitleText="Erreur de connexion"
+          subtitleText={errorSubtitle}
           {...ERROR_COLORS}
           logoSrc="/spotify.webp"
           logoAlt="Logo de Spotify"
@@ -304,7 +320,7 @@ export default function SpotifyMediaCard() {
           imageType="custom"
           labelText="Indisponible"
           titleText="Spotify"
-          subtitleText="Aucune donnée"
+          subtitleText="Aucun morceau disponible"
           {...ERROR_COLORS}
           logoSrc="/spotify.webp"
           logoAlt="Logo de Spotify"

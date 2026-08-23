@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18" # adapte la version si besoin
+          node-version: "22" # adapte la version si besoin
 
       - name: Create .env file
         run: |

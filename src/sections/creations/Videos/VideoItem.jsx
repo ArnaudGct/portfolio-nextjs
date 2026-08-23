@@ -59,7 +59,7 @@ export default function VideoItem({ id, title, tags, url, pageCurrent }) {
         {!isInView || loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-50 opacity-70">
             {/* Skeleton loader */}
-            <div className="w-full h-full bg-gradient-to-r from-blue-200 to-blue-50 rounded-lg animate-pulse opacity-70"></div>
+            <div className="w-full h-full bg-linear-to-r from-blue-200 to-blue-50 rounded-lg animate-pulse opacity-70"></div>
           </div>
         ) : null}
 
@@ -79,6 +79,7 @@ export default function VideoItem({ id, title, tags, url, pageCurrent }) {
             title={title}
             poster="hqdefault"
             webp
+            announce="Lire"
           />
         ) : null}
         {!isInView && !youtubeId && (

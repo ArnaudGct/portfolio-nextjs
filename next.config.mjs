@@ -27,11 +27,6 @@ const nextConfig = {
     ];
   },
 
-  // Augmenter le timeout pour les requêtes API
-  serverRuntimeConfig: {
-    apiTimeout: 120000, // 2 minutes
-  },
-
   images: {
     domains: [
       "localhost",
