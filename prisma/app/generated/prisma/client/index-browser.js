@@ -365,6 +365,7 @@ exports.Prisma.OutilsScalarFieldEnum = {
   miniature: 'miniature',
   lien_github: 'lien_github',
   lien_telechargement: 'lien_telechargement',
+  afficher: 'afficher',
   derniere_modification: 'derniere_modification'
 };
 

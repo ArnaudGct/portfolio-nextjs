@@ -6,8 +6,11 @@ import OutilGallery from "../../../src/sections/outils/OutilGallery";
 
 async function getOutilDetails(id_outil) {
   try {
-    const outilData = await prisma.outils.findUnique({
-      where: { id_outil: parseInt(id_outil) },
+    const outilData = await prisma.outils.findFirst({
+      where: {
+        id_outil: parseInt(id_outil),
+        afficher: true,
+      },
       select: {
         id_outil: true,
         titre: true,

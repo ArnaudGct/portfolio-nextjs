@@ -298,6 +298,7 @@ model outils {
   miniature             String   @db.VarChar(500)
   lien_github           String   @db.VarChar(500)
   lien_telechargement   String   @db.VarChar(500)
+  afficher              Boolean
   derniere_modification DateTime @db.DateTime(0)
 }
 

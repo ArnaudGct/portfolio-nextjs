@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const outilsData = await prisma.outils.findMany({
+      where: { afficher: true },
       orderBy: { titre: "asc" },
       select: {
         id_outil: true,
