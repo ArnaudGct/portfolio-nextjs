@@ -81,7 +81,7 @@ export default function Autre() {
       } catch (error) {
         console.error(
           "❌ Erreur lors de la récupération des autres créations :",
-          error
+          error,
         );
         setIsLoading(false);
         setIsVisuallyLoading(false);
@@ -113,7 +113,7 @@ export default function Autre() {
         return selectedTags.some(
           (selectedTag) =>
             Array.isArray(autre.tags) &&
-            autre.tags.some((tag) => tag.titre === selectedTag)
+            autre.tags.some((tag) => tag.titre === selectedTag),
         );
       });
     }
@@ -126,7 +126,7 @@ export default function Autre() {
             autre.titre.toLowerCase().includes(query)) ||
           (autre.description &&
             typeof autre.description === "string" &&
-            autre.description.toLowerCase().includes(query))
+            autre.description.toLowerCase().includes(query)),
       );
     }
 
@@ -135,7 +135,7 @@ export default function Autre() {
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -144,7 +144,7 @@ export default function Autre() {
 
     const dates = autres
       .map((v) =>
-        v.derniere_modification ? new Date(v.derniere_modification) : null
+        v.derniere_modification ? new Date(v.derniere_modification) : null,
       )
       .filter(Boolean);
 
@@ -211,7 +211,7 @@ export default function Autre() {
               const count = autres.filter(
                 (autre) =>
                   Array.isArray(autre.tags) &&
-                  autre.tags.some((autreTag) => autreTag.titre === tag)
+                  autre.tags.some((autreTag) => autreTag.titre === tag),
               ).length;
 
               return (

@@ -136,7 +136,10 @@ export default function Testimonial() {
               <div className="flex items-center gap-2">
                 <StarRating rating={temoignage.rating} />
                 <a
-                  href="https://fr.trustpilot.com/review/arnaudgct.fr"
+                  href={
+                    temoignage.reviewUrl ||
+                    "https://fr.trustpilot.com/review/arnaudgct.fr"
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-[#00b67a] font-semibold hover:underline"

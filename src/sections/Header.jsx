@@ -217,6 +217,14 @@ export default function Header() {
                 className="font-normal py-2"
                 itemHeight={28}
               />
+
+              <TextRollover
+                href="/outils"
+                text="Boîte à outils"
+                isActive={pathname === "/outils"}
+                className="font-normal py-2"
+                itemHeight={28}
+              />
             </ul>
           </nav>
         </div>
@@ -379,6 +387,13 @@ export default function Header() {
                 >
                   Mes créations
                 </Link>
+                <Link
+                  href="/outils"
+                  className={`${linkClassText("/outils")} font-normal`}
+                  onClick={toggleMenu}
+                >
+                  Boîte à outils
+                </Link>
               </motion.nav>
               <div className="flex flex-col items-end gap-2">
                 <motion.div
@@ -453,7 +468,7 @@ export default function Header() {
 
         <motion.div
           initial={{ height: "65px" }}
-          animate={{ height: isMenuOpen ? "205px" : "65px" }}
+          animate={{ height: isMenuOpen ? "235px" : "65px" }}
           transition={{ type: "spring", bounce: 0.35 }}
           className="absolute top-0 right-0 w-full z-40"
           style={{
