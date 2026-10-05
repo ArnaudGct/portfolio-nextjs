@@ -223,6 +223,19 @@ exports.Prisma.TemoignagesScalarFieldEnum = {
   afficher: 'afficher'
 };
 
+exports.Prisma.Trustpilot_reviewsScalarFieldEnum = {
+  id: 'id',
+  client: 'client',
+  contenu: 'contenu',
+  rating: 'rating',
+  date_publication: 'date_publication',
+  review_url: 'review_url',
+  afficher: 'afficher',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  last_seen_at: 'last_seen_at'
+};
+
 exports.Prisma.UtilisateursScalarFieldEnum = {
   id_user: 'id_user',
   img: 'img',
@@ -448,6 +461,13 @@ exports.Prisma.temoignagesOrderByRelevanceFieldEnum = {
   date: 'date'
 };
 
+exports.Prisma.trustpilot_reviewsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  client: 'client',
+  contenu: 'contenu',
+  review_url: 'review_url'
+};
+
 exports.Prisma.utilisateursOrderByRelevanceFieldEnum = {
   img: 'img',
   email: 'email',
@@ -564,6 +584,7 @@ exports.Prisma.ModelName = {
   photos_tags: 'photos_tags',
   photos_tags_link: 'photos_tags_link',
   temoignages: 'temoignages',
+  trustpilot_reviews: 'trustpilot_reviews',
   utilisateurs: 'utilisateurs',
   videos: 'videos',
   videos_tags: 'videos_tags',
