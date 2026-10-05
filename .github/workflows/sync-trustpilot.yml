@@ -1,0 +1,46 @@
+name: Synchroniser les avis Trustpilot
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    # 05:17 UTC, soit 06:17 ou 07:17 à Paris selon l'heure d'hiver/d'été.
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-trustpilot
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Générer le client Prisma
+        run: npm run prisma:generate
+
+      - name: Appliquer les migrations de la base
+        run: npm run prisma:migrate:deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Synchroniser Trustpilot vers MySQL
+        run: npm run sync:trustpilot
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}

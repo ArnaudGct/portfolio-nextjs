@@ -74,6 +74,11 @@ export type photos_tags_link = $Result.DefaultSelection<Prisma.$photos_tags_link
  */
 export type temoignages = $Result.DefaultSelection<Prisma.$temoignagesPayload>
 /**
+ * Model trustpilot_reviews
+ * 
+ */
+export type trustpilot_reviews = $Result.DefaultSelection<Prisma.$trustpilot_reviewsPayload>
+/**
  * Model utilisateurs
  * 
  */
@@ -396,6 +401,16 @@ export class PrismaClient<
     * ```
     */
   get temoignages(): Prisma.temoignagesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.trustpilot_reviews`: Exposes CRUD operations for the **trustpilot_reviews** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Trustpilot_reviews
+    * const trustpilot_reviews = await prisma.trustpilot_reviews.findMany()
+    * ```
+    */
+  get trustpilot_reviews(): Prisma.trustpilot_reviewsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.utilisateurs`: Exposes CRUD operations for the **utilisateurs** model.
@@ -1019,6 +1034,7 @@ export namespace Prisma {
     photos_tags: 'photos_tags',
     photos_tags_link: 'photos_tags_link',
     temoignages: 'temoignages',
+    trustpilot_reviews: 'trustpilot_reviews',
     utilisateurs: 'utilisateurs',
     videos: 'videos',
     videos_tags: 'videos_tags',
@@ -1054,7 +1070,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "autre" | "autre_tags" | "autre_tags_link" | "experiences" | "faq" | "photos" | "photos_albums" | "photos_albums_link" | "photos_experiences" | "photos_tags" | "photos_tags_link" | "temoignages" | "utilisateurs" | "videos" | "videos_tags" | "videos_tags_link" | "photos_tags_recherche" | "photos_tags_recherche_link" | "photos_albums_tags_link" | "account" | "session" | "user" | "verification" | "accueil_general" | "apropos_general" | "apropos_outils" | "outils" | "outils_tags" | "outils_tags_link"
+      modelProps: "autre" | "autre_tags" | "autre_tags_link" | "experiences" | "faq" | "photos" | "photos_albums" | "photos_albums_link" | "photos_experiences" | "photos_tags" | "photos_tags_link" | "temoignages" | "trustpilot_reviews" | "utilisateurs" | "videos" | "videos_tags" | "videos_tags_link" | "photos_tags_recherche" | "photos_tags_recherche_link" | "photos_albums_tags_link" | "account" | "session" | "user" | "verification" | "accueil_general" | "apropos_general" | "apropos_outils" | "outils" | "outils_tags" | "outils_tags_link"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1847,6 +1863,72 @@ export namespace Prisma {
           count: {
             args: Prisma.temoignagesCountArgs<ExtArgs>
             result: $Utils.Optional<TemoignagesCountAggregateOutputType> | number
+          }
+        }
+      }
+      trustpilot_reviews: {
+        payload: Prisma.$trustpilot_reviewsPayload<ExtArgs>
+        fields: Prisma.trustpilot_reviewsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.trustpilot_reviewsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.trustpilot_reviewsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload>
+          }
+          findFirst: {
+            args: Prisma.trustpilot_reviewsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.trustpilot_reviewsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload>
+          }
+          findMany: {
+            args: Prisma.trustpilot_reviewsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload>[]
+          }
+          create: {
+            args: Prisma.trustpilot_reviewsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload>
+          }
+          createMany: {
+            args: Prisma.trustpilot_reviewsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.trustpilot_reviewsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload>
+          }
+          update: {
+            args: Prisma.trustpilot_reviewsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload>
+          }
+          deleteMany: {
+            args: Prisma.trustpilot_reviewsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.trustpilot_reviewsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.trustpilot_reviewsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$trustpilot_reviewsPayload>
+          }
+          aggregate: {
+            args: Prisma.Trustpilot_reviewsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTrustpilot_reviews>
+          }
+          groupBy: {
+            args: Prisma.trustpilot_reviewsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Trustpilot_reviewsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.trustpilot_reviewsCountArgs<ExtArgs>
+            result: $Utils.Optional<Trustpilot_reviewsCountAggregateOutputType> | number
           }
         }
       }
@@ -3080,6 +3162,7 @@ export namespace Prisma {
     photos_tags?: photos_tagsOmit
     photos_tags_link?: photos_tags_linkOmit
     temoignages?: temoignagesOmit
+    trustpilot_reviews?: trustpilot_reviewsOmit
     utilisateurs?: utilisateursOmit
     videos?: videosOmit
     videos_tags?: videos_tagsOmit
@@ -15177,6 +15260,977 @@ export namespace Prisma {
      * Omit specific fields from the temoignages
      */
     omit?: temoignagesOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model trustpilot_reviews
+   */
+
+  export type AggregateTrustpilot_reviews = {
+    _count: Trustpilot_reviewsCountAggregateOutputType | null
+    _avg: Trustpilot_reviewsAvgAggregateOutputType | null
+    _sum: Trustpilot_reviewsSumAggregateOutputType | null
+    _min: Trustpilot_reviewsMinAggregateOutputType | null
+    _max: Trustpilot_reviewsMaxAggregateOutputType | null
+  }
+
+  export type Trustpilot_reviewsAvgAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type Trustpilot_reviewsSumAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type Trustpilot_reviewsMinAggregateOutputType = {
+    id: string | null
+    client: string | null
+    contenu: string | null
+    rating: number | null
+    date_publication: Date | null
+    review_url: string | null
+    afficher: boolean | null
+    created_at: Date | null
+    updated_at: Date | null
+    last_seen_at: Date | null
+  }
+
+  export type Trustpilot_reviewsMaxAggregateOutputType = {
+    id: string | null
+    client: string | null
+    contenu: string | null
+    rating: number | null
+    date_publication: Date | null
+    review_url: string | null
+    afficher: boolean | null
+    created_at: Date | null
+    updated_at: Date | null
+    last_seen_at: Date | null
+  }
+
+  export type Trustpilot_reviewsCountAggregateOutputType = {
+    id: number
+    client: number
+    contenu: number
+    rating: number
+    date_publication: number
+    review_url: number
+    afficher: number
+    created_at: number
+    updated_at: number
+    last_seen_at: number
+    _all: number
+  }
+
+
+  export type Trustpilot_reviewsAvgAggregateInputType = {
+    rating?: true
+  }
+
+  export type Trustpilot_reviewsSumAggregateInputType = {
+    rating?: true
+  }
+
+  export type Trustpilot_reviewsMinAggregateInputType = {
+    id?: true
+    client?: true
+    contenu?: true
+    rating?: true
+    date_publication?: true
+    review_url?: true
+    afficher?: true
+    created_at?: true
+    updated_at?: true
+    last_seen_at?: true
+  }
+
+  export type Trustpilot_reviewsMaxAggregateInputType = {
+    id?: true
+    client?: true
+    contenu?: true
+    rating?: true
+    date_publication?: true
+    review_url?: true
+    afficher?: true
+    created_at?: true
+    updated_at?: true
+    last_seen_at?: true
+  }
+
+  export type Trustpilot_reviewsCountAggregateInputType = {
+    id?: true
+    client?: true
+    contenu?: true
+    rating?: true
+    date_publication?: true
+    review_url?: true
+    afficher?: true
+    created_at?: true
+    updated_at?: true
+    last_seen_at?: true
+    _all?: true
+  }
+
+  export type Trustpilot_reviewsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which trustpilot_reviews to aggregate.
+     */
+    where?: trustpilot_reviewsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of trustpilot_reviews to fetch.
+     */
+    orderBy?: trustpilot_reviewsOrderByWithRelationInput | trustpilot_reviewsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: trustpilot_reviewsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` trustpilot_reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` trustpilot_reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned trustpilot_reviews
+    **/
+    _count?: true | Trustpilot_reviewsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Trustpilot_reviewsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Trustpilot_reviewsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Trustpilot_reviewsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Trustpilot_reviewsMaxAggregateInputType
+  }
+
+  export type GetTrustpilot_reviewsAggregateType<T extends Trustpilot_reviewsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTrustpilot_reviews]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTrustpilot_reviews[P]>
+      : GetScalarType<T[P], AggregateTrustpilot_reviews[P]>
+  }
+
+
+
+
+  export type trustpilot_reviewsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: trustpilot_reviewsWhereInput
+    orderBy?: trustpilot_reviewsOrderByWithAggregationInput | trustpilot_reviewsOrderByWithAggregationInput[]
+    by: Trustpilot_reviewsScalarFieldEnum[] | Trustpilot_reviewsScalarFieldEnum
+    having?: trustpilot_reviewsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Trustpilot_reviewsCountAggregateInputType | true
+    _avg?: Trustpilot_reviewsAvgAggregateInputType
+    _sum?: Trustpilot_reviewsSumAggregateInputType
+    _min?: Trustpilot_reviewsMinAggregateInputType
+    _max?: Trustpilot_reviewsMaxAggregateInputType
+  }
+
+  export type Trustpilot_reviewsGroupByOutputType = {
+    id: string
+    client: string
+    contenu: string
+    rating: number
+    date_publication: Date
+    review_url: string
+    afficher: boolean
+    created_at: Date
+    updated_at: Date
+    last_seen_at: Date
+    _count: Trustpilot_reviewsCountAggregateOutputType | null
+    _avg: Trustpilot_reviewsAvgAggregateOutputType | null
+    _sum: Trustpilot_reviewsSumAggregateOutputType | null
+    _min: Trustpilot_reviewsMinAggregateOutputType | null
+    _max: Trustpilot_reviewsMaxAggregateOutputType | null
+  }
+
+  type GetTrustpilot_reviewsGroupByPayload<T extends trustpilot_reviewsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Trustpilot_reviewsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Trustpilot_reviewsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Trustpilot_reviewsGroupByOutputType[P]>
+            : GetScalarType<T[P], Trustpilot_reviewsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type trustpilot_reviewsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    client?: boolean
+    contenu?: boolean
+    rating?: boolean
+    date_publication?: boolean
+    review_url?: boolean
+    afficher?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    last_seen_at?: boolean
+  }, ExtArgs["result"]["trustpilot_reviews"]>
+
+
+
+  export type trustpilot_reviewsSelectScalar = {
+    id?: boolean
+    client?: boolean
+    contenu?: boolean
+    rating?: boolean
+    date_publication?: boolean
+    review_url?: boolean
+    afficher?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    last_seen_at?: boolean
+  }
+
+  export type trustpilot_reviewsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "client" | "contenu" | "rating" | "date_publication" | "review_url" | "afficher" | "created_at" | "updated_at" | "last_seen_at", ExtArgs["result"]["trustpilot_reviews"]>
+
+  export type $trustpilot_reviewsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "trustpilot_reviews"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      client: string
+      contenu: string
+      rating: number
+      date_publication: Date
+      review_url: string
+      afficher: boolean
+      created_at: Date
+      updated_at: Date
+      last_seen_at: Date
+    }, ExtArgs["result"]["trustpilot_reviews"]>
+    composites: {}
+  }
+
+  type trustpilot_reviewsGetPayload<S extends boolean | null | undefined | trustpilot_reviewsDefaultArgs> = $Result.GetResult<Prisma.$trustpilot_reviewsPayload, S>
+
+  type trustpilot_reviewsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<trustpilot_reviewsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Trustpilot_reviewsCountAggregateInputType | true
+    }
+
+  export interface trustpilot_reviewsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['trustpilot_reviews'], meta: { name: 'trustpilot_reviews' } }
+    /**
+     * Find zero or one Trustpilot_reviews that matches the filter.
+     * @param {trustpilot_reviewsFindUniqueArgs} args - Arguments to find a Trustpilot_reviews
+     * @example
+     * // Get one Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends trustpilot_reviewsFindUniqueArgs>(args: SelectSubset<T, trustpilot_reviewsFindUniqueArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Trustpilot_reviews that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {trustpilot_reviewsFindUniqueOrThrowArgs} args - Arguments to find a Trustpilot_reviews
+     * @example
+     * // Get one Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends trustpilot_reviewsFindUniqueOrThrowArgs>(args: SelectSubset<T, trustpilot_reviewsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Trustpilot_reviews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {trustpilot_reviewsFindFirstArgs} args - Arguments to find a Trustpilot_reviews
+     * @example
+     * // Get one Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends trustpilot_reviewsFindFirstArgs>(args?: SelectSubset<T, trustpilot_reviewsFindFirstArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Trustpilot_reviews that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {trustpilot_reviewsFindFirstOrThrowArgs} args - Arguments to find a Trustpilot_reviews
+     * @example
+     * // Get one Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends trustpilot_reviewsFindFirstOrThrowArgs>(args?: SelectSubset<T, trustpilot_reviewsFindFirstOrThrowArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Trustpilot_reviews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {trustpilot_reviewsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.findMany()
+     * 
+     * // Get first 10 Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const trustpilot_reviewsWithIdOnly = await prisma.trustpilot_reviews.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends trustpilot_reviewsFindManyArgs>(args?: SelectSubset<T, trustpilot_reviewsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Trustpilot_reviews.
+     * @param {trustpilot_reviewsCreateArgs} args - Arguments to create a Trustpilot_reviews.
+     * @example
+     * // Create one Trustpilot_reviews
+     * const Trustpilot_reviews = await prisma.trustpilot_reviews.create({
+     *   data: {
+     *     // ... data to create a Trustpilot_reviews
+     *   }
+     * })
+     * 
+     */
+    create<T extends trustpilot_reviewsCreateArgs>(args: SelectSubset<T, trustpilot_reviewsCreateArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Trustpilot_reviews.
+     * @param {trustpilot_reviewsCreateManyArgs} args - Arguments to create many Trustpilot_reviews.
+     * @example
+     * // Create many Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends trustpilot_reviewsCreateManyArgs>(args?: SelectSubset<T, trustpilot_reviewsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Trustpilot_reviews.
+     * @param {trustpilot_reviewsDeleteArgs} args - Arguments to delete one Trustpilot_reviews.
+     * @example
+     * // Delete one Trustpilot_reviews
+     * const Trustpilot_reviews = await prisma.trustpilot_reviews.delete({
+     *   where: {
+     *     // ... filter to delete one Trustpilot_reviews
+     *   }
+     * })
+     * 
+     */
+    delete<T extends trustpilot_reviewsDeleteArgs>(args: SelectSubset<T, trustpilot_reviewsDeleteArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Trustpilot_reviews.
+     * @param {trustpilot_reviewsUpdateArgs} args - Arguments to update one Trustpilot_reviews.
+     * @example
+     * // Update one Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends trustpilot_reviewsUpdateArgs>(args: SelectSubset<T, trustpilot_reviewsUpdateArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Trustpilot_reviews.
+     * @param {trustpilot_reviewsDeleteManyArgs} args - Arguments to filter Trustpilot_reviews to delete.
+     * @example
+     * // Delete a few Trustpilot_reviews
+     * const { count } = await prisma.trustpilot_reviews.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends trustpilot_reviewsDeleteManyArgs>(args?: SelectSubset<T, trustpilot_reviewsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Trustpilot_reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {trustpilot_reviewsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends trustpilot_reviewsUpdateManyArgs>(args: SelectSubset<T, trustpilot_reviewsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Trustpilot_reviews.
+     * @param {trustpilot_reviewsUpsertArgs} args - Arguments to update or create a Trustpilot_reviews.
+     * @example
+     * // Update or create a Trustpilot_reviews
+     * const trustpilot_reviews = await prisma.trustpilot_reviews.upsert({
+     *   create: {
+     *     // ... data to create a Trustpilot_reviews
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Trustpilot_reviews we want to update
+     *   }
+     * })
+     */
+    upsert<T extends trustpilot_reviewsUpsertArgs>(args: SelectSubset<T, trustpilot_reviewsUpsertArgs<ExtArgs>>): Prisma__trustpilot_reviewsClient<$Result.GetResult<Prisma.$trustpilot_reviewsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Trustpilot_reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {trustpilot_reviewsCountArgs} args - Arguments to filter Trustpilot_reviews to count.
+     * @example
+     * // Count the number of Trustpilot_reviews
+     * const count = await prisma.trustpilot_reviews.count({
+     *   where: {
+     *     // ... the filter for the Trustpilot_reviews we want to count
+     *   }
+     * })
+    **/
+    count<T extends trustpilot_reviewsCountArgs>(
+      args?: Subset<T, trustpilot_reviewsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Trustpilot_reviewsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Trustpilot_reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Trustpilot_reviewsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Trustpilot_reviewsAggregateArgs>(args: Subset<T, Trustpilot_reviewsAggregateArgs>): Prisma.PrismaPromise<GetTrustpilot_reviewsAggregateType<T>>
+
+    /**
+     * Group by Trustpilot_reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {trustpilot_reviewsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends trustpilot_reviewsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: trustpilot_reviewsGroupByArgs['orderBy'] }
+        : { orderBy?: trustpilot_reviewsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, trustpilot_reviewsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTrustpilot_reviewsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the trustpilot_reviews model
+   */
+  readonly fields: trustpilot_reviewsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for trustpilot_reviews.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__trustpilot_reviewsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the trustpilot_reviews model
+   */
+  interface trustpilot_reviewsFieldRefs {
+    readonly id: FieldRef<"trustpilot_reviews", 'String'>
+    readonly client: FieldRef<"trustpilot_reviews", 'String'>
+    readonly contenu: FieldRef<"trustpilot_reviews", 'String'>
+    readonly rating: FieldRef<"trustpilot_reviews", 'Int'>
+    readonly date_publication: FieldRef<"trustpilot_reviews", 'DateTime'>
+    readonly review_url: FieldRef<"trustpilot_reviews", 'String'>
+    readonly afficher: FieldRef<"trustpilot_reviews", 'Boolean'>
+    readonly created_at: FieldRef<"trustpilot_reviews", 'DateTime'>
+    readonly updated_at: FieldRef<"trustpilot_reviews", 'DateTime'>
+    readonly last_seen_at: FieldRef<"trustpilot_reviews", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * trustpilot_reviews findUnique
+   */
+  export type trustpilot_reviewsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * Filter, which trustpilot_reviews to fetch.
+     */
+    where: trustpilot_reviewsWhereUniqueInput
+  }
+
+  /**
+   * trustpilot_reviews findUniqueOrThrow
+   */
+  export type trustpilot_reviewsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * Filter, which trustpilot_reviews to fetch.
+     */
+    where: trustpilot_reviewsWhereUniqueInput
+  }
+
+  /**
+   * trustpilot_reviews findFirst
+   */
+  export type trustpilot_reviewsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * Filter, which trustpilot_reviews to fetch.
+     */
+    where?: trustpilot_reviewsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of trustpilot_reviews to fetch.
+     */
+    orderBy?: trustpilot_reviewsOrderByWithRelationInput | trustpilot_reviewsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for trustpilot_reviews.
+     */
+    cursor?: trustpilot_reviewsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` trustpilot_reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` trustpilot_reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of trustpilot_reviews.
+     */
+    distinct?: Trustpilot_reviewsScalarFieldEnum | Trustpilot_reviewsScalarFieldEnum[]
+  }
+
+  /**
+   * trustpilot_reviews findFirstOrThrow
+   */
+  export type trustpilot_reviewsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * Filter, which trustpilot_reviews to fetch.
+     */
+    where?: trustpilot_reviewsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of trustpilot_reviews to fetch.
+     */
+    orderBy?: trustpilot_reviewsOrderByWithRelationInput | trustpilot_reviewsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for trustpilot_reviews.
+     */
+    cursor?: trustpilot_reviewsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` trustpilot_reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` trustpilot_reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of trustpilot_reviews.
+     */
+    distinct?: Trustpilot_reviewsScalarFieldEnum | Trustpilot_reviewsScalarFieldEnum[]
+  }
+
+  /**
+   * trustpilot_reviews findMany
+   */
+  export type trustpilot_reviewsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * Filter, which trustpilot_reviews to fetch.
+     */
+    where?: trustpilot_reviewsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of trustpilot_reviews to fetch.
+     */
+    orderBy?: trustpilot_reviewsOrderByWithRelationInput | trustpilot_reviewsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing trustpilot_reviews.
+     */
+    cursor?: trustpilot_reviewsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` trustpilot_reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` trustpilot_reviews.
+     */
+    skip?: number
+    distinct?: Trustpilot_reviewsScalarFieldEnum | Trustpilot_reviewsScalarFieldEnum[]
+  }
+
+  /**
+   * trustpilot_reviews create
+   */
+  export type trustpilot_reviewsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a trustpilot_reviews.
+     */
+    data: XOR<trustpilot_reviewsCreateInput, trustpilot_reviewsUncheckedCreateInput>
+  }
+
+  /**
+   * trustpilot_reviews createMany
+   */
+  export type trustpilot_reviewsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many trustpilot_reviews.
+     */
+    data: trustpilot_reviewsCreateManyInput | trustpilot_reviewsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * trustpilot_reviews update
+   */
+  export type trustpilot_reviewsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a trustpilot_reviews.
+     */
+    data: XOR<trustpilot_reviewsUpdateInput, trustpilot_reviewsUncheckedUpdateInput>
+    /**
+     * Choose, which trustpilot_reviews to update.
+     */
+    where: trustpilot_reviewsWhereUniqueInput
+  }
+
+  /**
+   * trustpilot_reviews updateMany
+   */
+  export type trustpilot_reviewsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update trustpilot_reviews.
+     */
+    data: XOR<trustpilot_reviewsUpdateManyMutationInput, trustpilot_reviewsUncheckedUpdateManyInput>
+    /**
+     * Filter which trustpilot_reviews to update
+     */
+    where?: trustpilot_reviewsWhereInput
+    /**
+     * Limit how many trustpilot_reviews to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * trustpilot_reviews upsert
+   */
+  export type trustpilot_reviewsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the trustpilot_reviews to update in case it exists.
+     */
+    where: trustpilot_reviewsWhereUniqueInput
+    /**
+     * In case the trustpilot_reviews found by the `where` argument doesn't exist, create a new trustpilot_reviews with this data.
+     */
+    create: XOR<trustpilot_reviewsCreateInput, trustpilot_reviewsUncheckedCreateInput>
+    /**
+     * In case the trustpilot_reviews was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<trustpilot_reviewsUpdateInput, trustpilot_reviewsUncheckedUpdateInput>
+  }
+
+  /**
+   * trustpilot_reviews delete
+   */
+  export type trustpilot_reviewsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
+    /**
+     * Filter which trustpilot_reviews to delete.
+     */
+    where: trustpilot_reviewsWhereUniqueInput
+  }
+
+  /**
+   * trustpilot_reviews deleteMany
+   */
+  export type trustpilot_reviewsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which trustpilot_reviews to delete
+     */
+    where?: trustpilot_reviewsWhereInput
+    /**
+     * Limit how many trustpilot_reviews to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * trustpilot_reviews without action
+   */
+  export type trustpilot_reviewsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the trustpilot_reviews
+     */
+    select?: trustpilot_reviewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the trustpilot_reviews
+     */
+    omit?: trustpilot_reviewsOmit<ExtArgs> | null
   }
 
 
@@ -31399,6 +32453,22 @@ export namespace Prisma {
   export type TemoignagesScalarFieldEnum = (typeof TemoignagesScalarFieldEnum)[keyof typeof TemoignagesScalarFieldEnum]
 
 
+  export const Trustpilot_reviewsScalarFieldEnum: {
+    id: 'id',
+    client: 'client',
+    contenu: 'contenu',
+    rating: 'rating',
+    date_publication: 'date_publication',
+    review_url: 'review_url',
+    afficher: 'afficher',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    last_seen_at: 'last_seen_at'
+  };
+
+  export type Trustpilot_reviewsScalarFieldEnum = (typeof Trustpilot_reviewsScalarFieldEnum)[keyof typeof Trustpilot_reviewsScalarFieldEnum]
+
+
   export const UtilisateursScalarFieldEnum: {
     id_user: 'id_user',
     img: 'img',
@@ -31706,6 +32776,16 @@ export namespace Prisma {
   };
 
   export type temoignagesOrderByRelevanceFieldEnum = (typeof temoignagesOrderByRelevanceFieldEnum)[keyof typeof temoignagesOrderByRelevanceFieldEnum]
+
+
+  export const trustpilot_reviewsOrderByRelevanceFieldEnum: {
+    id: 'id',
+    client: 'client',
+    contenu: 'contenu',
+    review_url: 'review_url'
+  };
+
+  export type trustpilot_reviewsOrderByRelevanceFieldEnum = (typeof trustpilot_reviewsOrderByRelevanceFieldEnum)[keyof typeof trustpilot_reviewsOrderByRelevanceFieldEnum]
 
 
   export const utilisateursOrderByRelevanceFieldEnum: {
@@ -32625,6 +33705,86 @@ export namespace Prisma {
     date?: StringNullableWithAggregatesFilter<"temoignages"> | string | null
     ordre?: IntWithAggregatesFilter<"temoignages"> | number
     afficher?: BoolWithAggregatesFilter<"temoignages"> | boolean
+  }
+
+  export type trustpilot_reviewsWhereInput = {
+    AND?: trustpilot_reviewsWhereInput | trustpilot_reviewsWhereInput[]
+    OR?: trustpilot_reviewsWhereInput[]
+    NOT?: trustpilot_reviewsWhereInput | trustpilot_reviewsWhereInput[]
+    id?: StringFilter<"trustpilot_reviews"> | string
+    client?: StringFilter<"trustpilot_reviews"> | string
+    contenu?: StringFilter<"trustpilot_reviews"> | string
+    rating?: IntFilter<"trustpilot_reviews"> | number
+    date_publication?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+    review_url?: StringFilter<"trustpilot_reviews"> | string
+    afficher?: BoolFilter<"trustpilot_reviews"> | boolean
+    created_at?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+    updated_at?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+    last_seen_at?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+  }
+
+  export type trustpilot_reviewsOrderByWithRelationInput = {
+    id?: SortOrder
+    client?: SortOrder
+    contenu?: SortOrder
+    rating?: SortOrder
+    date_publication?: SortOrder
+    review_url?: SortOrder
+    afficher?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    last_seen_at?: SortOrder
+    _relevance?: trustpilot_reviewsOrderByRelevanceInput
+  }
+
+  export type trustpilot_reviewsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: trustpilot_reviewsWhereInput | trustpilot_reviewsWhereInput[]
+    OR?: trustpilot_reviewsWhereInput[]
+    NOT?: trustpilot_reviewsWhereInput | trustpilot_reviewsWhereInput[]
+    client?: StringFilter<"trustpilot_reviews"> | string
+    contenu?: StringFilter<"trustpilot_reviews"> | string
+    rating?: IntFilter<"trustpilot_reviews"> | number
+    date_publication?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+    review_url?: StringFilter<"trustpilot_reviews"> | string
+    afficher?: BoolFilter<"trustpilot_reviews"> | boolean
+    created_at?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+    updated_at?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+    last_seen_at?: DateTimeFilter<"trustpilot_reviews"> | Date | string
+  }, "id">
+
+  export type trustpilot_reviewsOrderByWithAggregationInput = {
+    id?: SortOrder
+    client?: SortOrder
+    contenu?: SortOrder
+    rating?: SortOrder
+    date_publication?: SortOrder
+    review_url?: SortOrder
+    afficher?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    last_seen_at?: SortOrder
+    _count?: trustpilot_reviewsCountOrderByAggregateInput
+    _avg?: trustpilot_reviewsAvgOrderByAggregateInput
+    _max?: trustpilot_reviewsMaxOrderByAggregateInput
+    _min?: trustpilot_reviewsMinOrderByAggregateInput
+    _sum?: trustpilot_reviewsSumOrderByAggregateInput
+  }
+
+  export type trustpilot_reviewsScalarWhereWithAggregatesInput = {
+    AND?: trustpilot_reviewsScalarWhereWithAggregatesInput | trustpilot_reviewsScalarWhereWithAggregatesInput[]
+    OR?: trustpilot_reviewsScalarWhereWithAggregatesInput[]
+    NOT?: trustpilot_reviewsScalarWhereWithAggregatesInput | trustpilot_reviewsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"trustpilot_reviews"> | string
+    client?: StringWithAggregatesFilter<"trustpilot_reviews"> | string
+    contenu?: StringWithAggregatesFilter<"trustpilot_reviews"> | string
+    rating?: IntWithAggregatesFilter<"trustpilot_reviews"> | number
+    date_publication?: DateTimeWithAggregatesFilter<"trustpilot_reviews"> | Date | string
+    review_url?: StringWithAggregatesFilter<"trustpilot_reviews"> | string
+    afficher?: BoolWithAggregatesFilter<"trustpilot_reviews"> | boolean
+    created_at?: DateTimeWithAggregatesFilter<"trustpilot_reviews"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"trustpilot_reviews"> | Date | string
+    last_seen_at?: DateTimeWithAggregatesFilter<"trustpilot_reviews"> | Date | string
   }
 
   export type utilisateursWhereInput = {
@@ -34403,6 +35563,97 @@ export namespace Prisma {
     date?: NullableStringFieldUpdateOperationsInput | string | null
     ordre?: IntFieldUpdateOperationsInput | number
     afficher?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type trustpilot_reviewsCreateInput = {
+    id: string
+    client: string
+    contenu: string
+    rating: number
+    date_publication: Date | string
+    review_url: string
+    afficher?: boolean
+    created_at?: Date | string
+    updated_at?: Date | string
+    last_seen_at: Date | string
+  }
+
+  export type trustpilot_reviewsUncheckedCreateInput = {
+    id: string
+    client: string
+    contenu: string
+    rating: number
+    date_publication: Date | string
+    review_url: string
+    afficher?: boolean
+    created_at?: Date | string
+    updated_at?: Date | string
+    last_seen_at: Date | string
+  }
+
+  export type trustpilot_reviewsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    client?: StringFieldUpdateOperationsInput | string
+    contenu?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    date_publication?: DateTimeFieldUpdateOperationsInput | Date | string
+    review_url?: StringFieldUpdateOperationsInput | string
+    afficher?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type trustpilot_reviewsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    client?: StringFieldUpdateOperationsInput | string
+    contenu?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    date_publication?: DateTimeFieldUpdateOperationsInput | Date | string
+    review_url?: StringFieldUpdateOperationsInput | string
+    afficher?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type trustpilot_reviewsCreateManyInput = {
+    id: string
+    client: string
+    contenu: string
+    rating: number
+    date_publication: Date | string
+    review_url: string
+    afficher?: boolean
+    created_at?: Date | string
+    updated_at?: Date | string
+    last_seen_at: Date | string
+  }
+
+  export type trustpilot_reviewsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    client?: StringFieldUpdateOperationsInput | string
+    contenu?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    date_publication?: DateTimeFieldUpdateOperationsInput | Date | string
+    review_url?: StringFieldUpdateOperationsInput | string
+    afficher?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type trustpilot_reviewsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    client?: StringFieldUpdateOperationsInput | string
+    contenu?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    date_publication?: DateTimeFieldUpdateOperationsInput | Date | string
+    review_url?: StringFieldUpdateOperationsInput | string
+    afficher?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type utilisateursCreateInput = {
@@ -36209,6 +37460,59 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type trustpilot_reviewsOrderByRelevanceInput = {
+    fields: trustpilot_reviewsOrderByRelevanceFieldEnum | trustpilot_reviewsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type trustpilot_reviewsCountOrderByAggregateInput = {
+    id?: SortOrder
+    client?: SortOrder
+    contenu?: SortOrder
+    rating?: SortOrder
+    date_publication?: SortOrder
+    review_url?: SortOrder
+    afficher?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    last_seen_at?: SortOrder
+  }
+
+  export type trustpilot_reviewsAvgOrderByAggregateInput = {
+    rating?: SortOrder
+  }
+
+  export type trustpilot_reviewsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    client?: SortOrder
+    contenu?: SortOrder
+    rating?: SortOrder
+    date_publication?: SortOrder
+    review_url?: SortOrder
+    afficher?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    last_seen_at?: SortOrder
+  }
+
+  export type trustpilot_reviewsMinOrderByAggregateInput = {
+    id?: SortOrder
+    client?: SortOrder
+    contenu?: SortOrder
+    rating?: SortOrder
+    date_publication?: SortOrder
+    review_url?: SortOrder
+    afficher?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    last_seen_at?: SortOrder
+  }
+
+  export type trustpilot_reviewsSumOrderByAggregateInput = {
+    rating?: SortOrder
   }
 
   export type utilisateursOrderByRelevanceInput = {
