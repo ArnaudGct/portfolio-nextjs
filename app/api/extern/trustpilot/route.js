@@ -4,6 +4,53 @@ import { parse } from "node-html-parser";
 const TRUSTPILOT_URL = "https://fr.trustpilot.com/review/arnaudgct.fr";
 const TRUSTPILOT_READER_URL = `https://r.jina.ai/${TRUSTPILOT_URL}`;
 
+// Trustpilot bloque régulièrement les requêtes provenant des hébergeurs et le
+// lecteur distant peut alors renvoyer une page de vérification avec un statut
+// 200. Conserver la dernière copie connue évite de faire disparaître les avis
+// du portfolio lorsqu'une des protections anti-bot change.
+const TRUSTPILOT_FALLBACK_REVIEWS = [
+  {
+    id_tem: "trustpilot-fallback-aquatre",
+    client: "Aquatre",
+    contenu:
+      "Technique, sens de l'esthétique et qualité humaines : Arnaud coche toutes les cases du monteur idéal ! Ultra réactif, très talentueux, à l'écoute et force de proposition, c'est un vrai bonheur de collaborer avec lui ! :)",
+    rating: 5,
+    date: "29 mars 2026",
+    reviewUrl: TRUSTPILOT_URL,
+    source: "trustpilot",
+  },
+  {
+    id_tem: "trustpilot-fallback-karl-wess",
+    client: "Karl Wess",
+    contenu:
+      "Le Monteur que tout entrepreneur rêve d’avoir !\n\nLa question technique ne se pose même pas, elle est exceptionnelle.\n\nMais là, où Arnaud excelle c’est là ou la plupart échouent…\n\n- comprendre la DA demandée (rare)\n- capacité de création incroyable\n- maîtrise du rythme au top\n- pertinence des choix de musique selon le récit/contexte (j’avais jamais vu ça jusqu’ici)\n- don pour l’esthétisme rare\n\nBref. Je ne peux que le recommander.\n\nMais je vous en supplie allez y doucement, j’ai trop besoin son talent/travail… 😅",
+    rating: 5,
+    date: "21 décembre 2025",
+    reviewUrl: TRUSTPILOT_URL,
+    source: "trustpilot",
+  },
+  {
+    id_tem: "trustpilot-fallback-gustystudio",
+    client: "Gustystudio.com",
+    contenu:
+      "INCROYABLE ! C’est génial de travailler avec Arnaud. Il comprend tellement bien et vite mes demandes, que la V1 est souvent la bonne. Je recommande vivement",
+    rating: 5,
+    date: "19 novembre 2025",
+    reviewUrl: TRUSTPILOT_URL,
+    source: "trustpilot",
+  },
+  {
+    id_tem: "trustpilot-fallback-thibonroad",
+    client: "ThibOnRoad",
+    contenu:
+      "Arnaud est quelqu'un de très professionnel. Une prestation pour la réalisation, le tournage et le cadrage d'une vidéo youtube a été commandé et le résultat est plus que convainquant et est au dela de mes esperences. Je ne peux que le recommander le yeux fermés !",
+    rating: 5,
+    date: "7 septembre 2025",
+    reviewUrl: TRUSTPILOT_URL,
+    source: "trustpilot",
+  },
+];
+
 // Une lecture par heure maximum, quel que soit le nombre de visiteurs.
 export const revalidate = 3600;
 
@@ -222,7 +269,22 @@ async function fetchReaderReviews() {
     throw new Error(`Lecteur Trustpilot indisponible (${response.status})`);
   }
 
-  return cleanReviews(parseTrustpilotMarkdown(await response.text()));
+  const markdown = await response.text();
+  const reviews = cleanReviews(parseTrustpilotMarkdown(markdown));
+
+  if (reviews.length === 0) {
+    const isVerificationPage =
+      /verifying connection|verify your browser|verification failed/i.test(
+        markdown,
+      );
+    throw new Error(
+      isVerificationPage
+        ? "Le lecteur Trustpilot a reçu une page de vérification"
+        : "Le lecteur Trustpilot n'a trouvé aucun avis",
+    );
+  }
+
+  return reviews;
 }
 
 async function fetchDirectReviews() {
@@ -241,36 +303,40 @@ async function fetchDirectReviews() {
     throw new Error(`Trustpilot a répondu ${response.status}`);
   }
 
-  return cleanReviews(parseTrustpilotHtml(await response.text()));
+  const reviews = cleanReviews(parseTrustpilotHtml(await response.text()));
+
+  if (reviews.length === 0) {
+    throw new Error("La lecture directe de Trustpilot n'a trouvé aucun avis");
+  }
+
+  return reviews;
 }
 
 export async function GET() {
-  let source = "unavailable";
-  let reviews = [];
+  const sources = [
+    ["reader", fetchReaderReviews],
+    ["direct", fetchDirectReviews],
+  ];
 
-  try {
-    reviews = await fetchReaderReviews();
-    source = "reader";
-
-    if (reviews.length === 0) {
-      reviews = await fetchDirectReviews();
-      source = "direct";
-    }
-  } catch (readerError) {
-    console.error("Erreur du lecteur Trustpilot:", readerError);
-
+  for (const [source, fetchReviews] of sources) {
     try {
-      reviews = await fetchDirectReviews();
-      source = "direct";
-    } catch (directError) {
-      console.error("Erreur de lecture directe Trustpilot:", directError);
+      const reviews = await fetchReviews();
+
+      return NextResponse.json(reviews, {
+        headers: {
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+          "X-Trustpilot-Source": source,
+        },
+      });
+    } catch (error) {
+      console.error(`Erreur Trustpilot (${source}):`, error);
     }
   }
 
-  return NextResponse.json(reviews, {
+  return NextResponse.json(TRUSTPILOT_FALLBACK_REVIEWS, {
     headers: {
       "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
-      "X-Trustpilot-Source": source,
+      "X-Trustpilot-Source": "fallback",
     },
   });
 }

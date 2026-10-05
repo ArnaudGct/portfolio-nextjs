@@ -153,7 +153,7 @@ export default function Header() {
   return (
     <header className="flex justify-center w-full fixed top-0 left-0 z-30">
       <motion.div
-        className="hidden lg:flex justify-between items-center mx-auto rounded-lg"
+        className="hidden min-[1200px]:flex justify-between items-center mx-auto rounded-lg"
         style={{
           // scale: smoothScale,
           width: smoothWidth,
@@ -317,7 +317,7 @@ export default function Header() {
       </motion.div>
 
       {/* Version mobile */}
-      <div className="lg:hidden relative w-full">
+      <div className="min-[1200px]:hidden relative w-full">
         <div className="flex justify-between items-center px-8 py-4 z-50">
           <div className="flex items-center gap-4 z-50">
             <Link href="/">
