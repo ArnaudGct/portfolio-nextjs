@@ -41,6 +41,9 @@ export default function Testimonial() {
         const trustpilotData = trustpilotRes?.ok
           ? await trustpilotRes.json()
           : [];
+        if (!trustpilotRes?.ok) {
+          console.error("Avis Trustpilot indisponibles :", trustpilotRes?.status || "erreur réseau");
+        }
         const dbData = dbRes?.ok ? await dbRes.json() : [];
 
         if (isMounted) {
