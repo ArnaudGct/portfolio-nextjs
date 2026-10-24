@@ -10,8 +10,7 @@ const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN;
 
-// Durée de mise en cache (4 heures)
-const CACHE_MAX_AGE = 60 * 60 * 4;
+export const dynamic = "force-dynamic";
 
 // Fonction pour obtenir un token d'accès
 async function getAccessToken() {
@@ -122,12 +121,13 @@ export async function GET(request) {
     let recentTrack = null;
     let isCurrentlyPlaying = false;
     let progress = 0;
-    let duration = 0;
+    let progressObservedAt = Date.now();
 
     // 1. Récupérer le morceau actuellement en cours de lecture
     let response = await fetch(
       "https://api.spotify.com/v1/me/player/currently-playing",
       {
+        cache: "no-store",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -137,30 +137,34 @@ export async function GET(request) {
     if (response.status === 200) {
       const data = await response.json();
       currentTrack = data.item;
-      isCurrentlyPlaying = data.is_playing && data.item;
+      isCurrentlyPlaying = Boolean(data.is_playing && data.item);
+      progressObservedAt = Date.now();
 
       // Récupérer les données de progression
       if (data.item) {
         progress = data.progress_ms || 0;
-        duration = data.item.duration_ms || 0;
       }
     }
 
-    // 2. Récupérer le morceau le plus écouté des 4 dernières semaines
-    response = await fetch(
-      "https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=1",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+    if (!isCurrentlyPlaying) {
+      // 2. Récupérer le morceau le plus écouté des 4 dernières semaines
+      response = await fetch(
+        "https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=1",
+        {
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-      },
-    );
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.items && data.items.length > 0) {
-        topTrack = data.items[0];
+      if (response.ok) {
+        const data = await response.json();
+        if (data.items && data.items.length > 0) {
+          topTrack = data.items[0];
+        }
       }
+
     }
 
     // 3. Récupérer le dernier morceau joué si nécessaire
@@ -223,21 +227,16 @@ export async function GET(request) {
       isCurrentlyPlaying,
       isMostPlayed,
       // Ajouter les données de progression
-      progress: isCurrentlyPlaying ? progress : undefined,
+      progress: isCurrentlyPlaying
+        ? Math.min(track.duration_ms, progress + Math.max(0, Date.now() - progressObservedAt))
+        : undefined,
       duration: track.duration_ms,
       ...colorScheme,
     };
 
     return NextResponse.json(trackInfo, {
       headers: {
-        "Cache-Control": isCurrentlyPlaying
-          ? "public, s-maxage=10, stale-while-revalidate=5, must-revalidate"
-          : "public, s-maxage=60, stale-while-revalidate=30, must-revalidate",
-        Pragma: "no-cache",
-        Expires: "0",
-        Vary: "User-Agent",
-        ETag: `"${Date.now()}"`,
-        "Last-Modified": new Date().toUTCString(),
+        "Cache-Control": "no-store, max-age=0",
       },
     });
   } catch (error) {

@@ -36,7 +36,8 @@ export default function VideoItem({ id, title, tags, url, pageCurrent }) {
         });
       },
       {
-        threshold: 0.5, // L'élément doit être à 50% visible pour être chargé
+        rootMargin: "400px 0px", // Préparer les médias avant leur entrée à l’écran
+        threshold: 0,
       }
     );
 

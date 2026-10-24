@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Un build de production ne doit pas écraser les fichiers du serveur dev.
+  distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   // Configuration pour les API
   serverExternalPackages: ["sharp"],
   reactStrictMode: true,

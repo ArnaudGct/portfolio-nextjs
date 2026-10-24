@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import MediaCard from "./MediaCard";
+import { progressAt, syncProgress } from "../../lib/spotify/progress.mjs";
 import NumberFlow from "@number-flow/react";
 // Import des icônes Lucide nécessaires
 import { AlertCircle, Loader2, Play, Pause } from "lucide-react";
@@ -48,31 +49,39 @@ const ErrorPlaceholder = () => (
 // Composant de barre de progression
 const ProgressBar = ({
   progress,
+  receivedAt,
   duration,
   isPlaying,
   bgColor,
   borderColor,
   labelColor,
 }) => {
+  const clock = useRef(null);
   const [currentProgress, setCurrentProgress] = useState(progress);
 
   useEffect(() => {
-    setCurrentProgress(progress);
-  }, [progress]);
+    const now = performance.now();
+    // Tenir compte du temps écoulé depuis la réception, même après un remount.
+    const elapsed = isPlaying ? Math.max(0, now - receivedAt) : 0;
+    clock.current = syncProgress(clock.current, {
+      progress: progress + elapsed, duration, isPlaying,
+    }, now);
+    setCurrentProgress(progressAt(clock.current, now));
+  }, [progress, receivedAt, duration, isPlaying]);
 
-  // Mise à jour en temps réel quand la musique est en cours de lecture
   useEffect(() => {
-    if (!isPlaying || !duration) return;
-
-    const interval = setInterval(() => {
-      setCurrentProgress((prev) => {
-        const newProgress = prev + 1000; // +1 seconde
-        return newProgress >= duration ? duration : newProgress;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, duration]);
+    let frame;
+    let lastPaint = 0;
+    const tick = (now) => {
+      if (clock.current && now - lastPaint >= 50) {
+        setCurrentProgress(progressAt(clock.current, now));
+        lastPaint = now;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const formatTime = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -87,9 +96,9 @@ const ProgressBar = ({
   return (
     <div className="mt-2 space-y-1">
       {/* Barre de progression unique */}
-      <div className="relative h-1 bg-black/20 rounded-full overflow-hidden">
+      <div role="progressbar" aria-label="Progression du morceau" aria-valuemin={0} aria-valuemax={Math.floor(duration / 1000)} aria-valuenow={Math.floor(currentProgress / 1000)} className="relative h-1 bg-black/20 rounded-full overflow-hidden">
         <div
-          className="absolute left-0 top-0 h-full rounded-full transition-all duration-300 ease-out"
+          className="absolute left-0 top-0 h-full rounded-full transition-[width] duration-75 ease-linear motion-reduce:transition-none"
           style={{
             width: `${progressPercentage}%`,
             backgroundColor: borderColor,
@@ -141,132 +150,46 @@ export default function SpotifyMediaCard() {
   const [trackData, setTrackData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const intervalRef = useRef(null);
-  const isInitialLoad = useRef(true);
-  const lastTrackId = useRef(null);
-  const timeoutRef = useRef(null);
-  const hoverTimeoutRef = useRef(null); // Nouveau ref pour le hover
+  useEffect(() => {
+    let disposed = false;
+    let timer;
+    let controller;
 
-  const fetchTopTrack = useCallback(async () => {
-    // Empêcher le rafraîchissement si on est en hover
-    if (isHovered) {
-      return;
-    }
-
-    try {
-      // Ne pas réafficher le loading si on a déjà des données
-      if (isInitialLoad.current) {
-        setIsLoading(true);
-      }
-
-      const uniqueId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const response = await fetch(`/api/extern/spotify?bust=${uniqueId}`, {
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
-          "X-Requested-With": "XMLHttpRequest",
-        },
-      });
-
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
+    const refresh = async () => {
+      let delay = 30000;
+      controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      try {
+        const response = await fetch("/api/extern/spotify", {
+          cache: "no-store", signal: controller.signal,
+        });
+        const data = await response.json().catch(() => null);
+        if (disposed) return;
         if (response.status === 404) {
           setTrackData(null);
           setError(null);
-          isInitialLoad.current = false;
-          return;
+        } else {
+          if (!response.ok || !data) throw new Error(data?.message || data?.error || "Spotify indisponible");
+          setTrackData({ ...data, receivedAt: performance.now() });
+          setError(null);
+          delay = data.isCurrentlyPlaying ? 5000 : 30000;
         }
-
-        const errorMessage =
-          data?.message ||
-          data?.error ||
-          "Échec de la récupération des données Spotify";
-
-        throw new Error(errorMessage);
-      }
-
-      // Vérifier si c'est une nouvelle musique
-      const currentTrackId = data.spotifyUrl || data.title;
-      const isNewTrack = lastTrackId.current !== currentTrackId;
-
-      if (isNewTrack) {
-        console.log("Nouvelle musique détectée:", data.title);
-        lastTrackId.current = currentTrackId;
-      }
-
-      setTrackData(data);
-      setError(null);
-      isInitialLoad.current = false;
-    } catch (err) {
-      console.error("Erreur:", err);
-      setError(err.message);
-    } finally {
-      if (isInitialLoad.current) {
-        setIsLoading(false);
-      }
-    }
-  }, [isHovered]); // Ajouter isHovered comme dépendance
-
-  useEffect(() => {
-    // Récupération initiale
-    fetchTopTrack();
-  }, [fetchTopTrack]);
-
-  // Effet pour gérer les intervalles selon l'état de lecture et le hover
-  useEffect(() => {
-    // Nettoyer l'intervalle précédent
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-
-    // Si on n'a pas de données ou si on est en hover, ne pas démarrer d'intervalle
-    if (!trackData || isHovered) return;
-
-    // Déterminer l'intervalle selon l'état de lecture
-    const interval = trackData.isCurrentlyPlaying ? 5 * 1000 : 30 * 1000; // 5 secondes si en cours, 30 secondes sinon
-
-    intervalRef.current = setInterval(() => {
-      fetchTopTrack();
-    }, interval);
-
-    // Nettoyage
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
+      } catch (err) {
+        if (!disposed) setError(err.message);
+      } finally {
+        clearTimeout(timeout);
+        if (!disposed) {
+          setIsLoading(false);
+          // Une seule requête à la fois, y compris si Spotify répond lentement.
+          timer = setTimeout(refresh, delay);
+        }
       }
     };
-  }, [trackData?.isCurrentlyPlaying, fetchTopTrack, isHovered]);
-
-  // Gestionnaires d'événements pour le hover
-  const handleMouseEnter = () => {
-    // Annuler tout timeout de sortie en cours
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    // Petit délai pour éviter les flickering rapides
-    hoverTimeoutRef.current = setTimeout(() => {
-      setIsHovered(false);
-    }, 1000); // Délai très court juste pour éviter les flickering
-  };
-
-  // Nettoyer les timeouts au démontage
-  useEffect(() => {
+    refresh();
     return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
+      disposed = true;
+      clearTimeout(timer);
+      controller?.abort();
     };
   }, []);
 
@@ -343,11 +266,7 @@ export default function SpotifyMediaCard() {
       : "Le dernier son que j'ai écouté";
 
   return (
-    <div
-      className={cardHeight}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className={cardHeight}>
       <MediaCard
         imageSrc={trackData.albumImageUrl}
         imageAlt={`Pochette de l'album ${trackData.albumName}`}
@@ -367,6 +286,8 @@ export default function SpotifyMediaCard() {
           trackData.isCurrentlyPlaying &&
           trackData.progress !== undefined && (
             <ProgressBar
+              key={trackData.spotifyUrl || trackData.title}
+              receivedAt={trackData.receivedAt}
               progress={trackData.progress}
               duration={trackData.duration}
               isPlaying={trackData.isCurrentlyPlaying}

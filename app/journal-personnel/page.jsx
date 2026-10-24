@@ -87,7 +87,7 @@ export default function JournalPersonnel() {
           }
         });
       },
-      { threshold: 0.5 },
+      { rootMargin: "400px 0px", threshold: 0 },
     );
 
     // Appliquer observer après que les refs soient en place
@@ -245,7 +245,7 @@ export default function JournalPersonnel() {
                                         height={360}
                                         placeholder="blur"
                                         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                        priority={false}
+                                        loading="eager" // Le déclenchement différé est déjà géré par l’observer
                                         className={`w-full object-cover rounded-lg aspect-video transition-opacity duration-500 ${
                                           loadingImages[id] === false
                                             ? "opacity-100"

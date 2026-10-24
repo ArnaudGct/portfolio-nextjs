@@ -74,7 +74,7 @@ export default function VideosGallery({ autre }) {
                     .sort(
                       (a, b) =>
                         (b.autre_tags.important || 0) -
-                        (a.autre_tags.important || 0)
+                        (a.autre_tags.important || 0),
                     )
                     .map((tag, index) => (
                       <Tag
@@ -110,7 +110,7 @@ export default function VideosGallery({ autre }) {
               </ButtonSecondary>
             </div>
           </div>
-          <div className="text-normal/8 md:text-lg/8 text-blue-900">
+          <div className="text-normal/8 text-blue-900">
             {autre.description && (
               <ReactMarkdown
                 components={{

@@ -1,4 +1,5 @@
 "use client";
+import { ViewportStaggerGrid, ViewportStaggerItem } from "../../../components/ViewportStaggerGrid";
 import { useEffect, useState } from "react";
 import AutreItem from "./AutreItem";
 import TagCheckbox from "./../../../components/TagCheckbox";
@@ -297,28 +298,14 @@ export default function Autre() {
           </motion.div>
         ) : filteredAutres.length > 0 ? (
           <AnimatePresence>
-            <motion.div
+            <ViewportStaggerGrid
               key={filteredAutres.length}
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10"
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={{
-                visible: {
-                  transition: { staggerChildren: 0.1 },
-                },
-                hidden: {},
-              }}
             >
               {filteredAutres.map((autre) => {
                 return (
-                  <motion.div
+                  <ViewportStaggerItem
                     key={autre.id_autre}
-                    variants={{
-                      hidden: { opacity: 0, scale: 0.9, y: 20 },
-                      visible: { opacity: 1, scale: 1, y: 0 },
-                    }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
                   >
                     <AutreItem
                       id={autre.id_autre}
@@ -326,10 +313,10 @@ export default function Autre() {
                       miniature={autre.miniature || "#"}
                       tags={autre.tags}
                     />
-                  </motion.div>
+                  </ViewportStaggerItem>
                 );
               })}
-            </motion.div>
+            </ViewportStaggerGrid>
           </AnimatePresence>
         ) : (
           <div className="flex flex-col justify-center items-center">
