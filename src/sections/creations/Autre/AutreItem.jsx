@@ -22,7 +22,8 @@ export default function AutreItem({ id, title, tags, miniature }) {
         });
       },
       {
-        threshold: 0.5, // L'élément doit être à 50% visible pour commencer à charger
+        rootMargin: "400px 0px", // Préparer les médias avant leur entrée à l’écran
+        threshold: 0,
       }
     );
 
@@ -73,7 +74,7 @@ export default function AutreItem({ id, title, tags, miniature }) {
               fill
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-              priority={false}
+              loading="eager" // Le déclenchement différé est déjà géré par l’observer
               className={`object-cover rounded-lg transition-all duration-500 group-hover:scale-105 ${
                 loading ? "opacity-0 scale-95" : "opacity-100 scale-100"
               }`}

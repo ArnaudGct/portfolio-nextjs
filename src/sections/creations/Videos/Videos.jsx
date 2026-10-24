@@ -1,4 +1,5 @@
 "use client";
+import { ViewportStaggerGrid, ViewportStaggerItem } from "../../../components/ViewportStaggerGrid";
 import { useEffect, useState } from "react";
 import VideoItem from "./VideoItem";
 import TagCheckbox from "../../../components/TagCheckbox";
@@ -249,27 +250,13 @@ export default function Videos() {
           </motion.div>
         ) : filteredVideos.length > 0 ? (
           <AnimatePresence>
-            <motion.div
+            <ViewportStaggerGrid
               key={filteredVideos.length}
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10"
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={{
-                visible: {
-                  transition: { staggerChildren: 0.1 },
-                },
-                hidden: {},
-              }}
             >
               {filteredVideos.map((video) => (
-                <motion.div
+                <ViewportStaggerItem
                   key={video.id_vid}
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.9, y: 20 },
-                    visible: { opacity: 1, scale: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
                 >
                   <VideoItem
                     id={video.id_vid}
@@ -278,9 +265,9 @@ export default function Videos() {
                     tags={video.tags}
                     pageCurrent="creations"
                   />
-                </motion.div>
+                </ViewportStaggerItem>
               ))}
-            </motion.div>
+            </ViewportStaggerGrid>
           </AnimatePresence>
         ) : (
           <div className="flex flex-col justify-center items-center">

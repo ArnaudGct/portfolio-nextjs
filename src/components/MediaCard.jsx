@@ -43,15 +43,13 @@ export default function MediaCard({
           rel={newTab ? "noopener noreferrer" : ""}
           className="block w-full h-full"
         >
-          <CardContent />
+          {renderCardContent()}
         </a>
-      ) : (
-        <CardContent />
-      )}
+      ) : renderCardContent()}
     </div>
   );
 
-  function CardContent() {
+  function renderCardContent() {
     return (
       <div
         className="relative w-full h-full rounded-lg p-3 flex items-center space-x-3 transition-all duration-300 group overflow-hidden"

@@ -1,4 +1,5 @@
 "use client";
+import { ViewportStaggerGrid, ViewportStaggerItem } from "../../../components/ViewportStaggerGrid";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
@@ -531,26 +532,12 @@ export default function Photos() {
           </motion.div>
         ) : filteredAlbums.length > 0 ? (
           <AnimatePresence>
-            <motion.div
+            <ViewportStaggerGrid
               className="grid grid-cols-1 gap-6 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={{
-                visible: {
-                  transition: { staggerChildren: 0.1 },
-                },
-                hidden: {},
-              }}
             >
               {filteredAlbums.map((album) => (
-                <motion.div
+                <ViewportStaggerItem
                   key={`album-${album.id_alb}`}
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.9, y: 20 },
-                    visible: { opacity: 1, scale: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
                   className="rounded-lg overflow-hidden group"
                 >
                   <Link
@@ -636,9 +623,9 @@ export default function Photos() {
                       </div>
                     </div>
                   </Link>
-                </motion.div>
+                </ViewportStaggerItem>
               ))}
-            </motion.div>
+            </ViewportStaggerGrid>
           </AnimatePresence>
         ) : null}
 
@@ -665,27 +652,13 @@ export default function Photos() {
           </motion.div>
         ) : filteredPhotos.length > 0 ? (
           <AnimatePresence>
-            <motion.div
+            <ViewportStaggerGrid
               key="photo-grid"
               className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 md:gap-6 xl:grid-cols-4 xl:gap-10"
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={{
-                visible: {
-                  transition: { staggerChildren: 0.1 },
-                },
-                hidden: {},
-              }}
             >
               {filteredPhotos.map((photo, index) => (
-                <motion.div
+                <ViewportStaggerItem
                   key={`photo-${photo.id_pho}`}
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.9, y: 20 },
-                    visible: { opacity: 1, scale: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
                   className="group cursor-pointer overflow-hidden rounded-lg relative"
                   onClick={() => handleImageClick(index)}
                 >
@@ -710,9 +683,9 @@ export default function Photos() {
                     }`}
                     onLoad={() => handlePhotoLoad(photo.id_pho)}
                   />
-                </motion.div>
+                </ViewportStaggerItem>
               ))}
-            </motion.div>
+            </ViewportStaggerGrid>
           </AnimatePresence>
         ) : null}
         {!isAlbumsLoading &&

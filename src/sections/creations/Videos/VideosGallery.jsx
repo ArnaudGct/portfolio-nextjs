@@ -85,7 +85,7 @@ export default function VideosGallery({ video }) {
               </ButtonSecondary>
             </div>
           </div>
-          <div className="text-normal/8 md:text-lg/8 text-blue-900">
+          <div className="text-normal/8 text-blue-900">
             {video.description && (
               <ReactMarkdown
                 components={{
