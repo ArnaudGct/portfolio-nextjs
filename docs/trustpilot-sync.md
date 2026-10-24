@@ -12,6 +12,20 @@ la synchronisation ; les visiteurs lisent la base de données.
 
 ## Activation
 
+La branche `dev` cible `https://portfolio-dev.arnaudgct.fr` ; `master` cible
+`https://arnaudgct.fr`. Le workflow démarre sur les pushes de ces deux branches.
+Pour un lancement manuel sur le site de développement, sélectionner la branche
+`dev` dans GitHub Actions. Le planning quotidien GitHub s'exécute sur la branche
+par défaut du dépôt, et ne synchronise donc pas automatiquement les deux sites.
+Si le jeton du site de développement est différent, définir le secret GitHub
+`API_TOKEN_DEV` ; sinon le workflow réutilise `API_TOKEN`.
+
+Depuis le Mac, pour synchroniser explicitement le site de développement :
+
+```sh
+TRUSTPILOT_SITE_URL=https://portfolio-dev.arnaudgct.fr npm run sync:trustpilot:remote
+```
+
 1. Déployer la nouvelle route sur CapRover avant de lancer le workflow.
 2. Vérifier le secret GitHub Actions `API_TOKEN`.
    `API_TOKEN` doit correspondre à celui du portfolio en production.

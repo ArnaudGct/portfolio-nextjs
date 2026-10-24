@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - master
+      - dev
   schedule:
     # 05:17 UTC, soit 06:17 ou 07:17 à Paris selon l'heure d'hiver/d'été.
     - cron: "17 5 * * *"
   workflow_dispatch:
 
 concurrency:
-  group: sync-trustpilot
+  group: sync-trustpilot-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -38,4 +39,5 @@ jobs:
       - name: Synchroniser Trustpilot via le portfolio
         run: npm run sync:trustpilot:remote
         env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
+          TRUSTPILOT_SITE_URL: ${{ github.ref_name == 'dev' && 'https://portfolio-dev.arnaudgct.fr' || 'https://arnaudgct.fr' }}
+          API_TOKEN: ${{ github.ref_name == 'dev' && (secrets.API_TOKEN_DEV || secrets.API_TOKEN) || secrets.API_TOKEN }}
