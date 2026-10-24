@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
   ChevronLeft,
@@ -122,7 +122,20 @@ export default function Testimonial() {
                   isExpanded ? "max-h-none" : "max-h-24 line-clamp-4"
                 }`}
               >
-                <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
+                {temoignage.source === "trustpilot" ? (
+                  temoignage.contenu.split(/\r?\n[\t ]*\r?\n(?:[\t ]*\r?\n)*/).map((paragraph, paragraphIndex) => (
+                    <p key={paragraphIndex} className="mb-6 last:mb-0">
+                      {paragraph.split(/\r?\n/).map((line, lineIndex) => (
+                        <Fragment key={lineIndex}>
+                          {lineIndex > 0 && <br />}
+                          {line}
+                        </Fragment>
+                      ))}
+                    </p>
+                  ))
+                ) : (
+                  <ReactMarkdown>{temoignage.contenu}</ReactMarkdown>
+                )}
               </div>
               {temoignage.contenu.length > 200 && (
                 <button
