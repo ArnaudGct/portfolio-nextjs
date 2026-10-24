@@ -31,16 +31,11 @@ jobs:
       - name: Installer les dépendances
         run: npm ci
 
-      - name: Générer le client Prisma
-        run: npm run prisma:generate
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Appliquer les migrations de la base
-        run: npm run prisma:migrate:deploy
+      # MySQL utilise le réseau privé CapRover ; seul le portfolio y accède.
+      - name: Synchroniser Trustpilot via le portfolio
+        run: npm run sync:trustpilot:remote
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Synchroniser Trustpilot vers MySQL
-        run: npm run sync:trustpilot
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
